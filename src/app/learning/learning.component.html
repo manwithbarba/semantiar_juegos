@@ -4,10 +4,34 @@
     <a class="back-link" routerLink="/">← Presentación</a>
   </header>
   <div class="progress-line" aria-label="Progreso del recorrido"><span [style.width.%]="((index() + 1) / pages.length) * 100"></span></div>
+  <nav class="sequence-nav" aria-label="Secuencia de indicadores">
+    <a *ngFor="let page of pages; let i = index" [routerLink]="'/' + page.path" [class.current-step]="page.path === current().path" [attr.aria-current]="page.path === current().path ? 'step' : null"><span>{{ i + 1 }}</span><small>{{ page.title }}</small></a>
+  </nav>
   <section class="objective-card"><p class="eyebrow">Objetivo</p><p>{{ current().objective }}</p></section>
   <section class="learning-grid">
     <article class="steps-card"><p class="eyebrow">Cómo resolverlo</p><h2>Cuatro decisiones guiadas</h2><ol><li *ngFor="let step of current().steps; let i = index"><b>{{ i + 1 }}</b><span>{{ step }}</span></li></ol></article>
-    <article class="example-card"><p class="eyebrow">{{ current().exampleTitle }}</p><h2>{{ current().exampleText }}</h2><div class="options"><div *ngFor="let option of current().options" class="option" [class.correct]="option.correct"><strong>{{ option.label }}</strong><span>{{ option.note }}</span></div></div></article>
+    <article class="example-card"><p class="eyebrow">{{ current().exampleTitle }}</p><h2>{{ current().exampleText }}</h2><div class="options"><div *ngFor="let option of current().options" class="option" [class.correct]="option.correct"><strong>{{ option.label }}</strong><span>{{ option.note }}</span></div></div><p class="example-caption">Este ejemplo muestra el criterio esperado antes de pasar a la práctica.</p></article>
+  </section>
+  <section class="practice-section" aria-labelledby="practice-heading">
+    <header class="practice-heading">
+      <div><p class="eyebrow">Ejercicios de práctica</p><h2 id="practice-heading">Aplicá el criterio en situaciones clínicas</h2><p>Elegí una opción en cada caso. La explicación aparece después de responder y muestra qué decisión semántica se está evaluando.</p></div>
+      <span class="exercise-count">{{ exercises().length }} ejercicios</span>
+    </header>
+    <div class="exercise-list">
+      <article class="exercise-card" *ngFor="let exercise of exercises(); let i = index">
+        <div class="exercise-meta"><span>Ejercicio {{ i + 1 }}</span><span *ngIf="hasAnswer(i)" [class.answer-good]="isCorrect(exercise, i)">{{ isCorrect(exercise, i) ? 'Resuelto' : 'Revisar' }}</span></div>
+        <h3>{{ exercise.title }}</h3>
+        <p class="exercise-prompt">{{ exercise.prompt }}</p>
+        <p class="exercise-instruction">{{ exercise.instruction }}</p>
+        <div class="exercise-options">
+          <button type="button" *ngFor="let option of exercise.options; let optionIndex = index" class="exercise-option" [class.selected]="selectedAnswer(i) === optionIndex" [class.correct]="hasAnswer(i) && option.correct" [class.incorrect]="hasAnswer(i) && selectedAnswer(i) === optionIndex && !option.correct" [attr.aria-pressed]="selectedAnswer(i) === optionIndex" (click)="selectAnswer(i, optionIndex)">
+            <strong>{{ option.label }}</strong>
+            <span *ngIf="hasAnswer(i)">{{ option.note }}</span>
+          </button>
+        </div>
+        <p class="exercise-feedback" *ngIf="hasAnswer(i)" [class.feedback-good]="isCorrect(exercise, i)"><strong>{{ isCorrect(exercise, i) ? 'Criterio correcto.' : 'Volvé a mirar la evidencia.' }}</strong> {{ exercise.feedback }}</p>
+      </article>
+    </div>
   </section>
   <section class="takeaway"><strong>Idea clave</strong><span>{{ current().takeaway }}</span></section>
   <section class="references-card" aria-labelledby="references-heading">
