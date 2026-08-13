@@ -14,6 +14,7 @@
   </section>
 
   <section class="track-picker" aria-label="Modo de entrenamiento">
+    <p class="track-instruction">Elegí un modo para empezar: hacé clic en <strong>Guiado</strong> para recibir una explicación inmediata, en <strong>Práctica</strong> para resolver y revisar después, o en <strong>Dominio</strong> para registrar tu primera decisión y tu confianza antes de ver la devolución.</p>
     <button type="button" *ngFor="let track of tracks" [class.active]="selectedTrack() === track.id" (click)="selectTrack(track.id)">
       <strong>{{ track.label }}</strong><span>{{ track.description }}</span>
     </button>

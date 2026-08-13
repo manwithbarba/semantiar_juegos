@@ -1,9 +1,9 @@
 <main class="bayes-game" aria-labelledby="bayes-game-title">
   <header class="game-header">
     <div>
-      <p class="eyebrow">Casos clínicos · resolución guiada</p>
-      <h1 id="bayes-game-title">Resolvé los casos</h1>
-      <p class="intro">Este laboratorio explora hipótesis y ambigüedad contextual; no reemplaza la anotación operativa del entrenamiento. Aplicá el contexto y observá cómo un modelo bayesiano actualiza las probabilidades de cada candidato.</p>
+      <p class="eyebrow">Laboratorio optativo · probabilidad contextual</p>
+      <h1 id="bayes-game-title">¿Qué tan probable es cada concepto según el contexto?</h1>
+      <p class="intro">Este laboratorio explora conceptos candidatos y ambigüedad contextual; no reemplaza la anotación operativa del entrenamiento. Aplicá el contexto y observá cómo cambia la plausibilidad de cada concepto.</p>
     </div>
     <a class="back-link" routerLink="/">← Inicio</a>
   </header>
@@ -29,15 +29,15 @@
     </div>
     <section class="iis-help" aria-label="Interpretación del IIS">
       <strong>¿Qué significa IIS?</strong>
-      <span>El Índice de Incertidumbre Semántica resume cuán repartida está la distribución entre las hipótesis: 0 significa una hipótesis dominante y 1, ambigüedad máxima. Se calcula como entropía normalizada, IIS = H(p) / log(n).</span>
+      <span>El Índice de Incertidumbre Semántica resume la incertidumbre de una distribución de probabilidad de conceptos mediante entropía normalizada: 0 indica un concepto claramente dominante y 1, ambigüedad máxima.</span>
     </section>
   </section>
 
   <section class="game-section" aria-labelledby="candidates-heading">
     <div class="section-heading">
-      <p class="section-label" id="candidates-heading">{{ revealedEvidence() === 0 ? 'Probabilidad a priori' : 'Probabilidad posterior bayesiana' }} de hipótesis</p>
+      <p class="section-label" id="candidates-heading">{{ revealedEvidence() === 0 ? 'Probabilidad a priori' : 'Plausibilidad contextual actualizada' }} de conceptos</p>
     </div>
-    <div class="probability-field" [attr.aria-label]="revealedEvidence() === 0 ? 'Probabilidad a priori de hipótesis' : 'Probabilidad posterior bayesiana de hipótesis'">
+    <div class="probability-field" [attr.aria-label]="revealedEvidence() === 0 ? 'Probabilidad a priori de conceptos' : 'Plausibilidad contextual actualizada de conceptos'">
       <button
         *ngFor="let candidate of activeCase().candidates; let i = index"
         class="probability-circle"
@@ -59,9 +59,9 @@
     </div>
   </section>
 
-  <section class="model-note" aria-label="Modelo probabilístico">
-    <strong>Modelo explícito</strong>
-    <span>La actualización aplica Bayes: P(H|E₁…Eₙ) ∝ P(H) × ∏ LR(Eᵢ|H). Cada pista se declara condicionalmente independiente dado el candidato; si esa hipótesis no pudiera sostenerse, el cálculo no debería interpretarse como una probabilidad posterior.</span>
+  <section class="model-note" aria-label="Cómo leer el resultado">
+    <strong>Cómo leer el resultado</strong>
+    <span>Cada dato de contexto modifica la plausibilidad de los conceptos candidatos. El cálculo supone que cada dato aporta información independiente del resto; la fórmula y sus supuestos completos quedan en la bibliografía.</span>
   </section>
 
   <section class="game-section" aria-labelledby="evidence-heading">
@@ -107,7 +107,7 @@
 
   <div class="action-row">
     <button class="btn btn-ghost" type="button" [disabled]="locked()" (click)="abstain()">Abstenerse: ambigüedad persistente</button>
-    <button class="btn btn-secondary btn-small" type="button" [disabled]="locked()" (click)="recalculateProbabilities()">Recalcular probabilidades</button>
+    <button class="btn btn-secondary btn-small" type="button" [disabled]="locked()" (click)="recalculateProbabilities()">Actualizar plausibilidad</button>
     <button class="btn btn-primary" type="button" (click)="submitDecision()">{{ submitLabel() }}</button>
   </div>
   <p class="feedback" role="status" aria-live="polite">{{ feedback() }}</p>
@@ -140,7 +140,7 @@
       } @else {
         <div class="operational-reference operational-reference-abstain">
           <strong>Salida operativa</strong>
-          <span>Abstenerse: las hipótesis siguen sin resolverse con la evidencia disponible.</span>
+          <span>Abstenerse: los conceptos candidatos siguen sin resolverse con la evidencia disponible.</span>
         </div>
       }
     </section>

@@ -33,7 +33,7 @@ describe('BayesGameComponent', () => {
 
     expect(game.recalculationCount()).toBe(1);
     expect(game.posterior()).not.toEqual(before);
-    expect(game.feedback()).toContain('evento independiente');
+    expect(game.feedback()).toContain('dato independiente');
   });
 
   it('scores a correct mapping and attribute decision', () => {

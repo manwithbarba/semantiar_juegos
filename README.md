@@ -31,7 +31,7 @@ El progreso se conserva únicamente en `localStorage`; no se transmite al servid
 
 ## Laboratorio bayesiano
 
-El laboratorio es optativo y trabaja con hipótesis contextuales, no con una anotación operativa alternativa. Su actualización es un modelo de Bayes explícito: `P(H|E₁…Eₙ) ∝ P(H) × ∏ LR(Eᵢ|H)`. Los priors deben sumar 1 y cada evento declara independencia condicional dado el candidato. El IIS es la entropía normalizada `H(p) / log(n)`: 0 indica una hipótesis dominante y 1 una distribución completamente ambigua. Cuando la evidencia no resuelve la hipótesis, la salida operativa de referencia es abstenerse.
+El laboratorio es optativo y trabaja con conceptos candidatos en contexto, no con una anotación operativa alternativa. Su actualización es un modelo de Bayes explícito: `P(H|E₁…Eₙ) ∝ P(H) × ∏ LR(Eᵢ|H)`. Los priors deben sumar 1 y cada evento declara independencia condicional dado el candidato. El IIS es un resumen escalar de la incertidumbre de una distribución de probabilidad de conceptos, calculado mediante entropía normalizada `H(p) / log(n)`: 0 indica un concepto dominante y 1 una distribución completamente ambigua. Cuando la evidencia no resuelve el concepto, la salida operativa de referencia es abstenerse.
 
 ## Gobierno del banco
 
