@@ -74,20 +74,18 @@ h1 {
 
 .status-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(3, minmax(74px, 1fr));
+  gap: 8px;
 }
 
 .stat-card {
   display: grid;
   gap: 4px;
-  min-height: 98px;
+  min-height: 70px;
   border: 1px solid #d4e1e4;
-  border-radius: 14px;
-  background: #ffffff;
-  padding: 18px 20px;
-  box-shadow: 0 8px 20px rgba(24, 62, 73, 0.05);
+  border-radius: 10px;
+  background: #f8fbfb;
+  padding: 10px 12px;
 }
 
 .stat-card span,
@@ -99,10 +97,17 @@ h1 {
 
 .stat-card strong {
   color: #123541;
-  font-size: 1.35rem;
+  font-size: 1.05rem;
 }
 
-.stat-card small { font-size: 0.72rem; }
+.stat-card small { font-size: 0.66rem; line-height: 1.25; }
+
+.case-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
+  align-items: end;
+  gap: 20px;
+}
 
 .game-section {
   margin-top: 30px;
@@ -287,11 +292,12 @@ input[type='range'] { accent-color: #2b7b84; margin: 10px 0 0; }
 
 @media (max-width: 760px) {
   .game-header { flex-direction: column; }
+  .case-layout { grid-template-columns: 1fr; }
   .candidate-grid, .decision-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
-  .status-grid { grid-template-columns: 1fr; }
+  .status-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .action-row { align-items: stretch; flex-direction: column-reverse; }
   .action-row .btn { width: 100%; }
 }
