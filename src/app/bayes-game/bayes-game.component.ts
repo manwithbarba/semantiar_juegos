@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 interface BayesCandidate {
   label: string;
   code: string;
-  prior: number;
+  initialProbability: number;
 }
 
 interface BayesEvidence {
@@ -37,14 +37,14 @@ interface BayesCase {
 export class BayesGameComponent {
   readonly cases: readonly BayesCase[] = [
     {
-      specialty: 'Cardiología · span: “FA”',
+      specialty: 'Cardiología · mención: “FA”',
       noteBefore: 'Paciente con ',
       highlightedText: 'FA',
       noteAfter: ' crónica en anticoagulación oral.',
       candidates: [
-        { label: 'Fibrilación auricular crónica', code: '426749004', prior: 0.55 },
-        { label: 'Anemia ferropénica', code: '', prior: 0.25 },
-        { label: 'Fosfatasa alcalina elevada', code: '', prior: 0.2 },
+        { label: 'Fibrilación auricular crónica', code: '426749004', initialProbability: 0.55 },
+        { label: 'Anemia ferropénica', code: '', initialProbability: 0.25 },
+        { label: 'Fosfatasa alcalina elevada', code: '', initialProbability: 0.2 },
       ],
       evidence: [
         { text: '“crónica” modifica a FA', likelihoodRatios: [2.2, 0.7, 0.5] },
@@ -54,21 +54,21 @@ export class BayesGameComponent {
       attributes: ['Activo', 'Confirmado', 'Actual', 'Paciente'],
       lesson: 'El contexto cardiovascular vuelve dominante a fibrilación auricular; la sigla aislada no bastaba.',
       reasoning: [
-        'El prior local favorece fibrilación auricular, pero “FA” aislada todavía puede ser ambigua.',
+        'La probabilidad previa local favorece fibrilación auricular, pero “FA” aislada todavía puede ser ambigua.',
         '“Crónica” aporta duración y la anticoagulación oral funciona como evidencia contextual muy discriminante.',
-        'Al multiplicar el prior por las razones de verosimilitud, la probabilidad posterior se concentra en fibrilación auricular.',
+        'Al multiplicar la probabilidad previa por las razones de verosimilitud, la probabilidad posterior se concentra en fibrilación auricular.',
         'La mención está activa, confirmada, actual y corresponde al paciente; los atributos no se deducen solo del SCTID.',
       ],
     },
     {
-      specialty: 'Guardia · span: “neumonía”',
+      specialty: 'Guardia · mención: “neumonía”',
       noteBefore: 'Infiltrado basal derecho; se interpreta como ',
       highlightedText: 'probable neumonía',
       noteAfter: '.',
       candidates: [
-        { label: 'Neumonía', code: '233604007', prior: 0.5 },
-        { label: 'Infección respiratoria inespecífica', code: '', prior: 0.3 },
-        { label: 'Tos', code: '', prior: 0.2 },
+        { label: 'Neumonía', code: '233604007', initialProbability: 0.5 },
+        { label: 'Infección respiratoria inespecífica', code: '', initialProbability: 0.3 },
+        { label: 'Tos', code: '', initialProbability: 0.2 },
       ],
       evidence: [
         { text: 'Infiltrado basal compatible', likelihoodRatios: [2.7, 1.1, 0.5] },
@@ -85,14 +85,14 @@ export class BayesGameComponent {
       ],
     },
     {
-      specialty: 'Clínica médica · span: “ACV”',
+      specialty: 'Clínica médica · mención: “ACV”',
       noteBefore: 'Antecedente de ',
       highlightedText: 'ACV hace 3 años',
       noteAfter: ', sin déficit motor actual.',
       candidates: [
-        { label: 'Accidente cerebrovascular', code: '230690007', prior: 0.62 },
-        { label: 'Déficit neurológico actual', code: '', prior: 0.23 },
-        { label: 'Antecedente familiar de ACV', code: '', prior: 0.15 },
+        { label: 'Accidente cerebrovascular', code: '230690007', initialProbability: 0.62 },
+        { label: 'Déficit neurológico actual', code: '', initialProbability: 0.23 },
+        { label: 'Antecedente familiar de ACV', code: '', initialProbability: 0.15 },
       ],
       evidence: [
         { text: '“Antecedente” y “hace 3 años”', likelihoodRatios: [3.5, 0.3, 0.8] },
@@ -109,14 +109,14 @@ export class BayesGameComponent {
       ],
     },
     {
-      specialty: 'Nota breve sin especialidad · span: “soplo”',
+      specialty: 'Nota breve sin especialidad · mención: “soplo”',
       noteBefore: 'Control. Persiste ',
       highlightedText: 'soplo',
       noteAfter: '. Sin otros datos.',
       candidates: [
-        { label: 'Soplo cardíaco', code: '', prior: 0.42 },
-        { label: 'Soplo vascular', code: '', prior: 0.31 },
-        { label: 'Descripción acústica inespecífica', code: '', prior: 0.27 },
+        { label: 'Soplo cardíaco', code: '', initialProbability: 0.42 },
+        { label: 'Soplo vascular', code: '', initialProbability: 0.31 },
+        { label: 'Descripción acústica inespecífica', code: '', initialProbability: 0.27 },
       ],
       evidence: [
         { text: 'No se documenta localización anatómica', likelihoodRatios: [1, 1, 1] },
@@ -124,7 +124,7 @@ export class BayesGameComponent {
       ],
       answer: null,
       attributes: ['Activo', 'Confirmado', 'Actual', 'Paciente'],
-      lesson: 'La incertidumbre permanece alta: abstenerse evita convertir un prior frecuente en una falsa certeza.',
+      lesson: 'La incertidumbre permanece alta: abstenerse evita convertir una probabilidad previa frecuente en una falsa certeza.',
       reasoning: [
         '“Soplo” es una mención clínica válida, pero no especifica localización ni etiología.',
         'Las dos evidencias tienen razón de verosimilitud 1: no favorecen ninguna hipótesis.',
@@ -133,14 +133,14 @@ export class BayesGameComponent {
       ],
     },
     {
-      specialty: 'Clínica médica · span: “SatO2 91%”',
+      specialty: 'Clínica médica · mención: “SatO2 91%”',
       noteBefore: 'SatO2: ',
       highlightedText: '91% al aire ambiente',
       noteAfter: '. Paciente sin disnea en reposo.',
       candidates: [
-        { label: 'Saturación de oxígeno (observable)', code: '431314004', prior: 0.46 },
-        { label: 'Hipoxemia', code: '389087006', prior: 0.31 },
-        { label: 'Insuficiencia respiratoria', code: '409622000', prior: 0.23 },
+        { label: 'Saturación de oxígeno (observable)', code: '431314004', initialProbability: 0.46 },
+        { label: 'Hipoxemia', code: '389087006', initialProbability: 0.31 },
+        { label: 'Insuficiencia respiratoria', code: '409622000', initialProbability: 0.23 },
       ],
       evidence: [
         { text: 'El valor numérico expresa una medición', likelihoodRatios: [4.5, 1.2, 0.4] },
@@ -158,38 +158,38 @@ export class BayesGameComponent {
       ],
     },
     {
-      specialty: 'Guardia · span: “fiebre”',
+      specialty: 'Guardia · mención: “fiebre”',
       noteBefore: 'El paciente ',
       highlightedText: 'niega fiebre',
       noteAfter: ', tos y disnea.',
       candidates: [
-        { label: 'Fiebre', code: '386661006', prior: 0.58 },
-        { label: 'Temperatura corporal normal', code: '', prior: 0.22 },
-        { label: 'Infección aguda', code: '', prior: 0.2 },
+        { label: 'Fiebre', code: '386661006', initialProbability: 0.58 },
+        { label: 'Temperatura corporal normal', code: '', initialProbability: 0.22 },
+        { label: 'Infección aguda', code: '', initialProbability: 0.2 },
       ],
       evidence: [
         { text: 'El verbo “niega” gobierna la mención', likelihoodRatios: [4.8, 1.1, 0.3] },
-        { text: 'La negación aparece antes del span clínico', likelihoodRatios: [2.4, 0.8, 0.4] },
+        { text: 'La negación aparece antes de la mención clínica', likelihoodRatios: [2.4, 0.8, 0.4] },
       ],
       answer: 0,
       attributes: ['Negado', 'Confirmado', 'Actual', 'Paciente'],
       lesson: 'Se detecta el concepto fiebre, pero la polaridad es negada; no debe eliminarse la mención ni convertirla en temperatura normal.',
       reasoning: [
-        'La entidad mencionada sigue siendo fiebre: la negación no borra el span clínico.',
+        'La entidad mencionada sigue siendo fiebre: la negación no borra la mención clínica.',
         '“Niega” es un disparador de aserción que tiene alcance sobre fiebre.',
         'La certeza es confirmada respecto de la negación, no de la presencia de fiebre.',
         'La salida debe conservar polaridad negada, actual y sujeto paciente para que el contexto sea auditable.',
       ],
     },
     {
-      specialty: 'Antecedentes familiares · span: “diabetes tipo 2”',
+      specialty: 'Antecedentes familiares · mención: “diabetes tipo 2”',
       noteBefore: 'La ',
       highlightedText: 'madre tiene diabetes tipo 2',
       noteAfter: '; el paciente no refiere diagnóstico conocido.',
       candidates: [
-        { label: 'Diabetes mellitus tipo 2', code: '44054006', prior: 0.52 },
-        { label: 'Antecedente familiar de diabetes mellitus', code: '', prior: 0.3 },
-        { label: 'Hiperglucemia', code: '', prior: 0.18 },
+        { label: 'Diabetes mellitus tipo 2', code: '44054006', initialProbability: 0.52 },
+        { label: 'Antecedente familiar de diabetes mellitus', code: '', initialProbability: 0.3 },
+        { label: 'Hiperglucemia', code: '', initialProbability: 0.18 },
       ],
       evidence: [
         { text: '“Madre” cambia el sujeto de la mención', likelihoodRatios: [2.8, 1.8, 0.5] },
@@ -206,14 +206,14 @@ export class BayesGameComponent {
       ],
     },
     {
-      specialty: 'Cardiología · span: “IAM en 2018”',
+      specialty: 'Cardiología · mención: “IAM en 2018”',
       noteBefore: 'Antecedente de ',
       highlightedText: 'IAM en 2018',
       noteAfter: '; actualmente sin dolor torácico.',
       candidates: [
-        { label: 'Infarto agudo de miocardio', code: '22298006', prior: 0.6 },
-        { label: 'Dolor torácico', code: '29857009', prior: 0.23 },
-        { label: 'Síndrome coronario agudo actual', code: '', prior: 0.17 },
+        { label: 'Infarto agudo de miocardio', code: '22298006', initialProbability: 0.6 },
+        { label: 'Dolor torácico', code: '29857009', initialProbability: 0.23 },
+        { label: 'Síndrome coronario agudo actual', code: '', initialProbability: 0.17 },
       ],
       evidence: [
         { text: '“Antecedente” y el año fijan temporalidad histórica', likelihoodRatios: [4.1, 0.5, 0.6] },
@@ -230,14 +230,14 @@ export class BayesGameComponent {
       ],
     },
     {
-      specialty: 'Consultorio · span: “ITU”',
+      specialty: 'Consultorio · mención: “ITU”',
       noteBefore: 'Se ',
       highlightedText: 'sospecha ITU',
       noteAfter: '; se solicita urocultivo.',
       candidates: [
-        { label: 'Infección del tracto urinario', code: '68566005', prior: 0.5 },
-        { label: 'Cistitis', code: '38822007', prior: 0.3 },
-        { label: 'Disuria', code: '267439000', prior: 0.2 },
+        { label: 'Infección del tracto urinario', code: '68566005', initialProbability: 0.5 },
+        { label: 'Cistitis', code: '38822007', initialProbability: 0.3 },
+        { label: 'Disuria', code: '267439000', initialProbability: 0.2 },
       ],
       evidence: [
         { text: '“Se sospecha” modifica la certeza', likelihoodRatios: [2.2, 1.1, 0.6] },
@@ -254,14 +254,14 @@ export class BayesGameComponent {
       ],
     },
     {
-      specialty: 'Reumatología · span: “artritis reumatoide”',
+      specialty: 'Reumatología · mención: “artritis reumatoide”',
       noteBefore: 'Artralgias; diagnóstico ',
       highlightedText: 'diferencial entre artritis reumatoide y lupus',
       noteAfter: '. Sin resultados de anticuerpos todavía.',
       candidates: [
-        { label: 'Artritis reumatoide', code: '69896004', prior: 0.38 },
-        { label: 'Lupus eritematoso sistémico', code: '', prior: 0.34 },
-        { label: 'Artralgia', code: '57676002', prior: 0.28 },
+        { label: 'Artritis reumatoide', code: '69896004', initialProbability: 0.38 },
+        { label: 'Lupus eritematoso sistémico', code: '', initialProbability: 0.34 },
+        { label: 'Artralgia', code: '57676002', initialProbability: 0.28 },
       ],
       evidence: [
         { text: '“Diferencial entre” mantiene abiertas dos hipótesis', likelihoodRatios: [1, 1, 0.9] },
@@ -273,7 +273,7 @@ export class BayesGameComponent {
       reasoning: [
         'El texto ofrece dos candidatos plausibles y no aporta evidencia que permita resolver el mapeo.',
         'La distribución posterior permanece repartida; el IIS alto es una señal para no forzar la decisión.',
-        'La certeza diferencial debe conservarse aunque el span contenga nombres de enfermedades.',
+        'La certeza diferencial debe conservarse aunque la mención contenga nombres de enfermedades.',
         'En entrenamiento, abstenerse aquí es una conducta de calidad y no una respuesta incompleta.',
       ],
     },
@@ -398,7 +398,7 @@ export class BayesGameComponent {
   }
 
   private calculatePosterior(current: BayesCase, revealed: number): number[] {
-    const weights = current.candidates.map((candidate) => candidate.prior);
+    const weights = current.candidates.map((candidate) => candidate.initialProbability);
     for (let evidenceIndex = 0; evidenceIndex < revealed; evidenceIndex += 1) {
       const ratios = current.evidence[evidenceIndex].likelihoodRatios;
       for (let candidateIndex = 0; candidateIndex < weights.length; candidateIndex += 1) {

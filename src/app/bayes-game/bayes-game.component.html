@@ -5,64 +5,29 @@
       <h1 id="bayes-game-title">Laboratorio bayesiano</h1>
       <p class="intro">Aprendé a mapear menciones clínicas a SNOMED CT usando contexto, probabilidad bayesiana y una decisión explícita de incertidumbre.</p>
     </div>
-    <div class="mini-flow" aria-label="Flujo bayesiano">
-      <span>Prior local</span><span aria-hidden="true">→</span><span>Evidencia</span>
-      <span aria-hidden="true">→</span><span>Posterior</span><span aria-hidden="true">→</span><span>Atributos</span>
-    </div>
   </header>
 
-  <section class="instructions-card" aria-labelledby="instructions-heading">
-    <div class="instructions-heading">
-      <div>
-        <p class="eyebrow">Guía de uso</p>
-        <h2 id="instructions-heading">Cómo usar esta presentación</h2>
-        <p>Una práctica guiada para justificar cada mapeo y reconocer cuándo la evidencia todavía no alcanza.</p>
-      </div>
-      <span class="instruction-badge">8 pasos por caso</span>
+  <section class="interpretation-card" aria-labelledby="interpretation-heading">
+    <div class="interpretation-copy">
+      <p class="eyebrow">Cómo interpretar el juego</p>
+      <h2 id="interpretation-heading">El contexto modifica la probabilidad de cada hipótesis</h2>
+      <p>Las barras muestran cuánto apoyo recibe cada concepto antes y después de incorporar las pistas de la nota. La <strong>probabilidad previa</strong> es el punto de partida; la <strong>probabilidad posterior</strong> refleja lo que cambia al considerar el contexto.</p>
+      <p>El <strong>índice de incertidumbre semántica (IIS)</strong> resume cuán difícil es decidir: un valor bajo indica que una hipótesis se diferencia con claridad; un valor alto indica que varias interpretaciones siguen siendo posibles y que abstenerse puede ser la decisión más rigurosa.</p>
+      <p>No hace falta conocer la palabra “entropía” para jugar: aquí representa, simplemente, cuánto se reparten las posibilidades entre las alternativas.</p>
     </div>
-    <ol class="instruction-steps">
-      <li><strong>Leé la nota clínica.</strong><span>Identificá el span resaltado y no agregues información que no aparece en el texto.</span></li>
-      <li><strong>Observá el prior local.</strong><span>Antes de revelar contexto, las barras muestran qué hipótesis serían plausibles solo por el término y la situación.</span></li>
-      <li><strong>Revelá el contexto de a una pista.</strong><span>Usá “Revelar contexto” y observá cómo cambia el posterior después de cada evidencia.</span></li>
-      <li><strong>Elegí una hipótesis SNOMED CT.</strong><span>Seleccioná la opción que mejor explica el span en esa nota, no la que suena más frecuente fuera de contexto.</span></li>
-      <li><strong>Completá los cuatro atributos.</strong><span>Indicá polaridad, certeza, temporalidad y sujeto. El concepto y sus atributos son dimensiones separadas.</span></li>
-      <li><strong>Declar&aacute; tu confianza.</strong><span>Mové el control entre 5% y 100%. La puntuación premia una confianza calibrada, no una seguridad artificial.</span></li>
-      <li><strong>Confirmá o abstente.</strong><span>“Irresoluble / abstenerse” es correcto cuando el IIS sigue alto o las hipótesis no se pueden discriminar.</span></li>
-      <li><strong>Leé la devolución.</strong><span>Después de confirmar aparece la respuesta, el puntaje y el razonamiento SemantIAr. Luego presioná “Siguiente caso”.</span></li>
-    </ol>
-    <div class="instruction-callout">
-      <strong>Regla de oro:</strong>
-      <span>detectar una mención no implica afirmar que la enfermedad está presente, en el paciente, ahora y con certeza.</span>
+    <div class="interpretation-rule">
+      <strong>Regla clínica</strong>
+      <span>Una mención puede ser correcta aunque esté negada, sea sospechosa, histórica o corresponda a un familiar.</span>
     </div>
   </section>
-
-  <details class="theory-card" open>
-    <summary>Qué significa el razonamiento bayesiano en este laboratorio</summary>
-    <div class="theory-grid">
-      <div>
-        <h3>Prior → evidencia → posterior</h3>
-        <p>El <strong>prior</strong> representa la plausibilidad inicial de cada hipótesis. Cada pista contextual funciona como una razón de verosimilitud: aumenta o reduce el peso de una hipótesis. El <strong>posterior</strong> es la distribución actualizada.</p>
-        <p class="formula"><code>P(hipótesis | evidencia) ∝ P(hipótesis) × evidencia</code></p>
-      </div>
-      <div>
-        <h3>IIS como señal de incertidumbre</h3>
-        <p>En esta pantalla el IIS es una aproximación pedagógica basada en entropía normalizada: <strong>0</strong> significa que una hipótesis concentra casi todo el peso y <strong>1</strong> que las alternativas siguen muy abiertas.</p>
-        <p>El IIS formal de la tesis puede incorporar perturbaciones del espacio de SapBERT y estabilidad del ranking; esta vista usa entropía para que el anotador vea la incertidumbre en tiempo real.</p>
-      </div>
-      <div>
-        <h3>Qué se evalúa realmente</h3>
-        <p>La actividad separa cuatro decisiones: qué concepto se menciona, si está negado o activo, con qué certeza se expresa, cuándo ocurre y a quién corresponde. Un mapeo correcto con atributos incorrectos sigue siendo una anotación incompleta.</p>
-      </div>
-    </div>
-  </details>
 
   <div class="status-grid" aria-label="Estado de la partida">
     <div class="stat-card"><span>Caso</span><strong>{{ caseIndex() + 1 }}/{{ cases.length }}</strong></div>
     <div class="stat-card"><span>Puntaje</span><strong>{{ score() }}</strong></div>
     <div class="stat-card">
-      <span>IIS (entropía)</span>
+      <span>IIS · incertidumbre semántica</span>
       <strong>{{ informationIndex() | number: '1.2-2' }}</strong>
-      <small>{{ informationIndex() >= 0.85 ? 'Alta: conviene abstenerse' : informationIndex() >= 0.55 ? 'Intermedia: falta evidencia' : 'Baja: hipótesis concentrada' }}</small>
+      <small>{{ informationIndex() >= 0.85 ? 'Alta: varias interpretaciones siguen abiertas' : informationIndex() >= 0.55 ? 'Intermedia: conviene revisar el contexto' : 'Baja: una hipótesis se diferencia con claridad' }}</small>
     </div>
   </div>
 
@@ -88,7 +53,7 @@
       >
         <strong>{{ candidate.label }}</strong>
         <span class="code">{{ candidate.code || 'SCTID pendiente de confirmar' }}</span>
-        <span class="posterior-label"><span>Posterior</span><strong>{{ posterior()[i] | percent: '1.0-0' }}</strong></span>
+        <span class="posterior-label"><span>Probabilidad posterior</span><strong>{{ posterior()[i] | percent: '1.0-0' }}</strong></span>
         <span class="prob-track" aria-hidden="true"><span class="prob-fill" [style.width.%]="posterior()[i] * 100"></span></span>
       </button>
     </div>
