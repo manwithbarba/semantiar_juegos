@@ -33,6 +33,12 @@ jobs:
       - name: Install dependencies
         run: corepack npm ci
 
+      - name: Audit dependencies
+        run: corepack npm audit --audit-level=low
+
+      - name: Validate training contract and run unit tests
+        run: corepack npm test -- --watch=false
+
       - name: Build (production, GitHub Pages)
         run: npm run build:pages
 

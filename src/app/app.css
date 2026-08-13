@@ -28,8 +28,11 @@
   color: #1f6870;
   outline: none;
 }
-@media (max-width: 560px) {
+@media (max-width: 760px) {
   .games-brand { align-items: flex-start; flex-direction: column; }
-  .games-nav { width: 100%; }
-  .games-nav a { flex: 1 1 0; text-align: center; }
+  .games-nav { flex-wrap: wrap; width: 100%; }
+  .games-nav a { flex: 1 1 calc(33.333% - 8px); text-align: center; }
+}
+@media (max-width: 420px) {
+  .games-nav a { flex-basis: calc(50% - 8px); }
 }
