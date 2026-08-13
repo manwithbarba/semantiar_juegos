@@ -285,7 +285,6 @@ export class BayesGameComponent {
   readonly revealedEvidence = signal(0);
   readonly selectedCandidate = signal<number | null>(null);
   readonly locked = signal(false);
-  readonly confidence = signal(70);
   readonly polarity = signal('Activo');
   readonly certainty = signal('Confirmado');
   readonly temporality = signal('Actual');
@@ -319,10 +318,6 @@ export class BayesGameComponent {
         ? 'Distribución recalculada a partir de la probabilidad a priori.'
         : `Distribución recalculada con ${revealed} ${revealed === 1 ? 'pista contextual' : 'pistas contextuales'}.`
     );
-  }
-
-  setConfidence(value: number | string): void {
-    this.confidence.set(Number(value));
   }
 
   setPolarity(value: string): void {
@@ -367,11 +362,7 @@ export class BayesGameComponent {
       (count, value, index) => count + (value === current.attributes[index] ? 1 : 0),
       0
     );
-    const declaredConfidence = this.confidence() / 100;
-    const calibration = Math.round(
-      30 * (1 - Math.abs(declaredConfidence - (mappingCorrect ? 1 : 0)))
-    );
-    const gained = (mappingCorrect ? 50 : 0) + attributeCorrect * 5 + calibration;
+    const gained = (mappingCorrect ? 50 : 0) + attributeCorrect * 5;
     this.score.update((value) => value + gained);
     this.locked.set(true);
 
@@ -399,7 +390,6 @@ export class BayesGameComponent {
     this.revealedEvidence.set(0);
     this.selectedCandidate.set(null);
     this.locked.set(false);
-    this.confidence.set(70);
     this.polarity.set('Activo');
     this.certainty.set('Confirmado');
     this.temporality.set('Actual');
