@@ -62,12 +62,12 @@ export const EDUCATIONAL_REFERENCES: readonly EducationalReference[] = [
     label: 'Probabilidad bayesiana en diagnóstico',
     description: 'Razones de verosimilitud y probabilidades previa y posterior en la práctica clínica. La fórmula de referencia es P(H|E) ∝ P(H) × ∏ LR(E|H).',
     url: 'https://onlinelibrary.wiley.com/doi/10.1111/j.1651-2227.2006.00179.x',
-    page: 'Ejercicios de probabilidad contextual · probabilidad condicional',
+    page: 'Probabilidad condicional',
   },
   {
     label: 'Fórmula de Bayes y probabilidad condicional',
     description: 'Aplicación clínica de Bayes para actualizar la plausibilidad de conceptos con nueva evidencia.',
     url: 'https://journals.sagepub.com/doi/full/10.1177/10398562241300887',
-    page: 'Ejercicios de probabilidad contextual · probabilidad condicional',
+    page: 'Probabilidad condicional',
   },
 ];
