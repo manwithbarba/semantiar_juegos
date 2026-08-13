@@ -1,7 +1,7 @@
 {
-  "name": "SemantIAr Anotador · anotación clínica",
-  "short_name": "SemantIAr Anotador",
-  "description": "Anotación clínica con SNOMED CT para el proyecto SEMANTIAR.",
+  "name": "SemantIAr Juegos · semántica clínica",
+  "short_name": "SemantIAr Juegos",
+  "description": "Entrenamiento interactivo en semántica clínica y razonamiento bayesiano.",
   "lang": "es-AR",
   "start_url": "./",
   "scope": "./",
