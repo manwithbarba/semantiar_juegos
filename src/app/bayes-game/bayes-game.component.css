@@ -45,12 +45,61 @@ h1 {
 }
 
 .interpretation-card,
+.how-to-play-card,
 .case-explanation {
   border: 1px solid #cfe0e3;
   border-radius: 14px;
   background: #ffffff;
   box-shadow: 0 8px 20px rgba(24, 62, 73, 0.05);
 }
+
+.how-to-play-card {
+  margin-bottom: 18px;
+  border-top: 4px solid #2b7b84;
+  padding: 20px 24px 22px;
+  background: #ffffff;
+}
+
+.how-to-play-card h2 {
+  margin: 4px 0 0;
+  color: #123541;
+  font-size: 1.3rem;
+  line-height: 1.2;
+}
+
+.play-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: play-step;
+}
+
+.play-steps li {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+  counter-increment: play-step;
+}
+
+.play-steps li::before {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e7f3f1;
+  color: #1f6870;
+  content: counter(play-step);
+  font-size: .75rem;
+  font-weight: 800;
+}
+
+.play-steps strong { color: #234951; font-size: .8rem; line-height: 1.3; }
+.play-steps span { color: #687b84; font-size: .76rem; line-height: 1.45; }
 
 .interpretation-card {
   display: grid;
@@ -327,11 +376,14 @@ input[type='range'] { accent-color: #2b7b84; margin: 10px 0 0; }
 @media (max-width: 760px) {
   .game-header { flex-direction: column; }
   .interpretation-card { grid-template-columns: 1fr; }
+  .play-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .candidate-grid, .decision-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 560px) {
   .interpretation-card { padding: 18px; }
+  .how-to-play-card { padding: 18px; }
+  .play-steps { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
