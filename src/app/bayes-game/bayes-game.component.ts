@@ -312,6 +312,15 @@ export class BayesGameComponent {
     if (this.revealedEvidence() < total) this.revealedEvidence.update((value) => value + 1);
   }
 
+  recalculateProbabilities(): void {
+    const revealed = this.revealedEvidence();
+    this.feedback.set(
+      revealed === 0
+        ? 'Distribución recalculada a partir de la probabilidad a priori.'
+        : `Distribución recalculada con ${revealed} ${revealed === 1 ? 'pista contextual' : 'pistas contextuales'}.`
+    );
+  }
+
   setConfidence(value: number | string): void {
     this.confidence.set(Number(value));
   }
