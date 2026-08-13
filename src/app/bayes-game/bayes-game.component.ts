@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 interface BayesCandidate {
   label: string;
@@ -29,7 +30,7 @@ interface BayesCase {
 @Component({
   selector: 'app-bayes-game',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './bayes-game.component.html',
   styleUrl: './bayes-game.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
