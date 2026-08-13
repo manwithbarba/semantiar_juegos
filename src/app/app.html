@@ -1,10 +1,19 @@
-<main class="games-shell">
+<div class="games-shell">
   <header class="games-brand">
     <div>
       <p class="brand-kicker">SemantIAr</p>
       <p class="brand-title">Juegos de semántica clínica</p>
     </div>
-    <span class="brand-context">Entrenamiento · Semántica clínica</span>
+    <nav class="games-nav" aria-label="Navegación principal">
+      <a
+        routerLink="/"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Presentación
+      </a>
+      <a routerLink="/casos" routerLinkActive="is-active">Ir a los casos</a>
+    </nav>
   </header>
-  <app-bayes-game></app-bayes-game>
-</main>
+  <router-outlet></router-outlet>
+</div>
