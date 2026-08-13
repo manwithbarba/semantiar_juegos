@@ -95,9 +95,6 @@
         </select>
       </label>
     </div>
-    <label class="confidence-label" for="confidence">¿Cuánto confiás en lo que estás pensando? <strong>{{ confidence() }}%</strong></label>
-    <input id="confidence" type="range" min="5" max="100" step="5" [ngModel]="confidence()" (ngModelChange)="setConfidence($event)" [disabled]="locked()" />
-    <p class="field-help"><strong>Confianza subjetiva en la decisión.</strong> No modifica las probabilidades ni el IIS; se utiliza para evaluar la calibración.</p>
   </section>
 
   <div class="action-row">
