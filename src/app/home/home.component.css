@@ -48,7 +48,7 @@
 
 .resource-links {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -237,6 +237,7 @@
 
 @media (max-width: 900px) {
   .learning-resources { grid-template-columns: 1fr; }
+  .resource-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .learning-resources-copy > p:last-child { max-width: 680px; }
 }
 
@@ -248,6 +249,7 @@
 }
 
 @media (max-width: 560px) {
+  .resource-links { grid-template-columns: 1fr; }
   .resource-links { grid-template-columns: 1fr; }
   .interpretation-card { padding: 18px; }
   .how-to-play-card { padding: 18px; }
