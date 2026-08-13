@@ -8,22 +8,25 @@
     <a class="back-link" routerLink="/">← Volver a la presentación</a>
   </header>
 
-  <div class="status-grid" aria-label="Estado de la partida">
-    <div class="stat-card"><span>Caso</span><strong>{{ caseIndex() + 1 }}/{{ cases.length }}</strong></div>
-    <div class="stat-card"><span>Puntaje</span><strong>{{ score() }}</strong></div>
-    <div class="stat-card">
-      <span>IIS · índice de incertidumbre semántica</span>
-      <strong>{{ informationIndex() | number: '1.2-2' }}</strong>
-      <small>{{ informationIndex() >= 0.85 ? 'Alta: persiste la ambigüedad semántica' : informationIndex() >= 0.55 ? 'Intermedia: conviene revisar el contexto' : 'Baja: un concepto se diferencia con claridad' }}</small>
-    </div>
-  </div>
-
   <section class="game-section" aria-labelledby="case-heading">
-    <p class="section-label" id="case-heading">Expresión clínica</p>
-    <div class="note-card">
-      {{ activeCase().noteBefore }}<mark>{{ activeCase().highlightedText }}</mark>{{ activeCase().noteAfter }}
+    <div class="case-layout">
+      <div class="case-expression">
+        <p class="section-label" id="case-heading">Expresión clínica</p>
+        <div class="note-card">
+          {{ activeCase().noteBefore }}<mark>{{ activeCase().highlightedText }}</mark>{{ activeCase().noteAfter }}
+        </div>
+        <p class="muted">{{ activeCase().specialty }}</p>
+      </div>
+      <div class="status-grid" aria-label="Estado de la partida">
+        <div class="stat-card"><span>Caso</span><strong>{{ caseIndex() + 1 }}/{{ cases.length }}</strong></div>
+        <div class="stat-card"><span>Puntaje</span><strong>{{ score() }}</strong></div>
+        <div class="stat-card">
+          <span>IIS</span>
+          <strong>{{ informationIndex() | number: '1.2-2' }}</strong>
+          <small>{{ informationIndex() >= 0.85 ? 'Ambigüedad alta' : informationIndex() >= 0.55 ? 'Ambigüedad intermedia' : 'Ambigüedad baja' }}</small>
+        </div>
+      </div>
     </div>
-    <p class="muted">{{ activeCase().specialty }}</p>
   </section>
 
   <section class="game-section" aria-labelledby="candidates-heading">
