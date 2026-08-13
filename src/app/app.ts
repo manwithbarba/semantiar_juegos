@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { BayesGameComponent } from './bayes-game/bayes-game.component';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [BayesGameComponent],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
