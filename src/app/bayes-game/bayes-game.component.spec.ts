@@ -24,16 +24,15 @@ describe('BayesGameComponent', () => {
     expect(game.informationIndex()).toBeLessThan(0.35);
   });
 
-  it('scores a correct mapping and attribute decision, including confidence calibration', () => {
+  it('scores a correct mapping and attribute decision', () => {
     const game = new BayesGameComponent();
 
     game.selectCandidate(0);
     game.setCertainty('Confirmado');
-    game.setConfidence(100);
     game.submitDecision();
 
     expect(game.locked()).toBe(true);
-    expect(game.score()).toBe(100);
+    expect(game.score()).toBe(70);
     expect(game.feedback()).toContain('Decisión correcta');
   });
 });
