@@ -43,14 +43,14 @@ export function validateBayesCases(cases: readonly BayesCase[]): string[] {
   const errors: string[] = [];
   for (const item of cases) {
     const priorTotal = item.candidates.reduce((sum, candidate) => sum + candidate.initialProbability, 0);
-    if (item.candidates.length < 2) errors.push(`${item.specialty}: se requieren al menos dos hipótesis.`);
+    if (item.candidates.length < 2) errors.push(`${item.specialty}: se requieren al menos dos conceptos candidatos.`);
     if (Math.abs(priorTotal - 1) > 0.000001) errors.push(`${item.specialty}: los priors deben sumar 1.`);
     if (item.candidates.some((candidate) => !Number.isFinite(candidate.initialProbability) || candidate.initialProbability <= 0)) {
       errors.push(`${item.specialty}: cada prior debe ser positivo y finito.`);
     }
     for (const candidate of item.candidates) {
       if (candidate.code && (!/^\d{6,18}$/.test(candidate.code) || !VERIFIED_TRAINING_CONCEPTS[candidate.code])) {
-        errors.push(`${item.specialty}: SCTID de hipótesis no verificado (${candidate.code}).`);
+        errors.push(`${item.specialty}: SCTID de concepto candidato no verificado (${candidate.code}).`);
       }
     }
     for (const evidence of item.evidence) {
@@ -58,7 +58,7 @@ export function validateBayesCases(cases: readonly BayesCase[]): string[] {
         errors.push(`${item.specialty}: cada evento debe declarar independencia condicional.`);
       }
       if (evidence.likelihoodRatios.length !== item.candidates.length) {
-        errors.push(`${item.specialty}: cada evento debe tener una razón de verosimilitud por hipótesis.`);
+        errors.push(`${item.specialty}: cada evento debe tener una razón de verosimilitud por concepto candidato.`);
       }
       if (evidence.likelihoodRatios.some((ratio) => !Number.isFinite(ratio) || ratio <= 0)) {
         errors.push(`${item.specialty}: las razones de verosimilitud deben ser positivas y finitas.`);
@@ -68,7 +68,7 @@ export function validateBayesCases(cases: readonly BayesCase[]): string[] {
       errors.push(`${item.specialty}: el literal debe ser contiguo y estar presente en la nota.`);
     }
     if (item.answer !== null && (!Number.isInteger(item.answer) || !item.candidates[item.answer])) {
-      errors.push(`${item.specialty}: la respuesta esperada no apunta a una hipótesis válida.`);
+      errors.push(`${item.specialty}: la respuesta esperada no apunta a un concepto candidato válido.`);
     }
     const annotation = item.operationalAnnotation;
     if (annotation) {
@@ -391,8 +391,8 @@ export class BayesGameComponent {
     const maximum = Math.max(...this.posterior());
     this.feedback.set(
       revealed === 0
-        ? `Probabilidades recalculadas desde los priors. Hipótesis dominante: ${Math.round(maximum * 100)}%.`
-        : `Probabilidades recalculadas con ${revealed} ${revealed === 1 ? 'evento independiente' : 'eventos independientes'}. Hipótesis dominante: ${Math.round(maximum * 100)}%.`
+        ? `Plausibilidad actualizada desde la información previa. Concepto dominante: ${Math.round(maximum * 100)}%.`
+        : `Plausibilidad actualizada con ${revealed} ${revealed === 1 ? 'dato independiente' : 'datos independientes'}. Concepto dominante: ${Math.round(maximum * 100)}%.`
     );
   }
 

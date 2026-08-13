@@ -111,7 +111,8 @@
   padding: 18px;
 }
 
-.hero-action p { margin: 0; color: #315964; font-size: 0.84rem; font-weight: 700; }
+.scroll-cue { color: #286b78; font-size: 0.78rem; font-weight: 800; text-decoration: none; }
+.scroll-cue:hover, .scroll-cue:focus-visible { color: #144f57; text-decoration: underline; outline: none; }
 
 .how-to-play-card,
 .interpretation-card,

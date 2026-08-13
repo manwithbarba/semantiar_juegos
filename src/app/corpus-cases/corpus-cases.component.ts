@@ -13,7 +13,7 @@ type CaseState = 'answering' | 'revealed';
   standalone: true,
   imports: [FormsModule, NgFor, NgIf, RouterLink],
   templateUrl: './corpus-cases.component.html',
-  styleUrl: './corpus-cases.component.css',
+  styleUrls: ['./corpus-cases.component.css', './corpus-cases.component.extra.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CorpusCasesComponent {

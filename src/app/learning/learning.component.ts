@@ -1,6 +1,9 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TRAINING_CASES } from '../training/training-case-bank';
+
+const TRAINING_CASE_BY_ID = new Map(TRAINING_CASES.map((item) => [item.id, item]));
 
 interface LearningPage {
   path: string;
@@ -21,6 +24,7 @@ interface LearningExercise {
   instruction: string;
   options: { label: string; note: string; correct: boolean }[];
   feedback: string;
+  source?: string;
 }
 
 @Component({
@@ -28,7 +32,7 @@ interface LearningExercise {
   standalone: true,
   imports: [RouterLink, NgFor, NgIf],
   templateUrl: './learning.component.html',
-  styleUrl: './learning.component.css',
+  styleUrls: ['./learning.component.css', './learning.component.extra.css'],
 })
 export class LearningComponent {
   private readonly route = inject(ActivatedRoute);
@@ -36,8 +40,8 @@ export class LearningComponent {
 
   readonly pages: readonly LearningPage[] = [
     { path: 'expresiones', eyebrow: 'Paso 1 · expresión', title: '¿Qué parte de la nota expresa una decisión clínica?', intro: 'Aprendé a delimitar la mención clínica que vas a revisar sin agregar información que la nota no documenta.', objective: 'Delimitá la mención clínica que expresa una idea y separá la evidencia contextual de otras afirmaciones.', steps: ['Leé la oración completa.', 'Marcá la expresión clínica mínima que conserva el significado.', 'Conservá los modificadores inseparables de la mención y registrá negación, certeza, temporalidad y sujeto en sus campos correspondientes.', 'No incorpores contexto que pertenece a otra afirmación.'], exampleTitle: 'Ejemplo de selección', exampleText: 'Paciente con insuficiencia cardíaca congestiva descompensada en tratamiento.', options: [{ label: 'insuficiencia', note: 'Demasiado amplio.' }, { label: 'insuficiencia cardíaca congestiva descompensada', note: 'Conserva el significado clínico documentado.', correct: true }, { label: 'insuficiencia cardíaca congestiva descompensada en tratamiento', note: 'Incluye una acción que puede anotarse por separado.' }], takeaway: 'Una selección incorrecta de la expresión condiciona todo el mapeo posterior.' },
-    { path: 'granularidad', eyebrow: 'Paso 2 · concepto', title: 'Elegí el concepto justo', intro: 'Compará conceptos generales y específicos para elegir el nivel de detalle que realmente sostiene la evidencia.', objective: 'La granularidad adecuada es la máxima precisión que la nota permite justificar, sin inventar detalles.', steps: ['Identificá qué está explícitamente documentado.', 'Compará el concepto general con sus descendientes.', 'Descartá conceptos que agreguen etiología, gravedad o localización no escrita.', 'Elegí el concepto más específico respaldado por el contexto.'], exampleTitle: 'Ejemplo de granularidad', exampleText: 'SatO₂ 91 % al aire ambiente. Paciente sin disnea en reposo.', options: [{ label: 'Insuficiencia respiratoria', note: 'Agrega un diagnóstico no documentado.' }, { label: 'Saturación de oxígeno (observable)', note: 'Representa el dato efectivamente registrado.', correct: true }, { label: 'Hipoxemia grave', note: 'Agrega interpretación y gravedad.' }], takeaway: 'El concepto correcto no es el más sofisticado: es el más preciso que la evidencia permite.' },
-    { path: 'atributos', eyebrow: 'Paso 3 · atributos', title: 'Un concepto, distintas afirmaciones', intro: 'El mismo concepto puede cambiar de significado clínico según la polaridad, la certeza, el tiempo y el sujeto.', objective: 'Separá la identidad del concepto de la forma en que la nota afirma, niega o contextualiza ese concepto.', steps: ['Seleccioná el concepto.', 'Determiná si está activo o negado.', 'Reconocé confirmación, sospecha o diagnóstico diferencial.', 'Definí temporalidad y sujeto.'], exampleTitle: 'Ejemplo de atributos', exampleText: 'La madre tiene diabetes tipo 2; el paciente no refiere diagnóstico conocido.', options: [{ label: 'Diabetes tipo 2 · paciente · activo', note: 'Atribuye la enfermedad a la persona equivocada.' }, { label: 'Diabetes tipo 2 · familiar · activo', note: 'Conserva concepto y sujeto documentados.', correct: true }, { label: 'Hiperglucemia · paciente · confirmado', note: 'Cambia concepto y sujeto sin evidencia.' }], takeaway: 'Mapear el concepto no alcanza: una anotación clínica necesita sus atributos.' },
+    { path: 'granularidad', eyebrow: 'Paso 2 · concepto', title: 'Elegí el concepto justo', intro: 'Practicá con el caso del banco de entrenamiento para elegir el nivel de detalle que realmente sostiene la evidencia.', objective: 'La granularidad adecuada es la máxima precisión que la nota permite justificar, sin inventar detalles.', steps: ['Identificá qué está explícitamente documentado.', 'Compará el concepto general con sus descendientes.', 'Descartá conceptos que agreguen etiología, gravedad o localización no escrita.', 'Elegí el concepto más específico respaldado por el contexto.'], exampleTitle: 'Ejemplo de granularidad · TRN-003', exampleText: 'SatO2 91% al aire ambiente, por debajo del rango esperado. Sin disnea en reposo.', options: [{ label: 'Insuficiencia respiratoria confirmada.', note: 'Agrega un diagnóstico no documentado.' }, { label: 'Saturación de oxígeno por debajo del rango de referencia.', note: 'Representa el dato efectivamente registrado.', correct: true }, { label: 'Hipoxemia grave confirmada.', note: 'Agrega interpretación y gravedad no documentadas.' }], takeaway: 'El concepto correcto no es el más sofisticado: es el más preciso que la evidencia permite.' },
+    { path: 'atributos', eyebrow: 'Paso 3 · atributos', title: 'Un concepto, distintas afirmaciones', intro: 'El mismo concepto puede cambiar de significado clínico según cuatro atributos independientes: polaridad, certeza, temporalidad y sujeto.', objective: 'Separá la identidad del concepto de la forma en que la nota afirma, niega o contextualiza ese concepto.', steps: ['Seleccioná el concepto.', 'Determiná la polaridad: Activo o Negado.', 'Reconocé la certeza: Confirmado, Sospecha o Diferencial.', 'Definí la temporalidad y el sujeto con los valores del contrato.'], exampleTitle: 'Ejemplo de atributos · TRN-002', exampleText: 'Antecedente familiar: madre con DBT2. El paciente no refiere diabetes conocida.', options: [{ label: 'Diabetes mellitus tipo 2 · Hallazgo clínico · Activo · Confirmado · Histórico · Paciente', note: 'Confunde el sujeto: la mención corresponde a la madre.', correct: false }, { label: 'Diabetes mellitus tipo 2 · Hallazgo clínico · Activo · Confirmado · Histórico · Familiar', note: 'Conserva los cuatro atributos del contrato para la mención de la madre.', correct: true }, { label: 'Diabetes mellitus tipo 2 · Hallazgo clínico · Negado · Confirmado · Histórico · Familiar', note: 'Confunde polaridad con la negación referida al paciente.', correct: false }], takeaway: 'Mapear el concepto no alcanza: una anotación clínica necesita sus cuatro atributos.' },
     { path: 'auditoria', eyebrow: 'Paso 4 · auditoría', title: 'Detectá el error del anotador', intro: 'Revisá anotaciones propuestas y distinguí errores de expresión, concepto, granularidad o atributos.', objective: 'La auditoría permite transformar desacuerdos en decisiones reproducibles y documentadas.', steps: ['Compará la nota con la expresión seleccionada.', 'Verificá si el concepto está sustentado.', 'Revisá los cuatro atributos.', 'Decidí si corregir, adjudicar o abstenerse.'], exampleTitle: 'Ejemplo de auditoría', exampleText: 'Niega fiebre. Anotación propuesta: fiebre · activo · paciente.', options: [{ label: 'Aceptar la anotación', note: 'La polaridad contradice el texto.' }, { label: 'Corregir a fiebre · negado · paciente', note: 'Conserva el concepto y corrige la aserción.', correct: true }, { label: 'Eliminar la expresión', note: 'La negación no borra el concepto mencionado.' }], takeaway: 'Una auditoría rigurosa explica el error; no solo marca una respuesta como incorrecta.' },
     { path: 'lenguaje-local', eyebrow: 'Paso 5 · lenguaje local', title: 'Del lenguaje local al concepto estándar', intro: 'Relacioná expresiones coloquiales, abreviaturas y términos regionales con conceptos clínicos normalizados.', objective: 'El lenguaje cotidiano puede variar; el significado clínico debe mantenerse estable y explícito.', steps: ['Leé la expresión local en su contexto.', 'Expandí abreviaturas sin asumir significados.', 'Compará sinónimos y conceptos cercanos.', 'Elegí el concepto estándar que la nota permite sostener.'], exampleTitle: 'Ejemplo de normalización', exampleText: 'Paciente con “presión alta” de larga evolución, sin tratamiento actual.', options: [{ label: 'Hipertensión arterial', note: 'Concepto clínico que el contexto permite normalizar.', correct: true }, { label: 'Crisis hipertensiva', note: 'Agrega una gravedad no documentada.' }, { label: 'Presión arterial elevada aislada', note: 'No representa necesariamente una condición crónica.' }], takeaway: 'Normalizar no es traducir palabra por palabra: es conservar el significado clínico.' },
   ];
@@ -87,74 +91,62 @@ export class LearningComponent {
         feedback: 'El span debe conservar la evidencia del concepto seleccionado, pero no absorber la afirmación siguiente.',
       },
     ],
-    granularidad: [
-      {
-        title: 'Dato observado o diagnóstico',
-        prompt: '“Glucemia capilar 248 mg/dL. No consta diagnóstico de diabetes”.',
-        instruction: 'Elegí el nivel de granularidad que la nota permite defender.',
-        options: [
-          { label: 'Diabetes mellitus', note: 'Convierte un resultado en un diagnóstico no documentado.', correct: false },
-          { label: 'Glucemia elevada', note: 'Interpreta el valor y puede ser válido si el vocabulario del juego lo contempla.', correct: false },
-          { label: 'Glucemia capilar', note: 'Representa exactamente la observación registrada sin agregar diagnóstico.', correct: true },
-        ],
-        feedback: 'La anotación debe distinguir el resultado observado del diagnóstico que podría investigarse después.',
-      },
-      {
-        title: 'Localización documentada',
-        prompt: '“Herida superficial en dorso del pie derecho, sin secreción”.',
-        instruction: '¿Cuál es el concepto más específico respaldado por la nota?',
-        options: [
-          { label: 'Herida del pie derecho', note: 'Conserva el sitio y evita inventar profundidad.', correct: true },
-          { label: 'Úlcera profunda infectada del pie', note: 'Agrega profundidad e infección no documentadas.', correct: false },
-          { label: 'Lesión cutánea', note: 'Es más general y pierde información útil que sí está escrita.', correct: false },
-        ],
-        feedback: 'La granularidad óptima conserva localización y tipo cuando están documentados, pero no agrega severidad.',
-      },
-      {
-        title: 'No sobrediagnosticar',
-        prompt: '“Disnea al caminar dos cuadras; saturación 96 % en reposo”.',
-        instruction: '¿Qué opción evita transformar un síntoma en una enfermedad?',
-        options: [
-          { label: 'Disnea de esfuerzo', note: 'Describe el síntoma y la circunstancia en que aparece.', correct: true },
-          { label: 'Insuficiencia cardíaca', note: 'Es una etiología posible, pero no está confirmada en la frase.', correct: false },
-          { label: 'Hipoxemia', note: 'La saturación en reposo no sostiene ese concepto.', correct: false },
-        ],
-        feedback: 'Elegir el concepto justo implica no reemplazar un hallazgo o síntoma por una causa que la nota no confirma.',
-      },
-    ],
+    granularidad: TRAINING_CASES.filter((item) => item.id === 'TRN-003').map((item) => ({
+      title: `${item.id} · ${item.specialty}`,
+      prompt: item.note,
+      instruction: item.prompt,
+      options: item.options.map((option) => ({ label: option.label, note: option.rationale, correct: option.correct })),
+      feedback: item.explanation,
+      source: item.id,
+    })),
     atributos: [
       {
-        title: 'Polaridad y sujeto',
-        prompt: '“La madre diabética; el paciente niega diabetes conocida”.',
-        instruction: 'Completá los atributos del concepto diabetes mencionado en cada afirmación.',
+        title: 'Polaridad · TRN-001',
+        prompt: TRAINING_CASE_BY_ID.get('TRN-001')!.note,
+        instruction: '¿Qué polaridad corresponde a la mención “disnea”? La polaridad sólo puede ser Activo o Negado.',
         options: [
-          { label: 'Madre · activo / Paciente · negado', note: 'Distingue sujeto y polaridad de las dos afirmaciones.', correct: true },
-          { label: 'Paciente · activo', note: 'Atribuye al paciente una condición que el texto niega.', correct: false },
-          { label: 'Familiar · negado', note: 'Invierte la polaridad de la afirmación sobre la madre.', correct: false },
+          { label: 'disnea · Hallazgo clínico · Activo · Confirmado · Actual · Paciente', note: 'Invierte el alcance de “niega”.', correct: false },
+          { label: 'disnea · Hallazgo clínico · Negado · Confirmado · Actual · Paciente', note: 'Conserva la mención y registra la negación en polaridad.', correct: true },
+          { label: 'disnea · Hallazgo clínico · Negado · Sospecha · Actual · Paciente', note: 'La negación está confirmada; no cambia la certeza a Sospecha.', correct: false },
         ],
-        feedback: 'El concepto es el mismo, pero la anotación correcta conserva quién lo presenta y cómo se afirma en cada caso.',
+        feedback: 'La negación se registra como polaridad = Negado. La certeza permanece Confirmado porque la nota confirma que la mención fue negada; no significa que confirme la presencia de disnea.',
+        source: 'TRN-001',
       },
       {
-        title: 'Certeza clínica',
-        prompt: '“Probable neumonía adquirida en la comunidad; se inicia tratamiento empírico”.',
-        instruction: '¿Qué estado de certeza corresponde?',
+        title: 'Certeza · TRN-005',
+        prompt: TRAINING_CASE_BY_ID.get('TRN-005')!.note,
+        instruction: '¿Qué certeza corresponde a “neumonía”? La certeza sólo puede ser Confirmado, Sospecha o Diferencial.',
         options: [
-          { label: 'Confirmado', note: 'La palabra “probable” no permite afirmar confirmación.', correct: false },
-          { label: 'Sospecha / probable', note: 'Registra que el equipo actúa sobre una hipótesis clínica.', correct: true },
-          { label: 'Negado', note: 'No hay una negación del concepto.', correct: false },
+          { label: 'neumonía · Hallazgo clínico · Activo · Confirmado · Actual · Paciente', note: '“Probable” no permite afirmar Confirmado.', correct: false },
+          { label: 'neumonía · Hallazgo clínico · Activo · Sospecha · Actual · Paciente', note: 'Registra la incertidumbre explícita como Sospecha.', correct: true },
+          { label: 'neumonía · Hallazgo clínico · Activo · Diferencial · Actual · Paciente', note: 'No se presentan alternativas diagnósticas explícitas.', correct: false },
         ],
-        feedback: 'La conducta terapéutica no transforma por sí sola una sospecha en un diagnóstico confirmado.',
+        feedback: 'La palabra “probable” corresponde a certeza = Sospecha. No es una polaridad: la mención sigue siendo Activa.',
+        source: 'TRN-005',
       },
       {
-        title: 'Temporalidad',
-        prompt: '“Antecedente de infarto agudo de miocardio en 2018. Actualmente asintomático”.',
-        instruction: '¿Qué temporalidad debe acompañar al concepto?',
+        title: 'Temporalidad · TRN-006',
+        prompt: TRAINING_CASE_BY_ID.get('TRN-006')!.note,
+        instruction: '¿Qué temporalidad corresponde a “IAM”? La temporalidad sólo puede ser Actual o Histórico.',
         options: [
-          { label: 'Histórico', note: 'El evento ocurrió en el pasado y está expresamente presentado como antecedente.', correct: true },
-          { label: 'Actual', note: 'Confunde el antecedente con una condición activa.', correct: false },
-          { label: 'Sospecha', note: 'La temporalidad no expresa incertidumbre diagnóstica.', correct: false },
+          { label: 'infarto de miocardio · Hallazgo clínico · Activo · Confirmado · Actual · Paciente', note: 'Confunde el antecedente con un evento presente.', correct: false },
+          { label: 'infarto de miocardio · Hallazgo clínico · Activo · Confirmado · Histórico · Paciente', note: 'Conserva que el evento ocurrió en el pasado.', correct: true },
+          { label: 'infarto de miocardio · Hallazgo clínico · Activo · Confirmado · Histórico · Familiar', note: 'La fecha es histórica, pero el sujeto sigue siendo el paciente.', correct: false },
         ],
-        feedback: 'La temporalidad informa cuándo se sitúa la afirmación; no debe inferirse solo por el nombre del concepto.',
+        feedback: '“Antecedente” y “en 2018” fijan temporalidad = Histórico. Activo no significa actual: indica que el evento está documentado.',
+        source: 'TRN-006',
+      },
+      {
+        title: 'Sujeto · TRN-002',
+        prompt: TRAINING_CASE_BY_ID.get('TRN-002')!.note,
+        instruction: '¿Qué sujeto corresponde a “DBT2”? El sujeto sólo puede ser Paciente o Familiar.',
+        options: [
+          { label: 'diabetes mellitus tipo 2 · Hallazgo clínico · Activo · Confirmado · Histórico · Paciente', note: 'Atribuye al paciente una mención que corresponde a la madre.', correct: false },
+          { label: 'diabetes mellitus tipo 2 · Hallazgo clínico · Activo · Confirmado · Histórico · Familiar', note: 'Conserva el sujeto documentado y los demás atributos.', correct: true },
+          { label: 'diabetes mellitus tipo 2 · Hallazgo clínico · Negado · Confirmado · Histórico · Familiar', note: 'La negación corresponde al paciente, no a la mención familiar.', correct: false },
+        ],
+        feedback: 'El sujeto = Familiar porque la condición pertenece a la madre. La negación que aparece después no se transfiere a esta mención.',
+        source: 'TRN-002',
       },
     ],
     auditoria: [

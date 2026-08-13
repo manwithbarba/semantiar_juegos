@@ -1,6 +1,6 @@
 <main class="learning-page">
   <header class="learning-hero">
-    <div><p class="eyebrow">{{ current().eyebrow }}</p><h1>{{ current().title }}</h1><p class="intro">{{ current().intro }}</p></div>
+    <div><p class="eyebrow">Recorrido conceptual · {{ current().eyebrow }}</p><h1>{{ current().title }}</h1><p class="intro">{{ current().intro }}</p></div>
     <a class="back-link" routerLink="/">← Inicio</a>
   </header>
   <div class="progress-line" aria-label="Progreso del recorrido"><span [style.width.%]="((index() + 1) / pages.length) * 100"></span></div>
@@ -20,6 +20,7 @@
     <div class="exercise-list">
       <article class="exercise-card" *ngFor="let exercise of exercises(); let i = index">
         <div class="exercise-meta"><span>Ejercicio {{ i + 1 }}</span><span *ngIf="hasAnswer(i)" [class.answer-good]="isCorrect(exercise, i)">{{ isCorrect(exercise, i) ? 'Resuelto' : 'Revisar' }}</span></div>
+        <p class="exercise-source" *ngIf="exercise.source">Caso del banco de entrenamiento: {{ exercise.source }}</p>
         <h3>{{ exercise.title }}</h3>
         <p class="exercise-prompt">{{ exercise.prompt }}</p>
         <p class="exercise-instruction">{{ exercise.instruction }}</p>
@@ -34,5 +35,5 @@
     </div>
   </section>
   <section class="takeaway"><strong>Idea clave</strong><span>{{ current().takeaway }}</span></section>
-  <nav class="page-nav" aria-label="Navegación del recorrido"><a *ngIf="previous()" [routerLink]="'/' + previous().path">← {{ previous().title }}</a><a class="cases-link" routerLink="/casos-reales">Ir al entrenamiento →</a><a *ngIf="next()" [routerLink]="'/' + next().path">{{ next().title }} →</a></nav>
+  <nav class="page-nav" aria-label="Navegación del recorrido conceptual"><a *ngIf="previous()" [routerLink]="'/' + previous().path">← {{ previous().title }}</a><a *ngIf="next(); else trainingLink" class="next-link" [routerLink]="'/' + next().path">Siguiente paso: {{ next().title }} →</a><ng-template #trainingLink><a class="cases-link" routerLink="/casos-reales">Comenzar entrenamiento →</a></ng-template></nav>
 </main>

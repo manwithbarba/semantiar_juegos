@@ -1,0 +1,7 @@
+.track-picker .track-instruction {
+  grid-column: 1 / -1;
+  margin: 0 0 2px;
+  color: #526875;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
