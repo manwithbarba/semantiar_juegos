@@ -1,54 +1,60 @@
 <main class="calibration-page">
   <header class="calibration-hero">
     <div>
-      <p class="eyebrow">Evaluación del anotador</p>
-      <h1>Laboratorio de calibración</h1>
-      <p class="intro">Aprendé a comparar tu confianza subjetiva con la claridad real del mapeo semántico. Esta actividad es independiente de la resolución de casos.</p>
+      <p class="eyebrow">Seguimiento local del entrenamiento</p>
+      <h1>Devolución de decisiones y confianza</h1>
+      <p class="intro">Se consideran sólo las primeras decisiones de cada caso y versión. Los datos permanecen en este navegador; no se envían al sitio ni se usan para evaluar competencia profesional.</p>
     </div>
-    <a class="back-link" routerLink="/">← Volver a la presentación</a>
+    <a class="back-link" routerLink="/casos-reales">← Volver al entrenamiento</a>
   </header>
 
   <section class="definition-card">
     <p class="eyebrow">Qué significa calibrar</p>
-    <h2>La confianza debe guardar relación con la corrección observada</h2>
-    <p>Una persona está bien calibrada cuando, en un conjunto de decisiones, sus niveles de confianza se parecen a la proporción de respuestas que efectivamente resultan correctas. Por ejemplo, entre decisiones expresadas con 70 % de confianza, aproximadamente 70 de cada 100 deberían ser correctas.</p>
-    <p>La calibración no es lo mismo que exactitud ni que discriminación: evalúa si la confianza está bien ajustada, no solamente si se acierta.</p>
+    <h2>La confianza se interpreta contra resultados observados, no como una nota personal</h2>
+    <p>La exactitud muestra cuántas primeras decisiones concordaron con el banco. La calibración compara la confianza declarada antes de recibir devolución con la exactitud observada en varias decisiones. No diagnostica habilidad clínica y necesita un volumen suficiente para ser estable.</p>
   </section>
 
-  <section class="comparison-card" aria-labelledby="comparison-heading">
-    <div>
-      <p class="eyebrow">Cómo se relaciona con SemantIAr</p>
-      <h2 id="comparison-heading">No reemplaza al IIS: lo complementa</h2>
-    </div>
-    <div class="comparison-grid">
-      <div><strong>IIS</strong><span>Describe la ambigüedad semántica del caso a partir de la distribución de probabilidades entre conceptos.</span></div>
-      <div><strong>Confianza subjetiva</strong><span>Describe cuán seguro se siente el anotador respecto de su propia decisión.</span></div>
-      <div><strong>Calibración</strong><span>Compara esa confianza con la corrección observada en muchas decisiones.</span></div>
-    </div>
-  </section>
+  <ng-container *ngIf="progress() as summary">
+    <section class="metrics-card">
+      <div><span>Primeras decisiones</span><strong>{{ summary.total }}</strong></div>
+      <div><span>Concordantes</span><strong>{{ summary.correct }}</strong></div>
+      <div><span>Exactitud observada</span><strong>{{ summary.accuracy === null ? '—' : summary.accuracy + '%' }}</strong></div>
+      <div><span>Calibración</span><strong>{{ summary.calibrationReady ? 'Lectura disponible' : 'Aún preliminar' }}</strong></div>
+    </section>
 
-  <section class="exercise-card" aria-labelledby="exercise-heading">
-    <div class="exercise-heading">
-      <div><p class="eyebrow">Ejercicio de lectura</p><h2 id="exercise-heading">¿Qué interpretación es más calibrada?</h2></div>
-      <span class="exercise-badge">Caso ilustrativo</span>
-    </div>
-    <div class="exercise-table">
-      <div class="table-row table-head"><span>Confianza declarada</span><span>Decisiones correctas observadas</span><span>Lectura</span></div>
-      <div class="table-row"><strong>50 %</strong><span>48 de 100</span><em>Bien calibrada</em></div>
-      <div class="table-row"><strong>80 %</strong><span>55 de 100</span><em class="warning">Sobreconfianza</em></div>
-      <div class="table-row"><strong>60 %</strong><span>82 de 100</span><em class="warning">Subconfianza</em></div>
-    </div>
-    <p class="exercise-note">La comparación se interpreta sobre un conjunto de decisiones, no a partir de un único caso.</p>
-  </section>
+    <section class="notice-card" *ngIf="!summary.total">
+      <strong>Todavía no hay decisiones guardadas.</strong>
+      <p>Resolvé casos de práctica o dominio. En dominio declarás tu confianza antes de ver la resolución.</p>
+      <a routerLink="/casos-reales">Ir al entrenamiento →</a>
+    </section>
 
-  <section class="references-card" aria-labelledby="references-heading">
-    <p class="eyebrow">Bibliografía y recursos</p>
-    <h2 id="references-heading">Para profundizar</h2>
-    <ul>
-      <li><a href="https://www.bmj.com/content/384/bmj-2023-074819" target="_blank" rel="noopener noreferrer">BMJ · Evaluación de modelos de predicción clínica</a><span>Explica calibración, calibración global y pendiente de calibración.</span></li>
-      <li><a href="https://www.bmj.com/content/384/bmj-2023-074820" target="_blank" rel="noopener noreferrer">BMJ · Validación externa de modelos clínicos</a><span>Presenta curvas de calibración y la comparación entre valores predichos y observados.</span></li>
-      <li><a href="https://doi.org/10.1186/s12916-019-1466-7" target="_blank" rel="noopener noreferrer">BMC Medicine · Calibration: the Achilles heel of predictive analytics</a><span>Describe por qué una predicción puede discriminar bien y, aun así, estar mal calibrada.</span></li>
-      <li><a href="https://www.tripod-statement.org/" target="_blank" rel="noopener noreferrer">TRIPOD Statement</a><span>Guía para informar estudios de modelos de predicción clínica.</span></li>
-    </ul>
+    <section class="notice-card" *ngIf="summary.total && !summary.calibrationReady">
+      <strong>Lectura preliminar: faltan decisiones.</strong>
+      <p>La calibración se habilita a partir de ocho primeras decisiones. Hasta entonces, usá estos datos para detectar qué competencia conviene practicar, no para sacar conclusiones sobre tu desempeño.</p>
+    </section>
+
+    <section class="comparison-card" *ngIf="summary.total">
+      <div>
+        <p class="eyebrow">Por competencia</p>
+        <h2>Dónde conviene volver a practicar</h2>
+      </div>
+      <div class="comparison-grid">
+        <div *ngFor="let skill of summary.skills"><strong>{{ skill.skill }}</strong><span>{{ skill.correct }}/{{ skill.total }} concordantes · {{ skill.accuracy }} %</span></div>
+      </div>
+    </section>
+
+    <section class="comparison-card" *ngIf="summary.total">
+      <div>
+        <p class="eyebrow">Confianza declarada</p>
+        <h2>Lectura por bandas</h2>
+      </div>
+      <div class="comparison-grid">
+        <div *ngFor="let band of summary.confidenceBands"><strong>{{ band.label }}</strong><span *ngIf="band.total">{{ band.total }} decisiones · exactitud observada {{ band.accuracy }} %</span><span *ngIf="!band.total">Sin decisiones en esta banda</span></div>
+      </div>
+    </section>
+  </ng-container>
+
+  <section class="privacy-card">
+    <strong>Control de datos</strong><span>Podés borrar este registro local en cualquier momento.</span><button type="button" (click)="clearProgress()">Borrar mi seguimiento local</button>
   </section>
 </main>

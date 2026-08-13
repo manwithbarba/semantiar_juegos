@@ -1,4 +1,59 @@
 <main class="presentation-page">
+  <header class="presentation-hero">
+    <div>
+      <p class="eyebrow">SemantIAr · laboratorio de entrenamiento y aprendizaje</p>
+      <h1>Juegos de semántica clínica</h1>
+      <p class="intro">
+        Un recorrido interactivo para aprender a seleccionar expresiones, elegir conceptos SNOMED CT,
+        interpretar atributos y reconocer la ambigüedad semántica en notas clínicas.
+      </p>
+    </div>
+    <div class="hero-action">
+      <p>Primer paso: entrenamiento operativo</p>
+      <a class="btn btn-primary" routerLink="/casos-reales">Comenzar entrenamiento</a>
+    </div>
+  </header>
+
+  <section class="how-to-play-card" aria-labelledby="how-to-play-heading">
+    <div>
+      <p class="eyebrow">Cómo se juega</p>
+      <h2 id="how-to-play-heading">Recorré la misma decisión que harás en el anotador</h2>
+    </div>
+    <ol class="play-steps">
+      <li><strong>Leé la nota completa.</strong><span>Identificá la evidencia que sostiene la decisión.</span></li>
+      <li><strong>Delimitá la expresión.</strong><span>No mezcles hallazgos con acciones o modificadores ajenos.</span></li>
+      <li><strong>Elegí o abstente.</strong><span>Seleccioná un concepto SNOMED CT sólo cuando la evidencia lo permite.</span></li>
+      <li><strong>Aplicá el contrato.</strong><span>Usá las categorías y atributos vigentes del anotador SemantIAr.</span></li>
+      <li><strong>Revisá tu devolución.</strong><span>La práctica y el dominio registran tu primera decisión de manera local.</span></li>
+    </ol>
+  </section>
+
+  <section class="interpretation-card" aria-labelledby="interpretation-heading">
+    <div class="interpretation-copy">
+      <p class="eyebrow">Qué vas a aprender</p>
+      <h2 id="interpretation-heading">Una decisión trazable desde el texto hasta la salida</h2>
+      <p>
+        Primero delimitás la <strong>expresión literal</strong>: el fragmento mínimo que conserva el significado
+        clínico sin fusionar menciones independientes.
+      </p>
+      <p>
+        Después elegís un <strong>concepto SNOMED CT</strong> suficientemente específico y una de las tres
+        categorías que admite el anotador. Finalmente completás polaridad, certeza, temporalidad y sujeto.
+      </p>
+      <p>
+        Si la nota no permite una decisión reproducible, aprendés a <strong>abstenerte y solicitar revisión</strong>.
+        La incertidumbre no se resuelve inventando un diagnóstico, una categoría o un estado que el texto no sostiene.
+      </p>
+    </div>
+    <div class="interpretation-rule">
+      <strong>Regla de calidad</strong>
+      <span>
+        Cada respuesta debe poder justificarse con evidencia visible en la nota y reproducirse con las opciones del
+        anotador real.
+      </span>
+    </div>
+  </section>
+
   <section class="learning-resources" aria-labelledby="learning-resources-title">
     <div class="learning-resources-copy">
       <p class="eyebrow">Para profundizar</p>
@@ -6,22 +61,6 @@
       <p>Referencias clínicas y de informática en salud para comprender los indicadores y juegos del recorrido.</p>
     </div>
     <div class="resource-links">
-      <a
-        href="https://onlinelibrary.wiley.com/doi/10.1111/j.1651-2227.2006.00179.x"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <strong>Probabilidad bayesiana en diagnóstico</strong>
-        <span>Razones de verosimilitud y probabilidades previa y posterior en la práctica clínica.</span>
-      </a>
-      <a
-        href="https://journals.sagepub.com/doi/full/10.1177/10398562241300887"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <strong>Bayes y probabilidad condicional</strong>
-        <span>Aplicación clínica de Bayes para actualizar estimaciones con nueva evidencia.</span>
-      </a>
       <a
         href="https://www.jmir.org/2024/1/e45209/"
         target="_blank"
@@ -38,74 +77,31 @@
         <strong>SNOMED CT en historias clínicas</strong>
         <span>Revisión sistemática de usos clínicos, calidad de datos e interoperabilidad.</span>
       </a>
-    </div>
-  </section>
-
-  <header class="presentation-hero">
-    <div>
-      <p class="eyebrow">SemantIAr · laboratorio de entrenamiento y aprendizaje</p>
-      <h1>Juegos de semántica clínica</h1>
-      <p class="intro">
-        Un recorrido interactivo para aprender a seleccionar expresiones, elegir conceptos SNOMED CT,
-        interpretar atributos y reconocer la ambigüedad semántica en notas clínicas.
-      </p>
-    </div>
-    <div class="hero-action">
-      <p>Primer juego: laboratorio bayesiano</p>
-      <a class="btn btn-primary" routerLink="/casos">Comenzar a jugar</a>
-    </div>
-  </header>
-
-  <section class="how-to-play-card" aria-labelledby="how-to-play-heading">
-    <div>
-      <p class="eyebrow">Cómo se juega</p>
-      <h2 id="how-to-play-heading">Tomá decisiones de mapeo clínico</h2>
-    </div>
-    <ol class="play-steps">
-      <li><strong>Leé la expresión clínica.</strong><span>Observá el texto resaltado dentro de la nota.</span></li>
-      <li><strong>Revelá el contexto.</strong><span>Mostrá las pistas una por una y seguí cómo cambian las probabilidades.</span></li>
-      <li><strong>Elegí un concepto.</strong><span>Seleccioná el concepto SNOMED CT que mejor representa la expresión.</span></li>
-      <li><strong>Completá los atributos.</strong><span>Indicá polaridad, certeza, temporalidad y sujeto.</span></li>
-      <li><strong>Confirmá o abstente.</strong><span>Si persiste la ambigüedad semántica, abstenerse también es una decisión válida.</span></li>
-    </ol>
-  </section>
-
-  <section class="interpretation-card" aria-labelledby="interpretation-heading">
-    <div class="interpretation-copy">
-      <p class="eyebrow">Cómo interpretar el juego</p>
-      <h2 id="interpretation-heading">El contexto cambia la probabilidad de cada concepto</h2>
-      <p>
-        Cada caso presenta una <strong>expresión clínica</strong> y varios
-        <strong>conceptos SNOMED CT candidatos</strong>. La <strong>probabilidad previa (o a priori)</strong>
-        es el punto de partida de cada concepto antes de incorporar todas las pistas. La
-        <strong>probabilidad posterior</strong> representa su peso después de considerar la evidencia disponible.
-      </p>
-      <p>
-        El <strong>índice de incertidumbre semántica (IIS)</strong> estima cuánta
-        <strong>ambigüedad semántica</strong> permanece entre los conceptos candidatos. El IIS se basa en la
-        <strong>entropía</strong>, que mide cómo se distribuyen las probabilidades entre esos conceptos.
-      </p>
-      <p>
-        Un IIS bajo indica que la probabilidad se concentra en un concepto. Un IIS alto indica que las
-        probabilidades siguen distribuidas entre varios conceptos y que la expresión continúa siendo ambigua.
-        El IIS no es la probabilidad de una enfermedad ni reemplaza el juicio clínico.
-      </p>
-    </div>
-    <div class="interpretation-rule">
-      <strong>Regla clínica</strong>
-      <span>
-        Un concepto puede corresponder a una expresión clínica activa o negada, confirmada o sospechosa,
-        actual o histórica, referida al paciente o a un familiar. Por eso también deben revisarse sus atributos.
-      </span>
+      <a
+        href="https://onlinelibrary.wiley.com/doi/10.1111/j.1651-2227.2006.00179.x"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <strong>Probabilidad bayesiana en diagnóstico</strong>
+        <span>Razones de verosimilitud y probabilidades previa y posterior en la práctica clínica.</span>
+      </a>
+      <a
+        href="https://journals.sagepub.com/doi/full/10.1177/10398562241300887"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <strong>Bayes y probabilidad condicional</strong>
+        <span>Aplicación clínica de Bayes para actualizar estimaciones con nueva evidencia.</span>
+      </a>
     </div>
   </section>
 
   <section class="presentation-footer-card" aria-label="Comenzar el laboratorio">
     <div>
       <p class="eyebrow">Siguiente paso</p>
-      <h2>Elegí un juego y recibí una devolución</h2>
-      <p>Podés resolver casos bayesianos, practicar con fragmentos del corpus y entrenar cada indicador de anotación.</p>
+      <h2>Primero dominá el contrato; luego profundizá</h2>
+      <p>Empezá con casos formativos alineados al anotador. El laboratorio bayesiano queda como módulo optativo para explorar ambigüedad y contexto.</p>
     </div>
-    <a class="btn btn-primary" routerLink="/casos">Comenzar el laboratorio</a>
+    <a class="btn btn-primary" routerLink="/casos-reales">Comenzar entrenamiento</a>
   </section>
 </main>

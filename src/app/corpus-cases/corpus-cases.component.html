@@ -1,52 +1,95 @@
-<main class="corpus-page">
-  <header class="corpus-hero">
+<main class="training-page" *ngIf="current() as item">
+  <header class="training-hero">
     <div>
-      <p class="eyebrow">Casos reales · fragmentos de-identificados</p>
-      <h1>Entrená con notas del corpus SemantIAr</h1>
-      <p class="intro">Nueve situaciones clínicas seleccionadas del corpus adjunto para practicar selección de expresiones, granularidad, atributos, auditoría y normalización.</p>
+      <p class="eyebrow">Entrenamiento operativo · {{ release.id }}</p>
+      <h1>Entrená la misma decisión que vas a tomar en SemantIAr</h1>
+      <p class="intro">Cada caso usa exactamente las categorías y atributos del anotador: Hallazgo clínico, Procedimiento o Fármaco; polaridad, certeza, temporalidad y sujeto. No reemplaza la revisión clínica ni la codificación en producción.</p>
     </div>
     <a class="back-link" routerLink="/">← Presentación</a>
   </header>
 
-  <section class="privacy-note" aria-label="Alcance y privacidad">
-    <strong>Uso educativo controlado</strong>
-    <p>Se muestran fragmentos breves derivados de notas de-identificadas. No se publica el archivo original ni sus identificadores internos; las resoluciones son didácticas y deben revisarse antes de usarse como guía operativa.</p>
+  <section class="contract-card" aria-label="Contrato de anotación">
+    <strong>Contrato compartido con el anotador</strong>
+    <span>Categorías: Hallazgo clínico · Procedimiento · Fármaco</span>
+    <span>Atributos: Activo/Negado · Confirmado/Sospecha/Diferencial · Actual/Histórico · Paciente/Familiar</span>
   </section>
 
-  <section class="corpus-intro">
-    <div><p class="eyebrow">Cómo trabajar estos casos</p><h2>Leé, elegí y justificá</h2><p>Primero leé el fragmento completo. Después seleccioná la respuesta que mejor respeta la evidencia textual. La devolución muestra el concepto esperado y sus atributos clínicos.</p></div>
-    <div class="corpus-stats"><strong>{{ cases.length }}</strong><span>casos seleccionados</span><strong>5</strong><span>indicadores trabajados</span></div>
+  <section class="privacy-note" aria-label="Gobierno del banco de casos">
+    <strong>Banco versionado y revisable</strong>
+    <p>{{ release.governanceNotice }}</p>
   </section>
 
-  <section class="case-grid" aria-label="Ejercicios con casos del corpus">
-    <article class="case-card" *ngFor="let item of cases">
-      <header class="case-header"><span class="case-number">Caso {{ item.number }}</span><span class="case-focus">{{ item.focus }}</span></header>
-      <p class="note-label">Fragmento clínico</p>
-      <blockquote>{{ item.note }}</blockquote>
-      <h2>{{ item.question }}</h2>
-      <div class="case-options">
-        <button type="button" *ngFor="let option of item.options; let optionIndex = index" class="case-option" [class.selected]="selectedAnswer(item.id) === optionIndex" [class.correct]="hasAnswer(item.id) && option.correct" [class.incorrect]="hasAnswer(item.id) && selectedAnswer(item.id) === optionIndex && !option.correct" [attr.aria-pressed]="selectedAnswer(item.id) === optionIndex" (click)="selectAnswer(item.id, optionIndex)">
-          <strong>{{ option.label }}</strong>
-          <span *ngIf="hasAnswer(item.id)">{{ option.rationale }}</span>
-        </button>
-      </div>
-      <section class="resolution" *ngIf="hasAnswer(item.id)" [class.resolution-good]="isCorrect(item)">
-        <p class="resolution-status"><strong>{{ isCorrect(item) ? 'Resolución correcta' : 'Revisá la evidencia' }}</strong></p>
-        <p>{{ item.explanation }}</p>
-        <dl class="annotation-grid">
-          <div><dt>Expresión</dt><dd>{{ item.annotation.expression }}</dd></div>
-          <div><dt>Concepto</dt><dd>{{ item.annotation.concept }}</dd></div>
-          <div><dt>Categoría</dt><dd>{{ item.annotation.category }}</dd></div>
-          <div><dt>Polaridad</dt><dd>{{ item.annotation.polarity }}</dd></div>
-          <div><dt>Certeza</dt><dd>{{ item.annotation.certainty }}</dd></div>
-          <div><dt>Temporalidad</dt><dd>{{ item.annotation.temporal }}</dd></div>
-          <div><dt>Sujeto</dt><dd>{{ item.annotation.subject }}</dd></div>
-          <div *ngIf="item.annotation.status"><dt>Estado</dt><dd>{{ item.annotation.status }}</dd></div>
+  <section class="track-picker" aria-label="Modo de entrenamiento">
+    <button type="button" *ngFor="let track of tracks" [class.active]="selectedTrack() === track.id" (click)="selectTrack(track.id)">
+      <strong>{{ track.label }}</strong><span>{{ track.description }}</span>
+    </button>
+  </section>
+
+  <section class="session-summary" *ngIf="progress().total">
+    <strong>{{ progress().correct }} / {{ progress().total }}</strong><span>primeras decisiones correctas guardadas sólo en este navegador</span>
+    <a routerLink="/calibracion">Ver seguimiento y calibración →</a>
+  </section>
+
+  <section class="case-shell">
+    <header class="case-header">
+      <div><p class="eyebrow">{{ selectedTrack() === 'guided' ? 'Paso guiado' : selectedTrack() === 'practice' ? 'Práctica aplicada' : 'Desafío de dominio' }}</p><h2>{{ item.skill }}</h2></div>
+      <span>Caso {{ currentIndex() + 1 }} de {{ activeCases().length }} · {{ item.specialty }}</span>
+    </header>
+
+    <div class="case-grid">
+      <section class="note-panel" aria-labelledby="note-title">
+        <p class="eyebrow" id="note-title">Nota clínica derivada</p>
+        <blockquote>{{ item.note }}</blockquote>
+        <dl class="case-provenance">
+          <div><dt>Versión</dt><dd>{{ item.version }}</dd></div>
+          <div><dt>Terminología</dt><dd>{{ item.governance.terminologyEdition }}</dd></div>
+          <div><dt>Revisión clínica</dt><dd>{{ item.governance.clinicalReview }}</dd></div>
         </dl>
+        <section class="glossary" *ngIf="item.glossary?.length">
+          <strong>Ayuda contextual</strong>
+          <p *ngFor="let entry of item.glossary"><b>{{ entry.term }}:</b> {{ entry.definition }}</p>
+        </section>
       </section>
-      <a class="focus-link" [routerLink]="item.focusPath">Practicar este indicador →</a>
-    </article>
-  </section>
 
-  <nav class="page-nav" aria-label="Navegación"><a routerLink="/expresiones">Recorrido de indicadores</a><a class="cases-link" routerLink="/casos">Laboratorio bayesiano</a><a routerLink="/calibracion">Calibración</a></nav>
+      <section class="decision-panel" aria-labelledby="decision-title">
+        <p class="eyebrow" id="decision-title">Decisión</p>
+        <h3>{{ item.prompt }}</h3>
+        <div class="case-options">
+          <button type="button" *ngFor="let option of item.options" [disabled]="state() === 'revealed'" [class.selected]="selectedOption() === option.id" [class.correct]="state() === 'revealed' && option.correct" [class.incorrect]="state() === 'revealed' && selectedOption() === option.id && !option.correct" [attr.aria-pressed]="selectedOption() === option.id" (click)="choose(option.id)">
+            <strong>{{ option.label }}</strong><span *ngIf="state() === 'revealed'">{{ option.rationale }}</span>
+          </button>
+        </div>
+
+        <div class="confidence" *ngIf="isMastery() && state() === 'answering'">
+          <label for="confidence">¿Cuánta confianza tenés en tu primera decisión? <strong>{{ confidence() }} %</strong></label>
+          <input id="confidence" type="range" min="0" max="100" step="5" [value]="confidence()" (input)="setConfidence($any($event.target).value)" />
+          <p>La confianza se guarda sólo en este navegador y se usa para tu devolución de calibración.</p>
+        </div>
+
+        <button class="confirm-button" type="button" *ngIf="isMastery() && state() === 'answering'" [disabled]="!selectedOption()" (click)="reveal()">Confirmar primera decisión</button>
+
+        <section class="resolution" *ngIf="state() === 'revealed'" [class.resolution-good]="isCorrect()">
+          <p class="resolution-status"><strong>{{ isCorrect() ? 'Decisión concordante' : 'Revisá la evidencia' }}</strong></p>
+          <p>{{ item.explanation }}</p>
+          <ng-container *ngIf="item.expected.kind === 'code'; else abstention">
+            <dl class="annotation-grid">
+              <div><dt>Expresión</dt><dd>{{ item.expected.annotation.textoLiteral }}</dd></div>
+              <div><dt>Concepto</dt><dd>{{ item.expected.annotation.term }} · SCTID {{ item.expected.annotation.sctid }}</dd></div>
+              <div><dt>Categoría</dt><dd>{{ item.expected.annotation.cat }}</dd></div>
+              <div><dt>Polaridad</dt><dd>{{ item.expected.annotation.pol }}</dd></div>
+              <div><dt>Certeza</dt><dd>{{ item.expected.annotation.cert }}</dd></div>
+              <div><dt>Temporalidad</dt><dd>{{ item.expected.annotation.temp }}</dd></div>
+              <div><dt>Sujeto</dt><dd>{{ item.expected.annotation.suj }}</dd></div>
+            </dl>
+          </ng-container>
+          <ng-template #abstention><p class="abstention"><strong>Decisión operativa:</strong> abstenerse. {{ abstentionReason(item) }}</p></ng-template>
+        </section>
+      </section>
+    </div>
+
+    <nav class="case-nav" aria-label="Navegación de casos">
+      <button type="button" (click)="previous()">← Caso anterior</button>
+      <button type="button" (click)="next()">Siguiente caso →</button>
+    </nav>
+  </section>
 </main>
