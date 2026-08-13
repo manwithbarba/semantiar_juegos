@@ -1,0 +1,52 @@
+<main class="corpus-page">
+  <header class="corpus-hero">
+    <div>
+      <p class="eyebrow">Casos reales · fragmentos de-identificados</p>
+      <h1>Entrená con notas del corpus SemantIAr</h1>
+      <p class="intro">Nueve situaciones clínicas seleccionadas del corpus adjunto para practicar selección de expresiones, granularidad, atributos, auditoría y normalización.</p>
+    </div>
+    <a class="back-link" routerLink="/">← Presentación</a>
+  </header>
+
+  <section class="privacy-note" aria-label="Alcance y privacidad">
+    <strong>Uso educativo controlado</strong>
+    <p>Se muestran fragmentos breves derivados de notas de-identificadas. No se publica el archivo original ni sus identificadores internos; las resoluciones son didácticas y deben revisarse antes de usarse como guía operativa.</p>
+  </section>
+
+  <section class="corpus-intro">
+    <div><p class="eyebrow">Cómo trabajar estos casos</p><h2>Leé, elegí y justificá</h2><p>Primero leé el fragmento completo. Después seleccioná la respuesta que mejor respeta la evidencia textual. La devolución muestra el concepto esperado y sus atributos clínicos.</p></div>
+    <div class="corpus-stats"><strong>{{ cases.length }}</strong><span>casos seleccionados</span><strong>5</strong><span>indicadores trabajados</span></div>
+  </section>
+
+  <section class="case-grid" aria-label="Ejercicios con casos del corpus">
+    <article class="case-card" *ngFor="let item of cases">
+      <header class="case-header"><span class="case-number">Caso {{ item.number }}</span><span class="case-focus">{{ item.focus }}</span></header>
+      <p class="note-label">Fragmento clínico</p>
+      <blockquote>{{ item.note }}</blockquote>
+      <h2>{{ item.question }}</h2>
+      <div class="case-options">
+        <button type="button" *ngFor="let option of item.options; let optionIndex = index" class="case-option" [class.selected]="selectedAnswer(item.id) === optionIndex" [class.correct]="hasAnswer(item.id) && option.correct" [class.incorrect]="hasAnswer(item.id) && selectedAnswer(item.id) === optionIndex && !option.correct" [attr.aria-pressed]="selectedAnswer(item.id) === optionIndex" (click)="selectAnswer(item.id, optionIndex)">
+          <strong>{{ option.label }}</strong>
+          <span *ngIf="hasAnswer(item.id)">{{ option.rationale }}</span>
+        </button>
+      </div>
+      <section class="resolution" *ngIf="hasAnswer(item.id)" [class.resolution-good]="isCorrect(item)">
+        <p class="resolution-status"><strong>{{ isCorrect(item) ? 'Resolución correcta' : 'Revisá la evidencia' }}</strong></p>
+        <p>{{ item.explanation }}</p>
+        <dl class="annotation-grid">
+          <div><dt>Expresión</dt><dd>{{ item.annotation.expression }}</dd></div>
+          <div><dt>Concepto</dt><dd>{{ item.annotation.concept }}</dd></div>
+          <div><dt>Categoría</dt><dd>{{ item.annotation.category }}</dd></div>
+          <div><dt>Polaridad</dt><dd>{{ item.annotation.polarity }}</dd></div>
+          <div><dt>Certeza</dt><dd>{{ item.annotation.certainty }}</dd></div>
+          <div><dt>Temporalidad</dt><dd>{{ item.annotation.temporal }}</dd></div>
+          <div><dt>Sujeto</dt><dd>{{ item.annotation.subject }}</dd></div>
+          <div *ngIf="item.annotation.status"><dt>Estado</dt><dd>{{ item.annotation.status }}</dd></div>
+        </dl>
+      </section>
+      <a class="focus-link" [routerLink]="item.focusPath">Practicar este indicador →</a>
+    </article>
+  </section>
+
+  <nav class="page-nav" aria-label="Navegación"><a routerLink="/expresiones">Recorrido de indicadores</a><a class="cases-link" routerLink="/casos">Laboratorio bayesiano</a><a routerLink="/calibracion">Calibración</a></nav>
+</main>
