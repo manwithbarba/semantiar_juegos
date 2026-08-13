@@ -27,21 +27,25 @@
   </section>
 
   <section class="game-section" aria-labelledby="candidates-heading">
-    <p class="section-label" id="candidates-heading">Conceptos SNOMED CT candidatos</p>
-    <div class="candidate-grid">
+    <p class="section-label" id="candidates-heading">{{ revealedEvidence() === 0 ? 'Distribución de probabilidad a priori' : 'Distribución de probabilidad posterior' }} de conceptos SNOMED CT</p>
+    <div class="probability-field" [attr.aria-label]="revealedEvidence() === 0 ? 'Distribución de probabilidad a priori de conceptos' : 'Distribución de probabilidad posterior de conceptos'">
       <button
         *ngFor="let candidate of activeCase().candidates; let i = index"
-        class="candidate-card"
+        class="probability-circle"
+        [class.circle-one]="i === 0"
+        [class.circle-two]="i === 1"
+        [class.circle-three]="i === 2"
         [class.is-selected]="selectedCandidate() === i"
         type="button"
         [disabled]="locked()"
         [attr.aria-pressed]="selectedCandidate() === i"
+        [attr.aria-label]="candidate.label + ': ' + (posterior()[i] | percent: '1.0-0')"
+        [style.width.px]="76 + posterior()[i] * 150"
+        [style.height.px]="76 + posterior()[i] * 150"
         (click)="selectCandidate(i)"
       >
         <strong>{{ candidate.label }}</strong>
-        <span class="code">{{ candidate.code || 'SCTID pendiente de confirmar' }}</span>
-        <span class="posterior-label"><span>Probabilidad posterior</span><strong>{{ posterior()[i] | percent: '1.0-0' }}</strong></span>
-        <span class="prob-track" aria-hidden="true"><span class="prob-fill" [style.width.%]="posterior()[i] * 100"></span></span>
+        <small>{{ posterior()[i] | percent: '1.0-0' }}</small>
       </button>
     </div>
   </section>
