@@ -3,21 +3,21 @@
     <div>
       <p class="eyebrow">SemantIAr · laboratorio de entrenamiento</p>
       <h1 id="bayes-game-title">Laboratorio bayesiano</h1>
-      <p class="intro">Aprendé a mapear menciones clínicas a SNOMED CT usando contexto, probabilidad bayesiana y una decisión explícita de incertidumbre.</p>
+      <p class="intro">Aprendé a seleccionar el concepto SNOMED CT que mejor representa una expresión clínica, incorporando el contexto y reconociendo cuándo persiste la ambigüedad semántica.</p>
     </div>
   </header>
 
   <section class="interpretation-card" aria-labelledby="interpretation-heading">
     <div class="interpretation-copy">
       <p class="eyebrow">Cómo interpretar el juego</p>
-      <h2 id="interpretation-heading">El contexto modifica la probabilidad de cada hipótesis</h2>
-      <p>Las barras muestran cuánto apoyo recibe cada concepto antes y después de incorporar las pistas de la nota. La <strong>probabilidad previa</strong> es el punto de partida; la <strong>probabilidad posterior</strong> refleja lo que cambia al considerar el contexto.</p>
-      <p>El <strong>índice de incertidumbre semántica (IIS)</strong> resume cuán difícil es decidir: un valor bajo indica que una hipótesis se diferencia con claridad; un valor alto indica que varias interpretaciones siguen siendo posibles y que abstenerse puede ser la decisión más rigurosa.</p>
-      <p>No hace falta conocer la palabra “entropía” para jugar: aquí representa, simplemente, cuánto se reparten las posibilidades entre las alternativas.</p>
+      <h2 id="interpretation-heading">El contexto cambia la probabilidad de cada concepto</h2>
+      <p>Cada caso presenta una <strong>expresión clínica</strong> y varios <strong>conceptos SNOMED CT candidatos</strong>. La <strong>probabilidad previa (o a priori)</strong> es el punto de partida de cada concepto antes de incorporar todas las pistas. La <strong>probabilidad posterior</strong> representa su peso después de considerar la evidencia disponible.</p>
+      <p>El <strong>índice de incertidumbre semántica (IIS)</strong> estima cuánta <strong>ambigüedad semántica</strong> permanece entre los conceptos candidatos. El IIS se basa en la <strong>entropía</strong>, que mide cómo se distribuyen las probabilidades entre esos conceptos.</p>
+      <p>Un IIS bajo indica que la probabilidad se concentra en un concepto. Un IIS alto indica que las probabilidades siguen distribuidas entre varios conceptos y que la expresión continúa siendo ambigua. El IIS no es la probabilidad de una enfermedad ni reemplaza el juicio clínico.</p>
     </div>
     <div class="interpretation-rule">
       <strong>Regla clínica</strong>
-      <span>Una mención puede ser correcta aunque esté negada, sea sospechosa, histórica o corresponda a un familiar.</span>
+      <span>Un concepto puede corresponder a una expresión clínica activa o negada, confirmada o sospechosa, actual o histórica, referida al paciente o a un familiar. Por eso también deben revisarse sus atributos.</span>
     </div>
   </section>
 
@@ -25,14 +25,14 @@
     <div class="stat-card"><span>Caso</span><strong>{{ caseIndex() + 1 }}/{{ cases.length }}</strong></div>
     <div class="stat-card"><span>Puntaje</span><strong>{{ score() }}</strong></div>
     <div class="stat-card">
-      <span>IIS · incertidumbre semántica</span>
+      <span>IIS · índice de incertidumbre semántica</span>
       <strong>{{ informationIndex() | number: '1.2-2' }}</strong>
-      <small>{{ informationIndex() >= 0.85 ? 'Alta: varias interpretaciones siguen abiertas' : informationIndex() >= 0.55 ? 'Intermedia: conviene revisar el contexto' : 'Baja: una hipótesis se diferencia con claridad' }}</small>
+      <small>{{ informationIndex() >= 0.85 ? 'Alta: persiste la ambigüedad semántica' : informationIndex() >= 0.55 ? 'Intermedia: conviene revisar el contexto' : 'Baja: un concepto se diferencia con claridad' }}</small>
     </div>
   </div>
 
   <section class="game-section" aria-labelledby="case-heading">
-    <p class="section-label" id="case-heading">Nota clínica</p>
+    <p class="section-label" id="case-heading">Expresión clínica</p>
     <div class="note-card">
       {{ activeCase().noteBefore }}<mark>{{ activeCase().highlightedText }}</mark>{{ activeCase().noteAfter }}
     </div>
@@ -40,7 +40,7 @@
   </section>
 
   <section class="game-section" aria-labelledby="candidates-heading">
-    <p class="section-label" id="candidates-heading">Hipótesis SNOMED CT</p>
+    <p class="section-label" id="candidates-heading">Conceptos SNOMED CT candidatos</p>
     <div class="candidate-grid">
       <button
         *ngFor="let candidate of activeCase().candidates; let i = index"
@@ -75,7 +75,7 @@
   </section>
 
   <section class="game-section" aria-labelledby="decision-heading">
-    <p class="section-label" id="decision-heading">Decisión del anotador</p>
+    <p class="section-label" id="decision-heading">Decisión de mapeo</p>
     <div class="decision-grid">
       <label>Polaridad
         <select [ngModel]="polarity()" (ngModelChange)="setPolarity($event)" [disabled]="locked()">
@@ -103,7 +103,7 @@
   </section>
 
   <div class="action-row">
-    <button class="btn btn-ghost" type="button" [disabled]="locked()" (click)="abstain()">Irresoluble / abstenerse</button>
+    <button class="btn btn-ghost" type="button" [disabled]="locked()" (click)="abstain()">Abstenerse: ambigüedad persistente</button>
     <button class="btn btn-primary" type="button" (click)="submitDecision()">{{ submitLabel() }}</button>
   </div>
   <p class="feedback" role="status" aria-live="polite">{{ feedback() }}</p>
