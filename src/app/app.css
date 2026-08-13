@@ -1,0 +1,16 @@
+:host { display: block; }
+.games-shell { min-height: 100dvh; }
+.games-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid #d8e1e6;
+  background: #fff;
+  padding: 12px clamp(16px, 4vw, 44px);
+}
+.brand-kicker, .brand-title { margin: 0; }
+.brand-kicker { color: #2b7b84; font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.brand-title { color: #193d47; font-size: .94rem; font-weight: 700; }
+.privacy-note { color: #687b84; font-size: .75rem; }
+@media (max-width: 560px) { .games-brand { align-items: flex-start; flex-direction: column; } }

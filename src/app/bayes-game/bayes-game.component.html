@@ -1,0 +1,170 @@
+<div class="bayes-game" aria-labelledby="bayes-game-title">
+  <header class="game-header">
+    <div>
+      <p class="eyebrow">Semántica clínica · entrenamiento</p>
+      <h1 id="bayes-game-title">Laboratorio bayesiano</h1>
+      <p class="intro">
+        Actualizá una hipótesis SNOMED CT con evidencia contextual y declar&aacute; los atributos de la
+        anotación. Podés abstenerte cuando la evidencia no alcanza.
+      </p>
+    </div>
+    <div class="mini-flow" aria-label="Flujo bayesiano">
+      <span>Prior local</span><span aria-hidden="true">→</span><span>Evidencia</span>
+      <span aria-hidden="true">→</span><span>Posterior</span><span aria-hidden="true">→</span><span>Atributos</span>
+    </div>
+  </header>
+
+  <section class="instructions-card" aria-labelledby="instructions-heading">
+    <div class="instructions-heading">
+      <div>
+        <p class="eyebrow">Guía de uso</p>
+        <h2 id="instructions-heading">Cómo usar esta presentación</h2>
+        <p>La actividad no busca adivinar rápido: busca justificar un mapeo clínico y reconocer cuándo no hay evidencia suficiente.</p>
+      </div>
+      <span class="instruction-badge">8 pasos por caso</span>
+    </div>
+    <ol class="instruction-steps">
+      <li><strong>Leé la nota clínica.</strong><span>Identificá el span resaltado y no agregues información que no aparece en el texto.</span></li>
+      <li><strong>Observá el prior local.</strong><span>Antes de revelar contexto, las barras muestran qué hipótesis serían plausibles solo por el término y la situación.</span></li>
+      <li><strong>Revelá el contexto de a una pista.</strong><span>Usá “Revelar contexto” y observá cómo cambia el posterior después de cada evidencia.</span></li>
+      <li><strong>Elegí una hipótesis SNOMED CT.</strong><span>Seleccioná la opción que mejor explica el span en esa nota, no la que suena más frecuente fuera de contexto.</span></li>
+      <li><strong>Completá los cuatro atributos.</strong><span>Indicá polaridad, certeza, temporalidad y sujeto. El concepto y sus atributos son dimensiones separadas.</span></li>
+      <li><strong>Declar&aacute; tu confianza.</strong><span>Mové el control entre 5% y 100%. La puntuación premia una confianza calibrada, no una seguridad artificial.</span></li>
+      <li><strong>Confirmá o abstente.</strong><span>“Irresoluble / abstenerse” es correcto cuando el IIS sigue alto o las hipótesis no se pueden discriminar.</span></li>
+      <li><strong>Leé la devolución.</strong><span>Después de confirmar aparece la respuesta, el puntaje y el razonamiento SemantIAr. Luego presioná “Siguiente caso”.</span></li>
+    </ol>
+    <div class="instruction-callout">
+      <strong>Regla de oro:</strong>
+      <span>detectar una mención no implica afirmar que la enfermedad está presente, en el paciente, ahora y con certeza.</span>
+    </div>
+  </section>
+
+  <details class="theory-card" open>
+    <summary>Qué significa el razonamiento bayesiano en este laboratorio</summary>
+    <div class="theory-grid">
+      <div>
+        <h3>Prior → evidencia → posterior</h3>
+        <p>El <strong>prior</strong> representa la plausibilidad inicial de cada hipótesis. Cada pista contextual funciona como una razón de verosimilitud: aumenta o reduce el peso de una hipótesis. El <strong>posterior</strong> es la distribución actualizada.</p>
+        <p class="formula"><code>P(hipótesis | evidencia) ∝ P(hipótesis) × evidencia</code></p>
+      </div>
+      <div>
+        <h3>IIS como señal de incertidumbre</h3>
+        <p>En esta pantalla el IIS es una aproximación pedagógica basada en entropía normalizada: <strong>0</strong> significa que una hipótesis concentra casi todo el peso y <strong>1</strong> que las alternativas siguen muy abiertas.</p>
+        <p>El IIS formal de la tesis puede incorporar perturbaciones del espacio de SapBERT y estabilidad del ranking; esta vista usa entropía para que el anotador vea la incertidumbre en tiempo real.</p>
+      </div>
+      <div>
+        <h3>Qué se evalúa realmente</h3>
+        <p>La actividad separa cuatro decisiones: qué concepto se menciona, si está negado o activo, con qué certeza se expresa, cuándo ocurre y a quién corresponde. Un mapeo correcto con atributos incorrectos sigue siendo una anotación incompleta.</p>
+      </div>
+    </div>
+  </details>
+
+  <div class="status-grid" aria-label="Estado de la partida">
+    <div class="stat-card"><span>Caso</span><strong>{{ caseIndex() + 1 }}/{{ cases.length }}</strong></div>
+    <div class="stat-card"><span>Puntaje</span><strong>{{ score() }}</strong></div>
+    <div class="stat-card">
+      <span>IIS (entropía)</span>
+      <strong>{{ informationIndex() | number: '1.2-2' }}</strong>
+      <small>{{ informationIndex() >= 0.85 ? 'Alta: conviene abstenerse' : informationIndex() >= 0.55 ? 'Intermedia: falta evidencia' : 'Baja: hipótesis concentrada' }}</small>
+    </div>
+  </div>
+
+  <section class="game-section" aria-labelledby="case-heading">
+    <p class="section-label" id="case-heading">Nota clínica</p>
+    <div class="note-card">
+      {{ activeCase().noteBefore }}<mark>{{ activeCase().highlightedText }}</mark>{{ activeCase().noteAfter }}
+    </div>
+    <p class="muted">{{ activeCase().specialty }}</p>
+  </section>
+
+  <section class="game-section" aria-labelledby="candidates-heading">
+    <p class="section-label" id="candidates-heading">Hipótesis SNOMED CT</p>
+    <div class="candidate-grid">
+      <button
+        *ngFor="let candidate of activeCase().candidates; let i = index"
+        class="candidate-card"
+        [class.is-selected]="selectedCandidate() === i"
+        type="button"
+        [disabled]="locked()"
+        [attr.aria-pressed]="selectedCandidate() === i"
+        (click)="selectCandidate(i)"
+      >
+        <strong>{{ candidate.label }}</strong>
+        <span class="code">{{ candidate.code || 'SCTID pendiente de confirmar' }}</span>
+        <span class="posterior-label"><span>Posterior</span><strong>{{ posterior()[i] | percent: '1.0-0' }}</strong></span>
+        <span class="prob-track" aria-hidden="true"><span class="prob-fill" [style.width.%]="posterior()[i] * 100"></span></span>
+      </button>
+    </div>
+  </section>
+
+  <section class="game-section" aria-labelledby="evidence-heading">
+    <div class="section-heading">
+      <p class="section-label" id="evidence-heading">Evidencia disponible</p>
+      <button class="btn btn-secondary" type="button" [disabled]="locked() || revealedEvidence() >= activeCase().evidence.length" (click)="revealEvidence()">
+        {{ revealedEvidence() >= activeCase().evidence.length ? 'Todo el contexto revelado' : 'Revelar contexto' }}
+      </button>
+    </div>
+    <div class="evidence-list">
+      <div *ngFor="let item of activeCase().evidence; let i = index" class="evidence-row" [class.is-revealed]="i < revealedEvidence()">
+        <span class="evidence-dot" aria-hidden="true"></span>
+        <span>{{ i < revealedEvidence() ? item.text : 'Contexto oculto' }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="game-section" aria-labelledby="decision-heading">
+    <p class="section-label" id="decision-heading">Decisión del anotador</p>
+    <div class="decision-grid">
+      <label>Polaridad
+        <select [ngModel]="polarity()" (ngModelChange)="setPolarity($event)" [disabled]="locked()">
+          <option>Activo</option><option>Negado</option>
+        </select>
+      </label>
+      <label>Certeza
+        <select [ngModel]="certainty()" (ngModelChange)="setCertainty($event)" [disabled]="locked()">
+          <option>Confirmado</option><option>Sospecha</option><option>Diferencial</option>
+        </select>
+      </label>
+      <label>Temporalidad
+        <select [ngModel]="temporality()" (ngModelChange)="setTemporality($event)" [disabled]="locked()">
+          <option>Actual</option><option>Histórico</option>
+        </select>
+      </label>
+      <label>Sujeto
+        <select [ngModel]="subject()" (ngModelChange)="setSubject($event)" [disabled]="locked()">
+          <option>Paciente</option><option>Familiar</option>
+        </select>
+      </label>
+    </div>
+    <label class="confidence-label" for="confidence">Confianza declarada: <strong>{{ confidence() }}%</strong></label>
+    <input id="confidence" type="range" min="5" max="100" step="5" [ngModel]="confidence()" (ngModelChange)="setConfidence($event)" [disabled]="locked()" />
+  </section>
+
+  <div class="action-row">
+    <button class="btn btn-ghost" type="button" [disabled]="locked()" (click)="abstain()">Irresoluble / abstenerse</button>
+    <button class="btn btn-primary" type="button" (click)="submitDecision()">{{ submitLabel() }}</button>
+  </div>
+  <p class="feedback" role="status" aria-live="polite">{{ feedback() }}</p>
+
+  @if (locked()) {
+    <section class="case-explanation" aria-labelledby="explanation-heading">
+      <div class="section-heading">
+        <div>
+          <p class="section-label" id="explanation-heading">Explicación detallada del caso</p>
+          <p class="explanation-subtitle">Leé el razonamiento antes de pasar al siguiente caso.</p>
+        </div>
+        <span class="explanation-badge">Devolución SemantIAr</span>
+      </div>
+      <ol class="reasoning-list">
+        <li *ngFor="let step of activeCase().reasoning; let i = index">
+          <span>{{ i + 1 }}</span>
+          <p>{{ step }}</p>
+        </li>
+      </ol>
+      <div class="lesson-box">
+        <strong>Conclusión del caso</strong>
+        <p>{{ activeCase().lesson }}</p>
+      </div>
+    </section>
+  }
+</div>

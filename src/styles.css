@@ -1,0 +1,206 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+  /* Brand color — global so it's available in CDK overlays (dialogs) too */
+  --brand: #2d3e5f;
+}
+html, body {
+  height: 100%;
+  min-height: 100dvh;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: #eef1f5;
+  overscroll-behavior-y: none;
+}
+* {
+  box-sizing: border-box;
+}
+
+/* Local prototype: a unified queue that sits above the existing detailed forms. */
+.unified-review {
+  margin: 14px 0;
+  border: 1px solid #b9d6ea;
+  border-left: 5px solid #1d6f9f;
+  border-radius: 12px;
+  background: #f7fbff;
+  padding: 14px;
+}
+.unified-marking-stage {
+  margin: 14px 0;
+  border: 1px solid #bfd6e6;
+  border-left: 5px solid #2b6f9f;
+  border-radius: 12px;
+  background: #f8fbfd;
+  padding: 14px;
+}
+.unified-marking-stage-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 13px;
+  border-top: 1px solid #d9e7f0;
+  padding-top: 12px;
+}
+.unified-marking-stage-body div { display: grid; gap: 3px; }
+.unified-marking-stage-body strong { color: #1e4f70; font-size: 13px; }
+.unified-marking-stage-body span { color: #63798a; font-size: 12px; line-height: 1.4; }
+.unified-marking-stage-body button { flex: 0 0 auto; min-height: 40px; }
+.independent-note-text { white-space: pre-wrap; }
+.unified-marking-left-control {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0 4px;
+  border: 1px solid #bfd6e6;
+  border-left: 4px solid #2b6f9f;
+  border-radius: 10px;
+  background: #f8fbfd;
+  padding: 12px;
+}
+.unified-marking-left-control strong { color: #1e4f70; font-size: 14px; }
+.unified-marking-left-control p { margin: 0; color: #63798a; font-size: 12px; line-height: 1.45; }
+.unified-marking-left-control button { justify-self: start; min-height: 38px; }
+.case-workflow-steps {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  margin-top: 12px;
+  border-top: 1px solid #e0e7ef;
+  padding-top: 10px;
+}
+.case-workflow-steps button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 8px;
+  flex: 1 1 0;
+  border: 1px solid #c8d6e4;
+  border-radius: 9px;
+  background: #fff;
+  color: #334d68;
+  cursor: pointer;
+  padding: 8px 10px;
+  text-align: left;
+}
+.case-workflow-steps button:hover,
+.case-workflow-steps button:focus-visible,
+.case-workflow-steps button.active {
+  border-color: #2677ad;
+  background: #eef7fd;
+  outline: none;
+}
+.case-workflow-steps button.locked { color: #7b8794; background: #f5f6f8; cursor: not-allowed; }
+.case-workflow-steps button > span {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  grid-row: span 2;
+  border-radius: 50%;
+  background: #dce9f4;
+  color: #1d6f9f;
+  font-size: 11px;
+  font-weight: 800;
+}
+.case-workflow-steps button.active > span { background: #1d6f9f; color: #fff; }
+.case-workflow-steps strong { font-size: 12px; }
+.case-workflow-steps small { color: #6b7c8d; font-size: 10px; }
+.case-workflow-arrow { align-self: center; color: #9aaabd; font-size: 17px; }
+.unified-detail-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  margin-top: 14px;
+  border-top: 1px solid #dce6ef;
+  padding-top: 12px;
+}
+.unified-detail-navigation button { min-height: 38px; }
+.unified-same-mark-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  border: 1px solid #c6dceb;
+  border-radius: 9px;
+  background: #f7fbff;
+  padding: 11px 12px;
+}
+.unified-same-mark-actions div { display: grid; gap: 3px; }
+.unified-same-mark-actions strong { color: #1e4f70; font-size: 13px; }
+.unified-same-mark-actions span { color: #63798a; font-size: 12px; line-height: 1.4; }
+.unified-same-mark-actions button { flex: 0 0 auto; }
+.unified-review-head,
+.unified-review-progress,
+.unified-review-item > summary,
+.unified-choice-actions,
+.unified-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.unified-review-head h3 { margin: 2px 0 3px; color: #1e4f70; font-size: 18px; }
+.unified-review-head p { margin: 0; color: #506b7d; font-size: 13px; }
+.unified-kicker { color: #1d6f9f; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.unified-review-progress { margin-top: 12px; border: 1px solid #cce0ee; border-radius: 8px; background: #fff; padding: 9px 11px; }
+.unified-review-navigation { display: flex; flex-wrap: wrap; gap: 6px; }
+.unified-review-navigation button { min-height: 34px; }
+.unified-review-navigation mat-icon { font-size: 18px; height: 18px; width: 18px; vertical-align: middle; }
+.unified-review-progress strong, .unified-review-progress span { display: block; }
+.unified-review-progress strong { color: #1e4f70; font-size: 13px; }
+.unified-review-progress div > span, .unified-item-copy p, .unified-choice small, .unified-skipped-copy { color: #63798a; font-size: 12px; line-height: 1.4; }
+.unified-review-progress div > span { margin-top: 2px; }
+.unified-review-badge { flex: 0 0 auto; border-radius: 999px; background: #dcedf8; color: #1d6f9f; padding: 4px 10px; font-size: 12px; font-weight: 800; }
+.unified-review-items { display: flex; flex-direction: column; gap: 9px; margin-top: 12px; }
+.unified-review-item { border: 1px solid #cfe0eb; border-radius: 9px; background: #fff; padding: 10px 12px; }
+.unified-review-item:focus-visible { outline: 3px solid rgba(29, 111, 159, .42); outline-offset: 3px; }
+.unified-review-item-pending { border-left: 4px solid #e19a27; }
+.unified-review-item-done { border-left: 4px solid #1f8a5b; }
+.unified-review-item-skipped {
+  border-left: 4px solid #7b8794;
+  background: #f7f8fa;
+}
+.unified-review-item-active { box-shadow: 0 0 0 2px rgba(29, 111, 159, .14); }
+.unified-review-item > summary { cursor: pointer; list-style: none; }
+.unified-review-item > summary::-webkit-details-marker { display: none; }
+.unified-review-item > summary::after { flex: 0 0 auto; color: #1d6f9f; content: '▾'; font-size: 16px; transition: transform .18s ease; }
+.unified-review-item[open] > summary::after { transform: rotate(180deg); }
+.unified-review-item[open] > summary { margin-bottom: 10px; border-bottom: 1px solid #e1edf4; padding-bottom: 9px; }
+.unified-review-item strong, .unified-review-item summary span { display: block; }
+.unified-review-item strong { color: #203346; font-size: 15px; }
+.unified-choice p { margin: 0 0 9px; color: #1e4f70; font-size: 14px; font-weight: 800; }
+.unified-choice-actions, .unified-item-actions { flex-wrap: wrap; justify-content: flex-start; }
+.unified-choice-actions button, .unified-item-actions button { min-height: 38px; }
+.unified-exclude-choice {
+  border-width: 2px !important;
+  background: #fff8f8;
+}
+.unified-choice small { display: block; margin-top: 9px; }
+.unified-item-copy p, .unified-skipped-copy { margin: 0 0 10px; }
+.unified-detail-drawer { display: block; margin: 0; border: 0; background: transparent; }
+.unified-detail-drawer-prototype { margin: 12px 0 18px; border: 1px solid #cfe0eb; border-radius: 10px; background: #fff; }
+.unified-prototype-return { margin: 12px 0; }
+.unified-detail-mode-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 12px 0; border: 1px solid #b9d6ea; border-left: 5px solid #1d6f9f; border-radius: 10px; background: #f7fbff; padding: 12px 14px; }
+.unified-detail-mode-banner div { display: grid; gap: 3px; }
+.unified-detail-mode-banner strong { color: #1e4f70; font-size: 15px; }
+.unified-detail-mode-banner span:not(.unified-kicker) { color: #63798a; font-size: 12px; }
+.unified-detail-mode-banner mat-icon { vertical-align: middle; }
+.unified-detail-drawer-prototype > summary { cursor: pointer; color: #1e4f70; padding: 11px 13px; font-size: 14px; font-weight: 800; }
+.unified-detail-drawer-prototype > p { margin: 0; border-top: 1px solid #e1edf4; color: #63798a; padding: 10px 13px 0; font-size: 12px; line-height: 1.4; }
+.unified-detail-content { padding: 0 13px 13px; }
+.unified-empty { border: 1px dashed #a9c9df; border-radius: 8px; color: #506b7d; padding: 11px 12px; font-size: 13px; }
+
+@media (max-width: 650px) {
+  .unified-review-head, .unified-review-progress, .unified-marking-stage-body { align-items: stretch; flex-direction: column; }
+  .unified-detail-mode-banner { align-items: stretch; flex-direction: column; }
+  .case-workflow-steps { align-items: stretch; flex-direction: column; }
+  .case-workflow-arrow { display: none; }
+  .unified-detail-navigation, .unified-same-mark-actions { align-items: stretch; flex-direction: column; }
+}
+
+@media (min-width: 821px) {
+  .case-workspace.marking-only { grid-template-columns: minmax(0, 1fr); }
+}

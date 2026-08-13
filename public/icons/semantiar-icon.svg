@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="SEMANTIAR">
+  <rect width="512" height="512" rx="96" fill="#2d3e5f"/>
+  <rect x="92" y="92" width="328" height="328" rx="54" fill="#f6f8fc"/>
+  <path d="M256 146c-19 0-34 15-34 34v42h-42c-19 0-34 15-34 34s15 34 34 34h42v42c0 19 15 34 34 34s34-15 34-34v-42h42c19 0 34-15 34-34s-15-34-34-34h-42v-42c0-19-15-34-34-34z" fill="#2f6fae"/>
+  <path d="M160 360h192" stroke="#1e7d34" stroke-width="26" stroke-linecap="round"/>
+</svg>
