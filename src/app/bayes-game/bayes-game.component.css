@@ -102,6 +102,29 @@ h1 {
 
 .stat-card small { font-size: 0.66rem; line-height: 1.25; }
 
+.iis-help,
+.model-note,
+.operational-reference {
+  display: grid;
+  gap: 5px;
+  margin-top: 12px;
+  border-left: 4px solid #2b7b84;
+  border-radius: 9px;
+  background: #edf8f7;
+  color: #315964;
+  padding: 11px 13px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.iis-help strong,
+.model-note strong,
+.operational-reference strong { color: #1f6870; }
+
+.model-note { margin-top: 14px; }
+.operational-reference { margin: 14px 20px 20px; background: #f4fbfa; }
+.operational-reference-abstain { border-left-color: #c69436; background: #fffaf0; }
+
 .case-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);

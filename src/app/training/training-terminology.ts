@@ -48,4 +48,13 @@ export const VERIFIED_TRAINING_CONCEPTS: Readonly<
   '1258985005': verified('ventilación mecánica invasiva', 'Procedimiento'),
   '56018004': verified('sibilancias', 'Hallazgo clínico'),
   '386661006': verified('fiebre', 'Hallazgo clínico'),
+  '230690007': verified('accidente cerebrovascular', 'Hallazgo clínico'),
+  '68566005': verified('infección del tracto urinario', 'Hallazgo clínico'),
+  '389087006': verified('hipoxemia', 'Hallazgo clínico'),
+  '409622000': verified('insuficiencia respiratoria', 'Hallazgo clínico'),
+  '29857009': verified('dolor torácico', 'Hallazgo clínico'),
+  '38822007': verified('cistitis', 'Hallazgo clínico'),
+  '267439000': verified('disuria', 'Hallazgo clínico'),
+  '57676002': verified('artralgia', 'Hallazgo clínico'),
+  '69896004': verified('artritis reumatoide', 'Hallazgo clínico'),
 };

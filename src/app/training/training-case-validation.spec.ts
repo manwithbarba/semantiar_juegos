@@ -30,4 +30,13 @@ describe('training case bank', () => {
       'TRN-001: el término no coincide con el display terminológico verificado.'
     );
   });
+
+  it('rejects a literal that is padded with surrounding context', () => {
+    const altered = structuredClone(TRAINING_CASES) as any[];
+    altered[0].expected.annotation.textoLiteral = ' disnea ';
+
+    expect(validateTrainingCaseBank(altered)).toContain(
+      'TRN-001: el literal debe ser una mención contigua, mínima y presente en la nota (literal-minimo-contiguo-contexto-separado).'
+    );
+  });
 });

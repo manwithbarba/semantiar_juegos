@@ -6,11 +6,18 @@ import {
   ANNOTATION_TEMPORALITIES,
   TRAINING_SKILLS,
   TRAINING_TRACKS,
+  ANNOTATION_SPAN_POLICY,
   type TrainingCase,
 } from './training-contract';
 import { VERIFIED_TRAINING_CONCEPTS } from './training-terminology';
 
 const has = <T extends readonly string[]>(values: T, value: string) => values.includes(value);
+
+const normalizeText = (value: string): string => value.normalize('NFC').toLocaleLowerCase('es-AR');
+
+export function hasContiguousLiteral(note: string, literal: string): boolean {
+  return literal.trim() === literal && literal.length > 0 && normalizeText(note).includes(normalizeText(literal));
+}
 
 export function validateTrainingCaseBank(cases: readonly TrainingCase[]): string[] {
   const errors: string[] = [];
@@ -62,8 +69,8 @@ export function validateTrainingCaseBank(cases: readonly TrainingCase[]): string
         errors.push(`${item.id}: el término no coincide con el display terminológico verificado.`);
       }
       if (!annotation.term.trim()) errors.push(`${item.id}: término terminológico vacío.`);
-      if (!item.note.toLocaleLowerCase('es-AR').includes(annotation.textoLiteral.toLocaleLowerCase('es-AR'))) {
-        errors.push(`${item.id}: el literal no aparece en la nota.`);
+      if (!hasContiguousLiteral(item.note, annotation.textoLiteral)) {
+        errors.push(`${item.id}: el literal debe ser una mención contigua, mínima y presente en la nota (${ANNOTATION_SPAN_POLICY}).`);
       }
       if (!has(ANNOTATION_CATEGORIES, annotation.cat)) errors.push(`${item.id}: categoría fuera del contrato.`);
       if (!has(ANNOTATION_POLARITIES, annotation.pol)) errors.push(`${item.id}: polaridad fuera del contrato.`);

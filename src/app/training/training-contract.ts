@@ -9,6 +9,14 @@ export const ANNOTATION_CERTAINTIES = ['Confirmado', 'Sospecha', 'Diferencial'] 
 export const ANNOTATION_TEMPORALITIES = ['Actual', 'Histórico'] as const;
 export const ANNOTATION_SUBJECTS = ['Paciente', 'Familiar'] as const;
 
+/**
+ * A single annotation always points to the smallest contiguous mention that
+ * carries the concept. Surrounding evidence (negation, certainty, time,
+ * subject and clinical context) is recorded in attributes or explanation,
+ * never by extending the literal to the whole sentence.
+ */
+export const ANNOTATION_SPAN_POLICY = 'literal-minimo-contiguo-contexto-separado' as const;
+
 export type AnnotationCategory = (typeof ANNOTATION_CATEGORIES)[number];
 export type AnnotationPolarity = (typeof ANNOTATION_POLARITIES)[number];
 export type AnnotationCertainty = (typeof ANNOTATION_CERTAINTIES)[number];
@@ -20,6 +28,13 @@ export interface TrainingAnnotation {
   sctid: string;
   term: string;
   textoLiteral: string;
+  pol: AnnotationPolarity;
+  cert: AnnotationCertainty;
+  temp: AnnotationTemporality;
+  suj: AnnotationSubject;
+}
+
+export interface OperationalAttributes {
   pol: AnnotationPolarity;
   cert: AnnotationCertainty;
   temp: AnnotationTemporality;

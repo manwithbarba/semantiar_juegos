@@ -19,7 +19,7 @@ type CaseState = 'answering' | 'revealed';
 export class CorpusCasesComponent {
   readonly release = CASE_BANK_RELEASE;
   readonly tracks: Array<{ id: TrainingTrack; label: string; description: string }> = [
-    { id: 'guided', label: 'Guiado', description: 'Criterio y devolución inmediata para aprender el contrato.' },
+    { id: 'guided', label: 'Guiado', description: 'Explicación paso a paso y devolución inmediata.' },
     { id: 'practice', label: 'Práctica', description: 'Aplicación con una única decisión y explicación posterior.' },
     { id: 'mastery', label: 'Dominio', description: 'Primera respuesta y confianza: la devolución aparece recién al confirmar.' },
   ];
