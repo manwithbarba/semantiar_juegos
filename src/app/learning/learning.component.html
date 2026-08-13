@@ -20,6 +20,7 @@
     <div class="exercise-list">
       <article class="exercise-card" *ngFor="let exercise of exercises(); let i = index">
         <div class="exercise-meta"><span>Ejercicio {{ i + 1 }}</span><span *ngIf="hasAnswer(i)" [class.answer-good]="isCorrect(exercise, i)">{{ isCorrect(exercise, i) ? 'Resuelto' : 'Revisar' }}</span></div>
+        <p class="exercise-source" *ngIf="exercise.source">Caso del banco de entrenamiento: {{ exercise.source }}</p>
         <h3>{{ exercise.title }}</h3>
         <p class="exercise-prompt">{{ exercise.prompt }}</p>
         <p class="exercise-instruction">{{ exercise.instruction }}</p>

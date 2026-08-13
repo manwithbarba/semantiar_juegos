@@ -56,9 +56,10 @@
         </div>
 
         <div class="confidence" *ngIf="isMastery() && state() === 'answering'">
+          <p class="eyebrow">Confianza para el seguimiento</p>
           <label for="confidence">¿Cuánta confianza tenés en tu primera decisión? <strong>{{ confidence() }} %</strong></label>
           <input id="confidence" type="range" min="0" max="100" step="5" [value]="confidence()" (input)="setConfidence($any($event.target).value)" />
-          <p>La confianza se guarda sólo en este navegador y se usa para tu devolución de calibración.</p>
+          <p>Esta barra aparece sólo en Dominio. Tu respuesta y este nivel de confianza se guardan localmente para revisar después la relación entre seguridad y resultado.</p>
         </div>
 
         <button class="confirm-button" type="button" *ngIf="isMastery() && state() === 'answering'" [disabled]="!selectedOption()" (click)="reveal()">Confirmar primera decisión</button>

@@ -9,6 +9,9 @@
   background: #fff;
   padding: 14px clamp(20px, 5vw, 64px);
 }
+.brand-identity { display: flex; align-items: center; gap: 13px; min-width: 0; }
+.brand-logo { display: block; flex: 0 0 auto; width: 78px; height: 46px; overflow: hidden; border-radius: 8px; background: #fff; }
+.brand-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .brand-kicker, .brand-title { margin: 0; }
 .brand-kicker { color: #2b7b84; font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .brand-title { color: #193d47; font-size: .94rem; font-weight: 700; }
