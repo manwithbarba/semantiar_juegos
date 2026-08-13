@@ -37,7 +37,7 @@ interface BayesCase {
 export class BayesGameComponent {
   readonly cases: readonly BayesCase[] = [
     {
-      specialty: 'Cardiología · mención: “FA”',
+      specialty: 'Cardiología · expresión clínica: “FA”',
       noteBefore: 'Paciente con ',
       highlightedText: 'FA',
       noteAfter: ' crónica en anticoagulación oral.',
@@ -57,11 +57,11 @@ export class BayesGameComponent {
         'La probabilidad previa local favorece fibrilación auricular, pero “FA” aislada todavía puede ser ambigua.',
         '“Crónica” aporta duración y la anticoagulación oral funciona como evidencia contextual muy discriminante.',
         'Al multiplicar la probabilidad previa por las razones de verosimilitud, la probabilidad posterior se concentra en fibrilación auricular.',
-        'La mención está activa, confirmada, actual y corresponde al paciente; los atributos no se deducen solo del SCTID.',
+        'La expresión clínica está activa, confirmada y actual; corresponde al paciente. Los atributos no se deducen solo del SCTID.',
       ],
     },
     {
-      specialty: 'Guardia · mención: “neumonía”',
+      specialty: 'Guardia · expresión clínica: “neumonía”',
       noteBefore: 'Infiltrado basal derecho; se interpreta como ',
       highlightedText: 'probable neumonía',
       noteAfter: '.',
@@ -78,14 +78,14 @@ export class BayesGameComponent {
       attributes: ['Activo', 'Sospecha', 'Actual', 'Paciente'],
       lesson: 'El concepto es neumonía, pero la certeza debe conservarse como sospecha.',
       reasoning: [
-        '“Neumonía” es una hipótesis clínica plausible, pero “probable” impide tratarla como confirmada.',
+        '“Neumonía” es un concepto clínico plausible, pero “probable” impide tratarla como confirmada.',
         'El infiltrado basal aumenta la plausibilidad de neumonía frente a tos o infección respiratoria inespecífica.',
         'La evidencia cambia el ranking de conceptos, pero no convierte una sospecha en certeza.',
         'La salida correcta conserva activo + sospecha + actual + paciente para no perder la aserción original.',
       ],
     },
     {
-      specialty: 'Clínica médica · mención: “ACV”',
+      specialty: 'Clínica médica · expresión clínica: “ACV”',
       noteBefore: 'Antecedente de ',
       highlightedText: 'ACV hace 3 años',
       noteAfter: ', sin déficit motor actual.',
@@ -100,7 +100,7 @@ export class BayesGameComponent {
       ],
       answer: 0,
       attributes: ['Activo', 'Confirmado', 'Histórico', 'Paciente'],
-      lesson: 'La entidad sigue siendo ACV; el tiempo pasado se representa en temporalidad, no cambiando el concepto.',
+      lesson: 'El concepto sigue siendo ACV; el tiempo pasado se representa en temporalidad, no cambiando el concepto.',
       reasoning: [
         '“ACV” identifica la entidad clínica; “hace 3 años” no crea otro concepto neurológico.',
         '“Antecedente” y la fecha aumentan la probabilidad de un evento histórico frente a un déficit actual.',
@@ -109,7 +109,7 @@ export class BayesGameComponent {
       ],
     },
     {
-      specialty: 'Nota breve sin especialidad · mención: “soplo”',
+      specialty: 'Nota breve sin especialidad · expresión clínica: “soplo”',
       noteBefore: 'Control. Persiste ',
       highlightedText: 'soplo',
       noteAfter: '. Sin otros datos.',
@@ -126,14 +126,14 @@ export class BayesGameComponent {
       attributes: ['Activo', 'Confirmado', 'Actual', 'Paciente'],
       lesson: 'La incertidumbre permanece alta: abstenerse evita convertir una probabilidad previa frecuente en una falsa certeza.',
       reasoning: [
-        '“Soplo” es una mención clínica válida, pero no especifica localización ni etiología.',
-        'Las dos evidencias tienen razón de verosimilitud 1: no favorecen ninguna hipótesis.',
+        'La expresión clínica “soplo” es válida, pero no especifica localización ni etiología.',
+        'Las dos evidencias tienen razón de verosimilitud 1: no favorecen ningún concepto.',
         'La distribución posterior conserva la ambigüedad y el IIS permanece alto.',
         'Abstenerse es la decisión reproducible: evita inventar granularidad que la nota no documenta.',
       ],
     },
     {
-      specialty: 'Clínica médica · mención: “SatO2 91%”',
+      specialty: 'Clínica médica · expresión clínica: “SatO2 91%”',
       noteBefore: 'SatO2: ',
       highlightedText: '91% al aire ambiente',
       noteAfter: '. Paciente sin disnea en reposo.',
@@ -158,7 +158,7 @@ export class BayesGameComponent {
       ],
     },
     {
-      specialty: 'Guardia · mención: “fiebre”',
+      specialty: 'Guardia · expresión clínica: “fiebre”',
       noteBefore: 'El paciente ',
       highlightedText: 'niega fiebre',
       noteAfter: ', tos y disnea.',
@@ -168,21 +168,21 @@ export class BayesGameComponent {
         { label: 'Infección aguda', code: '', initialProbability: 0.2 },
       ],
       evidence: [
-        { text: 'El verbo “niega” gobierna la mención', likelihoodRatios: [4.8, 1.1, 0.3] },
-        { text: 'La negación aparece antes de la mención clínica', likelihoodRatios: [2.4, 0.8, 0.4] },
+        { text: 'El verbo “niega” gobierna la expresión clínica', likelihoodRatios: [4.8, 1.1, 0.3] },
+        { text: 'La negación aparece antes de la expresión clínica', likelihoodRatios: [2.4, 0.8, 0.4] },
       ],
       answer: 0,
       attributes: ['Negado', 'Confirmado', 'Actual', 'Paciente'],
-      lesson: 'Se detecta el concepto fiebre, pero la polaridad es negada; no debe eliminarse la mención ni convertirla en temperatura normal.',
+      lesson: 'Se detecta el concepto fiebre, pero la polaridad es negada; no debe eliminarse la expresión clínica ni convertirla en temperatura normal.',
       reasoning: [
-        'La entidad mencionada sigue siendo fiebre: la negación no borra la mención clínica.',
+        'El concepto identificado sigue siendo fiebre: la negación no borra la expresión clínica.',
         '“Niega” es un disparador de aserción que tiene alcance sobre fiebre.',
         'La certeza es confirmada respecto de la negación, no de la presencia de fiebre.',
         'La salida debe conservar polaridad negada, actual y sujeto paciente para que el contexto sea auditable.',
       ],
     },
     {
-      specialty: 'Antecedentes familiares · mención: “diabetes tipo 2”',
+      specialty: 'Antecedentes familiares · expresión clínica: “diabetes tipo 2”',
       noteBefore: 'La ',
       highlightedText: 'madre tiene diabetes tipo 2',
       noteAfter: '; el paciente no refiere diagnóstico conocido.',
@@ -192,21 +192,21 @@ export class BayesGameComponent {
         { label: 'Hiperglucemia', code: '', initialProbability: 0.18 },
       ],
       evidence: [
-        { text: '“Madre” cambia el sujeto de la mención', likelihoodRatios: [2.8, 1.8, 0.5] },
+        { text: '“Madre” cambia el sujeto de la expresión clínica', likelihoodRatios: [2.8, 1.8, 0.5] },
         { text: '“El paciente no refiere diagnóstico” evita atribuirlo al paciente', likelihoodRatios: [1.4, 2.2, 0.4] },
       ],
       answer: 0,
       attributes: ['Activo', 'Confirmado', 'Actual', 'Familiar'],
       lesson: 'El concepto es diabetes mellitus tipo 2, pero el sujeto es un familiar; atribuirlo al paciente sería un error de aserción.',
       reasoning: [
-        'La mención describe una enfermedad de la madre, por lo que el concepto y el sujeto deben separarse.',
-        'La evidencia familiar no cambia la entidad a hiperglucemia ni autoriza inferir diabetes en el paciente.',
+        'La expresión clínica describe una enfermedad de la madre, por lo que el concepto y el sujeto deben separarse.',
+        'La evidencia familiar no cambia el concepto a hiperglucemia ni autoriza inferir diabetes en el paciente.',
         'El campo sujeto = familiar es el dato que evita contaminar el registro clínico del paciente.',
-        'Este caso muestra por qué detección léxica y aserción contextual son capas distintas.',
+        'Este caso muestra por qué la identificación de la expresión clínica y la asignación de atributos son capas distintas.',
       ],
     },
     {
-      specialty: 'Cardiología · mención: “IAM en 2018”',
+      specialty: 'Cardiología · expresión clínica: “IAM en 2018”',
       noteBefore: 'Antecedente de ',
       highlightedText: 'IAM en 2018',
       noteAfter: '; actualmente sin dolor torácico.',
@@ -223,14 +223,14 @@ export class BayesGameComponent {
       attributes: ['Activo', 'Confirmado', 'Histórico', 'Paciente'],
       lesson: 'El antecedente de IAM se codifica como entidad histórica; la ausencia de dolor actual no elimina el antecedente.',
       reasoning: [
-        '“IAM” es la entidad clínica expresada; el año aporta una coordenada temporal.',
-        'La negación de dolor actual reduce la hipótesis de síndrome coronario agudo presente.',
+        '“IAM” es el concepto clínico expresado; el año aporta una coordenada temporal.',
+        'La negación de dolor actual reduce el apoyo al concepto de síndrome coronario agudo presente.',
         'No se debe reemplazar el IAM histórico por dolor torácico ni por un evento agudo actual.',
         'Temporalidad histórica y polaridad activa permiten conservar que el evento ocurrió.',
       ],
     },
     {
-      specialty: 'Consultorio · mención: “ITU”',
+      specialty: 'Consultorio · expresión clínica: “ITU”',
       noteBefore: 'Se ',
       highlightedText: 'sospecha ITU',
       noteAfter: '; se solicita urocultivo.',
@@ -245,7 +245,7 @@ export class BayesGameComponent {
       ],
       answer: 0,
       attributes: ['Activo', 'Sospecha', 'Actual', 'Paciente'],
-      lesson: 'El plan diagnóstico apoya ITU como hipótesis, pero la certeza permanece en sospecha hasta contar con evidencia suficiente.',
+      lesson: 'El plan diagnóstico apoya ITU como concepto candidato, pero la certeza permanece en sospecha hasta contar con evidencia suficiente.',
       reasoning: [
         'La sigla ITU se expande al concepto más amplio mientras no haya datos para una localización más granular.',
         'Solicitar urocultivo indica evaluación diagnóstica, no confirmación de la infección.',
@@ -254,7 +254,7 @@ export class BayesGameComponent {
       ],
     },
     {
-      specialty: 'Reumatología · mención: “artritis reumatoide”',
+      specialty: 'Reumatología · expresión clínica: “artritis reumatoide”',
       noteBefore: 'Artralgias; diagnóstico ',
       highlightedText: 'diferencial entre artritis reumatoide y lupus',
       noteAfter: '. Sin resultados de anticuerpos todavía.',
@@ -264,16 +264,16 @@ export class BayesGameComponent {
         { label: 'Artralgia', code: '57676002', initialProbability: 0.28 },
       ],
       evidence: [
-        { text: '“Diferencial entre” mantiene abiertas dos hipótesis', likelihoodRatios: [1, 1, 0.9] },
+        { text: '“Diferencial entre” mantiene abiertas dos conceptos candidatos', likelihoodRatios: [1, 1, 0.9] },
         { text: 'No hay anticuerpos ni otro dato discriminante', likelihoodRatios: [1, 1, 1] },
       ],
       answer: null,
       attributes: ['Activo', 'Diferencial', 'Actual', 'Paciente'],
-      lesson: 'La nota documenta un diferencial, no una elección final: abstenerse evita presentar una hipótesis como diagnóstico.',
+      lesson: 'La nota documenta un diferencial, no una elección final: abstenerse evita presentar un concepto candidato como diagnóstico.',
       reasoning: [
         'El texto ofrece dos candidatos plausibles y no aporta evidencia que permita resolver el mapeo.',
         'La distribución posterior permanece repartida; el IIS alto es una señal para no forzar la decisión.',
-        'La certeza diferencial debe conservarse aunque la mención contenga nombres de enfermedades.',
+        'La certeza diferencial debe conservarse aunque la expresión clínica contenga nombres de enfermedades.',
         'En entrenamiento, abstenerse aquí es una conducta de calidad y no una respuesta incompleta.',
       ],
     },
@@ -347,7 +347,7 @@ export class BayesGameComponent {
     const current = this.activeCase();
     const selected = this.selectedCandidate();
     if (!abstained && selected === null) {
-      this.feedback.set('Seleccioná una hipótesis o elegí abstenerse.');
+      this.feedback.set('Seleccioná un concepto candidato o elegí abstenerse.');
       return;
     }
 
