@@ -1,39 +1,12 @@
-<div class="bayes-game" aria-labelledby="bayes-game-title">
+<main class="bayes-game" aria-labelledby="bayes-game-title">
   <header class="game-header">
     <div>
-      <p class="eyebrow">SemantIAr · laboratorio de entrenamiento</p>
-      <h1 id="bayes-game-title">Laboratorio bayesiano</h1>
-      <p class="intro">Aprendé a seleccionar el concepto SNOMED CT que mejor representa una expresión clínica, incorporando el contexto y reconociendo cuándo persiste la ambigüedad semántica.</p>
+      <p class="eyebrow">Casos clínicos · resolución guiada</p>
+      <h1 id="bayes-game-title">Resolvé los casos</h1>
+      <p class="intro">Aplicá el contexto, observá cómo cambian las probabilidades y decidí qué concepto SNOMED CT representa mejor cada expresión clínica.</p>
     </div>
+    <a class="back-link" routerLink="/">← Volver a la presentación</a>
   </header>
-
-  <section class="how-to-play-card" aria-labelledby="how-to-play-heading">
-    <div>
-      <p class="eyebrow">Cómo se juega</p>
-      <h2 id="how-to-play-heading">Tomá una decisión de mapeo clínico</h2>
-    </div>
-    <ol class="play-steps">
-      <li><strong>Leé la expresión clínica.</strong><span>Observá el texto resaltado dentro de la nota.</span></li>
-      <li><strong>Revelá el contexto.</strong><span>Mostrá las pistas una por una y seguí cómo cambian las probabilidades.</span></li>
-      <li><strong>Elegí un concepto.</strong><span>Seleccioná el concepto SNOMED CT que mejor representa la expresión.</span></li>
-      <li><strong>Completá los atributos.</strong><span>Indicá polaridad, certeza, temporalidad y sujeto.</span></li>
-      <li><strong>Confirmá o abstente.</strong><span>Si persiste la ambigüedad semántica, abstenerse también es una decisión válida.</span></li>
-    </ol>
-  </section>
-
-  <section class="interpretation-card" aria-labelledby="interpretation-heading">
-    <div class="interpretation-copy">
-      <p class="eyebrow">Cómo interpretar el juego</p>
-      <h2 id="interpretation-heading">El contexto cambia la probabilidad de cada concepto</h2>
-      <p>Cada caso presenta una <strong>expresión clínica</strong> y varios <strong>conceptos SNOMED CT candidatos</strong>. La <strong>probabilidad previa (o a priori)</strong> es el punto de partida de cada concepto antes de incorporar todas las pistas. La <strong>probabilidad posterior</strong> representa su peso después de considerar la evidencia disponible.</p>
-      <p>El <strong>índice de incertidumbre semántica (IIS)</strong> estima cuánta <strong>ambigüedad semántica</strong> permanece entre los conceptos candidatos. El IIS se basa en la <strong>entropía</strong>, que mide cómo se distribuyen las probabilidades entre esos conceptos.</p>
-      <p>Un IIS bajo indica que la probabilidad se concentra en un concepto. Un IIS alto indica que las probabilidades siguen distribuidas entre varios conceptos y que la expresión continúa siendo ambigua. El IIS no es la probabilidad de una enfermedad ni reemplaza el juicio clínico.</p>
-    </div>
-    <div class="interpretation-rule">
-      <strong>Regla clínica</strong>
-      <span>Un concepto puede corresponder a una expresión clínica activa o negada, confirmada o sospechosa, actual o histórica, referida al paciente o a un familiar. Por eso también deben revisarse sus atributos.</span>
-    </div>
-  </section>
 
   <div class="status-grid" aria-label="Estado de la partida">
     <div class="stat-card"><span>Caso</span><strong>{{ caseIndex() + 1 }}/{{ cases.length }}</strong></div>
@@ -143,4 +116,4 @@
       </div>
     </section>
   }
-</div>
+</main>
