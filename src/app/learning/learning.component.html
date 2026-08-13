@@ -1,7 +1,7 @@
 <main class="learning-page">
   <header class="learning-hero">
     <div><p class="eyebrow">{{ current().eyebrow }}</p><h1>{{ current().title }}</h1><p class="intro">{{ current().intro }}</p></div>
-    <a class="back-link" routerLink="/">← Presentación</a>
+    <a class="back-link" routerLink="/">← Inicio</a>
   </header>
   <div class="progress-line" aria-label="Progreso del recorrido"><span [style.width.%]="((index() + 1) / pages.length) * 100"></span></div>
   <nav class="sequence-nav" aria-label="Secuencia de indicadores">
@@ -34,12 +34,5 @@
     </div>
   </section>
   <section class="takeaway"><strong>Idea clave</strong><span>{{ current().takeaway }}</span></section>
-  <section class="references-card" aria-labelledby="references-heading">
-    <p class="eyebrow">Bibliografía orientada</p>
-    <h2 id="references-heading">Para profundizar en este indicador</h2>
-    <ul>
-      <li *ngFor="let reference of references()"><a [href]="reference.url" target="_blank" rel="noopener noreferrer">{{ reference.label }}</a></li>
-    </ul>
-  </section>
-  <nav class="page-nav" aria-label="Navegación del recorrido"><a *ngIf="previous()" [routerLink]="'/' + previous().path">← {{ previous().title }}</a><a class="cases-link" routerLink="/casos">Ir al laboratorio de casos</a><a *ngIf="next()" [routerLink]="'/' + next().path">{{ next().title }} →</a></nav>
+  <nav class="page-nav" aria-label="Navegación del recorrido"><a *ngIf="previous()" [routerLink]="'/' + previous().path">← {{ previous().title }}</a><a class="cases-link" routerLink="/casos-reales">Ir al entrenamiento →</a><a *ngIf="next()" [routerLink]="'/' + next().path">{{ next().title }} →</a></nav>
 </main>

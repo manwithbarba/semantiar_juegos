@@ -1,7 +1,7 @@
 <main class="presentation-page">
   <header class="presentation-hero">
     <div>
-      <p class="eyebrow">SemantIAr · laboratorio de entrenamiento y aprendizaje</p>
+      <p class="eyebrow">SemantIAr · recorrido de anotación clínica</p>
       <h1>Juegos de semántica clínica</h1>
       <p class="intro">
         Un recorrido interactivo para aprender a seleccionar expresiones, elegir conceptos SNOMED CT,
@@ -9,8 +9,8 @@
       </p>
     </div>
     <div class="hero-action">
-      <p>Primer paso: entrenamiento operativo</p>
-      <a class="btn btn-primary" routerLink="/casos-reales">Comenzar entrenamiento</a>
+      <p>Un recorrido guiado, de la lectura a la revisión.</p>
+      <a class="btn btn-primary" routerLink="/expresiones">Comenzar recorrido</a>
     </div>
   </header>
 
@@ -23,8 +23,8 @@
       <li><strong>Leé la nota completa.</strong><span>Identificá la evidencia que sostiene la decisión.</span></li>
       <li><strong>Delimitá la expresión.</strong><span>No mezcles hallazgos con acciones o modificadores ajenos.</span></li>
       <li><strong>Elegí o abstente.</strong><span>Seleccioná un concepto SNOMED CT sólo cuando la evidencia lo permite.</span></li>
-      <li><strong>Aplicá el contrato.</strong><span>Usá las categorías y atributos vigentes del anotador SemantIAr.</span></li>
-      <li><strong>Revisá tu devolución.</strong><span>La práctica y el dominio registran tu primera decisión de manera local.</span></li>
+      <li><strong>Completá la anotación.</strong><span>Usá las categorías y atributos disponibles en el anotador SemantIAr.</span></li>
+      <li><strong>Revisá tu decisión.</strong><span>La práctica y el dominio registran tu primera respuesta de manera local.</span></li>
     </ol>
   </section>
 
@@ -44,6 +44,7 @@
         Si la nota no permite una decisión reproducible, aprendés a <strong>abstenerte y solicitar revisión</strong>.
         La incertidumbre no se resuelve inventando un diagnóstico, una categoría o un estado que el texto no sostiene.
       </p>
+      <p class="contract-summary"><strong>Contrato compartido con el anotador:</strong> categorías Hallazgo clínico · Procedimiento · Fármaco; atributos Activo/Negado · Confirmado/Sospecha/Diferencial · Actual/Histórico · Paciente/Familiar.</p>
     </div>
     <div class="interpretation-rule">
       <strong>Regla de calidad</strong>
@@ -56,42 +57,15 @@
 
   <section class="learning-resources" aria-labelledby="learning-resources-title">
     <div class="learning-resources-copy">
-      <p class="eyebrow">Para profundizar</p>
-      <h2 id="learning-resources-title">Bibliografía médica para profundizar</h2>
-      <p>Referencias clínicas y de informática en salud para comprender los indicadores y juegos del recorrido.</p>
+      <p class="eyebrow">Referencias del recorrido</p>
+      <h2 id="learning-resources-title">Bibliografía para cada etapa</h2>
+      <p>Las fuentes están agrupadas por el paso o módulo al que ayudan a interpretar.</p>
     </div>
     <div class="resource-links">
-      <a
-        href="https://www.jmir.org/2024/1/e45209/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <strong>Semántica clínica e interoperabilidad</strong>
-        <span>Revisión sobre FHIR, terminologías, ontologías y preservación del significado clínico.</span>
-      </a>
-      <a
-        href="https://medinform.jmir.org/2023/1/e43750/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <strong>SNOMED CT en historias clínicas</strong>
-        <span>Revisión sistemática de usos clínicos, calidad de datos e interoperabilidad.</span>
-      </a>
-      <a
-        href="https://onlinelibrary.wiley.com/doi/10.1111/j.1651-2227.2006.00179.x"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <strong>Probabilidad bayesiana en diagnóstico</strong>
-        <span>Razones de verosimilitud y probabilidades previa y posterior en la práctica clínica.</span>
-      </a>
-      <a
-        href="https://journals.sagepub.com/doi/full/10.1177/10398562241300887"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <strong>Bayes y probabilidad condicional</strong>
-        <span>Aplicación clínica de Bayes para actualizar estimaciones con nueva evidencia.</span>
+      <a *ngFor="let reference of references" [href]="reference.url" target="_blank" rel="noopener noreferrer">
+        <strong>{{ reference.label }}</strong>
+        <span>{{ reference.description }}</span>
+        <small>Referencia: {{ reference.page }}</small>
       </a>
     </div>
   </section>
@@ -99,9 +73,9 @@
   <section class="presentation-footer-card" aria-label="Comenzar el laboratorio">
     <div>
       <p class="eyebrow">Siguiente paso</p>
-      <h2>Primero dominá el contrato; luego profundizá</h2>
-      <p>Empezá con casos formativos alineados al anotador. El laboratorio bayesiano queda como módulo optativo para explorar ambigüedad y contexto.</p>
+      <h2>Empezá por la lectura y avanzá hacia la práctica</h2>
+      <p>Recorré la explicación, resolvé casos formativos alineados al anotador y consultá tu seguimiento cuando hayas tomado varias decisiones.</p>
     </div>
-    <a class="btn btn-primary" routerLink="/casos-reales">Comenzar entrenamiento</a>
+    <a class="btn btn-primary" routerLink="/expresiones">Comenzar recorrido</a>
   </section>
 </main>

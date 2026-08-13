@@ -3,9 +3,9 @@
     <div>
       <p class="eyebrow">Casos clínicos · resolución guiada</p>
       <h1 id="bayes-game-title">Resolvé los casos</h1>
-      <p class="intro">Aplicá el contexto, observá cómo cambian las probabilidades y decidí qué concepto SNOMED CT representa mejor cada expresión clínica.</p>
+      <p class="intro">Este laboratorio explora hipótesis y ambigüedad contextual; no reemplaza la anotación operativa del entrenamiento. Aplicá el contexto y observá cómo un modelo bayesiano actualiza las probabilidades de cada candidato.</p>
     </div>
-    <a class="back-link" routerLink="/">← Volver a la presentación</a>
+    <a class="back-link" routerLink="/">← Inicio</a>
   </header>
 
   <section class="game-section" aria-labelledby="case-heading">
@@ -13,7 +13,7 @@
       <div class="case-expression">
         <p class="section-label" id="case-heading">Expresión clínica</p>
         <div class="note-card">
-          {{ activeCase().noteBefore }}<mark>{{ activeCase().highlightedText }}</mark>{{ activeCase().noteAfter }}
+          {{ activeCase().noteBefore }}<mark>{{ activeCase().literal }}</mark>{{ activeCase().noteAfter }}
         </div>
         <p class="muted">{{ activeCase().specialty }}</p>
       </div>
@@ -27,13 +27,17 @@
         </div>
       </div>
     </div>
+    <section class="iis-help" aria-label="Interpretación del IIS">
+      <strong>¿Qué significa IIS?</strong>
+      <span>El Índice de Incertidumbre Semántica resume cuán repartida está la distribución entre las hipótesis: 0 significa una hipótesis dominante y 1, ambigüedad máxima. Se calcula como entropía normalizada, IIS = H(p) / log(n).</span>
+    </section>
   </section>
 
   <section class="game-section" aria-labelledby="candidates-heading">
     <div class="section-heading">
-      <p class="section-label" id="candidates-heading">{{ revealedEvidence() === 0 ? 'Distribución de probabilidad a priori' : 'Distribución de probabilidad posterior' }} de conceptos SNOMED CT</p>
+      <p class="section-label" id="candidates-heading">{{ revealedEvidence() === 0 ? 'Probabilidad a priori' : 'Probabilidad posterior bayesiana' }} de hipótesis</p>
     </div>
-    <div class="probability-field" [attr.aria-label]="revealedEvidence() === 0 ? 'Distribución de probabilidad a priori de conceptos' : 'Distribución de probabilidad posterior de conceptos'">
+    <div class="probability-field" [attr.aria-label]="revealedEvidence() === 0 ? 'Probabilidad a priori de hipótesis' : 'Probabilidad posterior bayesiana de hipótesis'">
       <button
         *ngFor="let candidate of activeCase().candidates; let i = index"
         class="probability-circle"
@@ -53,6 +57,11 @@
         <small>{{ posterior()[i] | percent: '1.0-0' }}</small>
       </button>
     </div>
+  </section>
+
+  <section class="model-note" aria-label="Modelo probabilístico">
+    <strong>Modelo explícito</strong>
+    <span>La actualización aplica Bayes: P(H|E₁…Eₙ) ∝ P(H) × ∏ LR(Eᵢ|H). Cada pista se declara condicionalmente independiente dado el candidato; si esa hipótesis no pudiera sostenerse, el cálculo no debería interpretarse como una probabilidad posterior.</span>
   </section>
 
   <section class="game-section" aria-labelledby="evidence-heading">
@@ -122,6 +131,18 @@
         <strong>Conclusión del caso</strong>
         <p>{{ activeCase().lesson }}</p>
       </div>
+      @if (activeCase().operationalAnnotation; as annotation) {
+        <div class="operational-reference">
+          <strong>Anotación operativa de referencia</strong>
+          <span>{{ annotation.term }} · SCTID {{ annotation.sctid }}</span>
+          <span>{{ annotation.cat }} · {{ annotation.pol }} · {{ annotation.cert }} · {{ annotation.temp }} · {{ annotation.suj }}</span>
+        </div>
+      } @else {
+        <div class="operational-reference operational-reference-abstain">
+          <strong>Salida operativa</strong>
+          <span>Abstenerse: las hipótesis siguen sin resolverse con la evidencia disponible.</span>
+        </div>
+      }
     </section>
   }
 </main>
