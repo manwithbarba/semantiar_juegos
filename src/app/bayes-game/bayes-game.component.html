@@ -32,7 +32,6 @@
   <section class="game-section" aria-labelledby="candidates-heading">
     <div class="section-heading">
       <p class="section-label" id="candidates-heading">{{ revealedEvidence() === 0 ? 'Distribución de probabilidad a priori' : 'Distribución de probabilidad posterior' }} de conceptos SNOMED CT</p>
-      <button class="btn btn-secondary btn-small" type="button" [disabled]="locked()" (click)="recalculateProbabilities()">Recalcular probabilidades</button>
     </div>
     <div class="probability-field" [attr.aria-label]="revealedEvidence() === 0 ? 'Distribución de probabilidad a priori de conceptos' : 'Distribución de probabilidad posterior de conceptos'">
       <button
@@ -99,6 +98,7 @@
 
   <div class="action-row">
     <button class="btn btn-ghost" type="button" [disabled]="locked()" (click)="abstain()">Abstenerse: ambigüedad persistente</button>
+    <button class="btn btn-secondary btn-small" type="button" [disabled]="locked()" (click)="recalculateProbabilities()">Recalcular probabilidades</button>
     <button class="btn btn-primary" type="button" (click)="submitDecision()">{{ submitLabel() }}</button>
   </div>
   <p class="feedback" role="status" aria-live="polite">{{ feedback() }}</p>
