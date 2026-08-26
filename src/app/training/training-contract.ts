@@ -41,7 +41,6 @@ export interface OperationalAttributes {
   suj: AnnotationSubject;
 }
 
-export const TRAINING_TRACKS = ['guided', 'practice', 'mastery'] as const;
 export const TRAINING_SKILLS = [
   'Selección de expresión',
   'Normalización',
@@ -50,7 +49,6 @@ export const TRAINING_SKILLS = [
   'Auditoría',
 ] as const;
 
-export type TrainingTrack = (typeof TRAINING_TRACKS)[number];
 export type TrainingSkill = (typeof TRAINING_SKILLS)[number];
 
 export interface TrainingOption {
@@ -76,7 +74,6 @@ export interface CaseGovernance {
 export interface TrainingCase {
   id: string;
   version: string;
-  track: TrainingTrack;
   skill: TrainingSkill;
   specialty: string;
   note: string;

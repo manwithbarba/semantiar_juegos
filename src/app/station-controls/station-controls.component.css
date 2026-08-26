@@ -1,0 +1,16 @@
+:host { display: grid; justify-items: end; gap: 5px; flex: 0 0 auto; }
+.station-controls { display: flex; align-items: center; gap: 7px; }
+button, a { min-height: 36px; border: 1px solid #b9d4d7; border-radius: 9px; background: #fff; color: #1f6870; cursor: pointer; font: inherit; font-size: .74rem; font-weight: 800; padding: 7px 10px; text-decoration: none; white-space: nowrap; }
+button:hover, button:focus-visible, a:hover, a:focus-visible { border-color: #2b7b84; background: #edf8f7; outline: 3px solid rgba(39, 121, 132, .14); }
+button[aria-pressed='true'] { border-color: #2b7b84; background: #1b6670; color: #fff; }
+.global-score { display: flex; align-items: baseline; gap: 6px; min-height: 36px; border: 1px solid #b9d4d7; border-radius: 9px; background: #edf8f7; color: #1f6870; padding: 7px 10px; white-space: nowrap; }
+.global-score small { color: inherit; font-size: .66rem; font-weight: 800; text-transform: uppercase; }
+.global-score strong { font-size: .9rem; }
+.music-credit { color: #778b90; font-size: .58rem; line-height: 1.3; text-align: right; }
+@media (max-width: 560px) {
+  :host { justify-items: stretch; }
+  .station-controls { align-items: stretch; flex-direction: column; }
+  button, a { text-align: center; }
+  .global-score { justify-content: center; }
+  .music-credit { text-align: left; }
+}

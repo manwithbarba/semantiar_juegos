@@ -1,0 +1,146 @@
+<main class="fall-game-page">
+  <header class="fall-hero">
+    <div>
+      <p class="eyebrow">Estación 2 · Reconocer</p>
+      <h1>Catarata de menciones</h1>
+      <p class="intro">
+        Mové cada mención clínica hacia el concepto SNOMED que mejor represente su significado.
+      </p>
+    </div>
+    <app-station-controls></app-station-controls>
+  </header>
+
+  <app-journey-ribbon current="catarata"></app-journey-ribbon>
+
+  <section class="fall-intro-card" *ngIf="state() === 'intro'">
+    <div class="fall-mission-intro">
+      <p class="eyebrow">Niveles</p>
+      <h2>Elegí el nivel de la Catarata</h2>
+      <p>Las rondas son breves y aumentan de complejidad. Empezá por menciones clínicas y terminá combinando formas breves con atributos.</p>
+      <ol>
+        <li>Leé la mención clínica que aparece en la pieza.</li>
+        <li>Movela con ← → o A/D.</li>
+        <li>Soltala sobre la opción elegida con Espacio, ↓ o haciendo clic.</li>
+      </ol>
+    </div>
+    <div class="fall-mission-grid" aria-label="Niveles de la Catarata">
+      <button
+        type="button"
+        *ngFor="let mission of missions"
+        [class.is-selected]="selectedMissionId() === mission.id"
+        [attr.aria-pressed]="selectedMissionId() === mission.id"
+        (click)="selectMission(mission.id)"
+      >
+        <small>{{ mission.step }}</small>
+        <strong>{{ mission.title }}</strong>
+        <span>{{ mission.description }}</span>
+        <em>{{ missionPromptCount(mission.id) }} desafíos</em>
+      </button>
+    </div>
+    <footer class="fall-mission-action">
+      <span>Seleccionado: <strong>{{ activeMission().title }}</strong></span>
+      <button class="fall-primary-button" type="button" (click)="startGame()">Empezar nivel</button>
+    </footer>
+  </section>
+
+  <section class="fall-scoreboard" *ngIf="state() !== 'intro'">
+    <div><span>Vidas</span><strong>{{ '♥'.repeat(lives()) || '—' }}</strong></div>
+    <div><span>Combo</span><strong>x{{ combo() }}</strong></div>
+    <div><span>Avance</span><strong>{{ completedCount() }} / {{ prompts().length }}</strong></div>
+  </section>
+
+  <section class="fall-shell" *ngIf="state() !== 'intro' && current() as prompt">
+    <header class="fall-case-header">
+      <div>
+        <p class="eyebrow">{{ activeMission().step }} · {{ activeMission().title }} · {{ prompt.caseLabel }}</p>
+        <span class="fall-challenge-badge">{{ prompt.kindLabel }}</span>
+        <h2>{{ prompt.instruction }}</h2>
+      </div>
+      <div class="fall-progress" aria-label="Progreso de la partida">
+        <span [style.width.%]="progressPercent()"></span>
+      </div>
+    </header>
+
+    <section class="fall-board" aria-label="Tablero de catarata de menciones">
+      <div class="fall-lane-guides" aria-hidden="true">
+        <span *ngFor="let option of prompt.options"></span>
+      </div>
+
+      <div
+        class="fall-piece"
+        *ngIf="state() === 'playing'"
+        [style.top.%]="piecePosition()"
+        [style.left.%]="laneCenter()"
+        aria-live="polite"
+      >
+        <small>{{ prompt.literal }}</small>
+      </div>
+
+      <div class="fall-targets">
+        <button
+          type="button"
+          class="fall-target"
+          *ngFor="let option of prompt.options; let lane = index"
+          [class.target-correct]="targetState(lane) === 'correct'"
+          [class.target-wrong]="targetState(lane) === 'chosen-wrong'"
+          [disabled]="state() !== 'playing'"
+          (click)="dropOnLane(lane)"
+        >
+          <span class="target-number">{{ lane + 1 }}</span>
+          <span class="target-copy">
+            <strong>{{ optionLabel(option) }}</strong>
+            <small>{{ option.annotation.cat }}</small>
+            <small class="target-attribute" *ngIf="prompt.kind === 'atributos'">
+              {{ attributeHint(option.annotation) }}
+            </small>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <section class="fall-resolution" *ngIf="lastResolution() as resolution" [class.is-correct]="resolution.correct">
+      <p class="resolution-title">
+        <strong>{{ resolution.correct ? '¡Bien! La mención encaja.' : 'Revisá la decisión.' }}</strong>
+        <span>{{ resolution.correct ? (resolution.pointsAdded ? '+' + resolution.pointsAdded + ' al puntaje global' : 'Ya sumaba puntos; mantenés el combo') : 'Perdés una vida' }}</span>
+      </p>
+      <p>
+        La respuesta formativa es <strong>{{ resolution.answer.annotation.term }}</strong>
+        para “{{ resolution.answer.annotation.literal }}”.
+      </p>
+      <dl>
+        <div><dt>SCTID</dt><dd>{{ resolution.answer.annotation.sctid }}</dd></div>
+        <div><dt>Categoría</dt><dd>{{ resolution.answer.annotation.cat }}</dd></div>
+        <div><dt>Polaridad</dt><dd>{{ resolution.answer.annotation.pol }}</dd></div>
+        <div><dt>Certeza</dt><dd>{{ resolution.answer.annotation.cert }}</dd></div>
+        <div><dt>Temporalidad</dt><dd>{{ resolution.answer.annotation.temp }}</dd></div>
+        <div><dt>Sujeto</dt><dd>{{ resolution.answer.annotation.suj }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="fall-paused" *ngIf="state() === 'paused'">
+      <strong>Partida en pausa</strong>
+      <button type="button" (click)="togglePause()">Continuar</button>
+    </section>
+
+    <footer class="fall-controls">
+      <span>← → / A D mover · Espacio / ↓ soltar · Esc pausar</span>
+      <button type="button" (click)="togglePause()" [disabled]="state() !== 'playing' && state() !== 'paused'">
+        {{ state() === 'paused' ? 'Continuar' : 'Pausar' }}
+      </button>
+    </footer>
+  </section>
+
+  <section class="fall-end-card" *ngIf="state() === 'gameover' || state() === 'complete'">
+    <p class="eyebrow">{{ state() === 'complete' ? 'Partida completa' : 'Fin de la partida' }}</p>
+    <h2>{{ state() === 'complete' ? 'Completaste ' + activeMission().title + '.' : 'Se terminaron las vidas.' }}</h2>
+    <p>
+      Aciertos: <strong>{{ correctAnswers() }}</strong> · Puntaje global: <strong>{{ score() }}</strong> ·
+      Mejor combo: <strong>x{{ bestCombo() }}</strong>
+    </p>
+    <div>
+      <button class="fall-primary-button" type="button" (click)="startGame()">Jugar de nuevo</button>
+      <button class="fall-primary-button" type="button" *ngIf="state() === 'complete' && nextMission()" (click)="startNextMission()">Siguiente nivel</button>
+      <a class="fall-secondary-button" *ngIf="!nextMission()" routerLink="/casos-reales">Estación 3: resolver casos</a>
+    </div>
+  </section>
+</main>

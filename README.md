@@ -1,6 +1,8 @@
 # SemantIAr · Entrenamiento
 
-Aplicación Angular independiente para formación en anotación de semántica clínica. El recorrido principal lleva desde la lectura de una mención hasta la práctica, el seguimiento y, finalmente, ejercicios de probabilidad contextual.
+Aplicación Angular independiente para formación en anotación de semántica clínica. El recorrido lleva desde la lectura de una mención hasta la práctica y, finalmente, a decidir si el contexto alcanza para resolver una ambigüedad.
+
+Las cuatro estaciones aportan a un único puntaje guardado localmente en el equipo. Cada ejercicio correcto suma hasta 100 puntos y las repeticiones conservan el mejor resultado de ese ejercicio, por lo que practicar nuevamente no infla el total. El puntaje es una señal lúdica de avance y no una calificación de competencia profesional.
 
 ## Contrato operativo
 
@@ -16,22 +18,20 @@ Los casos codificables incluyen literal, SCTID y término. Cuando la evidencia n
 
 ### Política única de literal y contexto
 
-`textoLiteral` es la mención mínima, contigua y visible en la nota que expresa el concepto. La negación, la certeza, la temporalidad, el sujeto y la evidencia contextual se registran en sus atributos o en la explicación; no se extiende el literal para incluir la oración completa. Esta misma regla se aplica en el recorrido, el entrenamiento y los ejercicios de probabilidad contextual.
+`textoLiteral` es la mención mínima, contigua y visible en la nota que expresa el concepto. La negación, la certeza, la temporalidad, el sujeto y la evidencia contextual se registran en sus atributos o en la explicación; no se extiende el literal para incluir la oración completa. Esta misma regla se aplica en las cuatro estaciones.
 
 ## Recorrido pedagógico
 
-1. **Recorrido conceptual:** selección de la expresión, elección del concepto, atributos, auditoría y lenguaje local.
-2. **Entrenamiento guiado:** explicación paso a paso y devolución inmediata.
-3. **Práctica:** aplicación del criterio en notas clínicas derivadas.
-4. **Dominio:** se registra la primera respuesta y la confianza antes de revelar la devolución.
-5. **Seguimiento local:** exactitud por competencia y lectura preliminar de calibración.
-6. **Ejercicios de probabilidad contextual:** exploración de cómo el contexto modifica la plausibilidad de los conceptos.
+1. **Conceptos:** selección de la expresión, elección del concepto, atributos, auditoría y lenguaje local.
+2. **Catarata:** reconocimiento rápido de menciones clínicas, formas breves y atributos.
+3. **Casos clínicos:** resolución de una secuencia única de casos con devolución formativa.
+4. **Ambigüedad:** comparación didáctica de conceptos para decidir si el contexto alcanza o si corresponde abstenerse.
 
 El progreso se conserva únicamente en `localStorage`; no se transmite al servidor ni constituye una evaluación de competencia profesional.
 
-## Laboratorio bayesiano
+## Módulo de ambigüedad
 
-Los ejercicios de probabilidad contextual trabajan con conceptos candidatos en contexto, no con una anotación operativa alternativa. Su actualización es un modelo de Bayes explícito: `P(H|E₁…Eₙ) ∝ P(H) × ∏ LR(Eᵢ|H)`. Los priors deben sumar 1 y cada evento declara independencia condicional dado el candidato. El IIS es un resumen escalar de la incertidumbre de una distribución de probabilidad de conceptos, calculado mediante entropía normalizada `H(p) / log(n)`: 0 indica un concepto dominante y 1 una distribución completamente ambigua. Cuando la evidencia no resuelve el concepto, la salida operativa de referencia es abstenerse.
+Cada ejercicio presenta primero una mención aislada y luego muestra la nota completa. La decisión se habilita únicamente después de leer ese contexto. Si la nota permite sostener un concepto, se elige y se completan sus atributos; si no permite distinguir las opciones, la respuesta formativa es abstenerse.
 
 ## Gobierno del banco
 
@@ -63,3 +63,14 @@ npm start -- --host 127.0.0.1 --port 4200
 ```
 
 Abrir `http://localhost:4200/`.
+
+## Uso portable para anotadores
+
+La carpeta `semantiar-juegos-portable` contiene una compilación autocontenida para Windows. No requiere Node, Angular, Python ni conexión a internet.
+
+1. Copiar o extraer la carpeta completa en la computadora del anotador.
+2. Hacer doble clic en `Abrir Semantiar Juegos.bat`.
+3. Usar Chrome o Edge en la dirección local que se abre automáticamente.
+4. Mantener abierta la ventana de PowerShell mientras se usa la aplicación.
+
+El progreso y el puntaje quedan guardados únicamente en ese navegador y en esa computadora. El paquete no envía notas ni resultados a servidores externos.

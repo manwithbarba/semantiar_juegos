@@ -3,7 +3,7 @@
 .games-brand {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 18px;
   border-bottom: 1px solid #d8e1e6;
   background: #fff;
@@ -15,27 +15,6 @@
 .brand-kicker, .brand-title { margin: 0; }
 .brand-kicker { color: #2b7b84; font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .brand-title { color: #193d47; font-size: .94rem; font-weight: 700; }
-.games-nav { display: flex; align-items: center; gap: 8px; }
-.games-nav a {
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: #526875;
-  font-size: .76rem;
-  font-weight: 800;
-  padding: 8px 10px;
-  text-decoration: none;
-}
-.games-nav a:hover, .games-nav a:focus-visible, .games-nav a.is-active {
-  border-color: #b9d4d7;
-  background: #edf8f7;
-  color: #1f6870;
-  outline: none;
-}
 @media (max-width: 760px) {
   .games-brand { align-items: flex-start; flex-direction: column; }
-  .games-nav { flex-wrap: wrap; width: 100%; }
-  .games-nav a { flex: 1 1 calc(33.333% - 8px); text-align: center; }
-}
-@media (max-width: 420px) {
-  .games-nav a { flex-basis: calc(50% - 8px); }
 }

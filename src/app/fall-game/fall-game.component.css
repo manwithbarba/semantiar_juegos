@@ -1,0 +1,522 @@
+:host {
+  display: block;
+  color: #17212b;
+}
+
+.fall-game-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px clamp(20px, 4vw, 64px) 64px;
+}
+
+.fall-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #d8e5e6;
+  padding: 12px 0 24px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #286b78;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fall-hero h1,
+.fall-case-header h2,
+.fall-intro-card h2,
+.fall-end-card h2 {
+  margin: 5px 0 8px;
+  color: #123541;
+  line-height: 1.1;
+}
+
+.fall-hero h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
+.fall-case-header h2 {
+  font-size: clamp(1.25rem, 2.6vw, 1.8rem);
+}
+
+.fall-challenge-badge {
+  display: inline-flex;
+  margin-top: 9px;
+  border: 1px solid #c7dfe0;
+  border-radius: 99px;
+  background: #eef8f6;
+  color: #286b78;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 4px 9px;
+}
+
+.intro {
+  max-width: 720px;
+  margin: 0;
+  color: #526875;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.fall-intro-card,
+.fall-shell,
+.fall-end-card {
+  border: 1px solid #cfe0e3;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(24, 62, 73, 0.05);
+}
+
+.fall-intro-card p,
+.fall-end-card p {
+  margin: 6px 0 0;
+  color: #526875;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.fall-intro-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 22px 24px;
+}
+
+.fall-intro-card ol {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding-left: 20px;
+  color: #526875;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.fall-primary-button,
+.fall-secondary-button,
+.fall-controls button,
+.fall-paused button {
+  min-height: 40px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+  padding: 8px 14px;
+  text-decoration: none;
+}
+
+.fall-primary-button {
+  background: #1b6670;
+  color: #fff;
+}
+
+.fall-primary-button:hover,
+.fall-primary-button:focus-visible {
+  background: #144f57;
+  outline: 3px solid rgba(39, 121, 132, 0.2);
+}
+
+.fall-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  border-color: #bfd4d7;
+  color: #1f6870;
+}
+
+.fall-scoreboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0 10px;
+}
+
+.fall-scoreboard div {
+  display: grid;
+  gap: 3px;
+  border: 1px solid #cfe0e3;
+  border-radius: 10px;
+  background: #f4fbfa;
+  padding: 11px 13px;
+}
+
+.fall-scoreboard span {
+  color: #54737a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fall-scoreboard strong {
+  color: #123541;
+  font-size: 1.14rem;
+}
+
+.fall-shell {
+  overflow: hidden;
+}
+
+.fall-case-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid #e0eaeb;
+  padding: 18px 20px 14px;
+}
+
+.fall-progress {
+  flex: 0 0 min(260px, 35%);
+  height: 8px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #e1eceb;
+}
+
+.fall-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #2b7b84;
+  transition: width 180ms ease;
+}
+
+.fall-board {
+  position: relative;
+  min-height: 520px;
+  margin: 0 20px 14px;
+  overflow: hidden;
+  border: 1px solid #203b4a;
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(15, 35, 47, 0.98) 0%, rgba(12, 29, 40, 0.98) 100%);
+}
+
+.fall-lane-guides,
+.fall-targets {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.fall-lane-guides {
+  top: 12px;
+  bottom: 212px;
+  pointer-events: none;
+}
+
+.fall-targets {
+  z-index: 2;
+}
+
+.fall-target {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 188px;
+  border: 1px solid #416d78;
+  border-radius: 10px;
+  background: linear-gradient(160deg, #173845, #102d38);
+  color: #ecfbf8;
+  cursor: pointer;
+  padding: 12px;
+  text-align: left;
+  transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
+}
+
+.fall-target:not(:disabled):hover,
+.fall-target:not(:disabled):focus-visible {
+  border-color: #9be4db;
+  background: #20515d;
+  outline: none;
+  transform: translateY(-3px);
+}
+
+.fall-target.target-correct {
+  border-color: #80dfb1;
+  background: #1b604e;
+}
+
+.fall-target.target-wrong {
+  border-color: #eea08d;
+  background: #6d352f;
+}
+
+.target-number {
+  display: grid;
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border: 1px solid rgba(168, 230, 223, 0.6);
+  border-radius: 50%;
+  color: #a8e6df;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.target-copy {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.target-copy strong {
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.target-copy small {
+  color: #a8c7c9;
+  font-size: 0.68rem;
+  line-height: 1.3;
+}
+
+.target-copy small.target-attribute {
+  color: #f1c879;
+}
+
+.fall-piece {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  width: calc(25% - 18px);
+  min-height: 74px;
+  transform: translateX(-50%);
+  place-content: center;
+  border: 2px solid #f1b75d;
+  border-radius: 10px;
+  background: linear-gradient(150deg, #744c2b, #a9682a);
+  box-shadow: 0 9px 20px rgba(0, 0, 0, 0.24), 0 0 0 3px rgba(241, 183, 93, 0.1);
+  color: #fff6e8;
+  pointer-events: none;
+  text-align: center;
+}
+
+.fall-piece small {
+  overflow: hidden;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fall-resolution {
+  margin: 0 20px 14px;
+  border: 1px solid #efc5b8;
+  border-left: 5px solid #bd674c;
+  border-radius: 10px;
+  background: #fff7f4;
+  padding: 13px 15px;
+}
+
+.fall-resolution.is-correct {
+  border-color: #abdac0;
+  border-left-color: #2d9864;
+  background: #f3fcf7;
+}
+
+.resolution-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  color: #783a2b;
+}
+
+.is-correct .resolution-title {
+  color: #176642;
+}
+
+.resolution-title span {
+  color: #637980;
+  font-size: 0.75rem;
+}
+
+.fall-resolution > p:not(.resolution-title) {
+  margin: 7px 0 10px;
+  color: #526875;
+  font-size: 0.84rem;
+}
+
+.fall-resolution dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.fall-resolution dl div {
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 7px 9px;
+}
+
+.fall-resolution dt {
+  color: #71858a;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fall-resolution dd {
+  margin: 3px 0 0;
+  color: #234951;
+  font-size: 0.76rem;
+  line-height: 1.25;
+}
+
+.fall-paused {
+  position: absolute;
+  z-index: 5;
+  inset: 50% auto auto 50%;
+  display: grid;
+  gap: 10px;
+  transform: translate(-50%, -50%);
+  place-items: center;
+  border: 1px solid #a8e6df;
+  border-radius: 12px;
+  background: rgba(15, 42, 52, 0.96);
+  color: #effffc;
+  padding: 20px 28px;
+}
+
+.fall-paused button,
+.fall-controls button {
+  border-color: #9bcacc;
+  background: #edf8f7;
+  color: #1f6870;
+}
+
+.fall-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #e0eaeb;
+  padding: 12px 20px 16px;
+}
+
+.fall-controls span {
+  color: #637980;
+  font-size: 0.74rem;
+}
+
+.fall-end-card {
+  margin-top: 18px;
+  padding: 24px;
+  text-align: center;
+}
+
+.fall-end-card h2 {
+  font-size: clamp(1.45rem, 3vw, 2rem);
+}
+
+.fall-end-card > div {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+@media (max-width: 760px) {
+  .fall-hero,
+  .fall-intro-card,
+  .fall-case-header,
+  .fall-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fall-progress {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .fall-board {
+    min-height: 580px;
+  }
+
+  .fall-target {
+    min-height: 216px;
+    padding: 8px;
+  }
+
+  .fall-targets {
+    gap: 6px;
+  }
+
+  .fall-targets,
+  .fall-lane-guides {
+    right: 7px;
+    left: 7px;
+    gap: 6px;
+  }
+
+  .fall-lane-guides {
+    bottom: 238px;
+  }
+
+  .fall-piece {
+    width: calc(25% - 10px);
+  }
+
+  .fall-resolution dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .fall-scoreboard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fall-board {
+    min-height: 650px;
+    margin-right: 10px;
+    margin-left: 10px;
+  }
+
+  .fall-target {
+    min-height: 260px;
+  }
+
+  .fall-targets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fall-lane-guides {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    bottom: 282px;
+  }
+
+  .fall-piece {
+    width: calc(50% - 14px);
+  }
+
+  .fall-resolution {
+    margin-right: 10px;
+    margin-left: 10px;
+  }
+
+  .fall-controls {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}

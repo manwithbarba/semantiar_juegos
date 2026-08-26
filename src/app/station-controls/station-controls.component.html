@@ -1,0 +1,8 @@
+<div class="station-controls">
+  <span class="global-score"><small>Puntaje global</small><strong>{{ globalScore() }}</strong></span>
+  <button type="button" (click)="toggleMusic()" [attr.aria-pressed]="musicEnabled()">
+    {{ musicEnabled() ? '♫ Música activa' : '♫ Activar música' }}
+  </button>
+  <a routerLink="/" aria-label="Volver al inicio de Juegos de semántica clínica">← Volver al inicio</a>
+</div>
+<small class="music-credit">Música CC0 · <em>Free Rhythm Game Music Pack 1</em></small>

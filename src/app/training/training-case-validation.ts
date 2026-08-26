@@ -5,7 +5,6 @@ import {
   ANNOTATION_SUBJECTS,
   ANNOTATION_TEMPORALITIES,
   TRAINING_SKILLS,
-  TRAINING_TRACKS,
   ANNOTATION_SPAN_POLICY,
   type TrainingCase,
 } from './training-contract';
@@ -25,7 +24,6 @@ export function validateTrainingCaseBank(cases: readonly TrainingCase[]): string
   const correctPositions = [0, 0, 0];
   const categories = new Set<string>();
   const skills = new Set<string>();
-  const trackCounts = new Map(TRAINING_TRACKS.map((track) => [track, 0]));
 
   for (const item of cases) {
     if (ids.has(item.id)) errors.push(`${item.id}: identificador duplicado.`);
@@ -36,11 +34,6 @@ export function validateTrainingCaseBank(cases: readonly TrainingCase[]): string
       errors.push(`${item.id}: nota, consigna y explicación son obligatorias.`);
     }
     skills.add(item.skill);
-    if (has(TRAINING_TRACKS, item.track)) {
-      trackCounts.set(item.track, (trackCounts.get(item.track) ?? 0) + 1);
-    } else {
-      errors.push(`${item.id}: recorrido fuera del contrato formativo.`);
-    }
     if (item.options.length !== 3) errors.push(`${item.id}: debe tener exactamente tres opciones.`);
     if (new Set(item.options.map((option) => option.id)).size !== item.options.length) {
       errors.push(`${item.id}: identificadores de opción duplicados.`);
@@ -91,9 +84,6 @@ export function validateTrainingCaseBank(cases: readonly TrainingCase[]): string
   }
   for (const category of ANNOTATION_CATEGORIES) {
     if (!categories.has(category)) errors.push(`El banco no cubre la categoría ${category}.`);
-  }
-  for (const track of TRAINING_TRACKS) {
-    if ((trackCounts.get(track) ?? 0) < 3) errors.push(`El recorrido ${track} requiere al menos tres casos.`);
   }
   for (const skill of TRAINING_SKILLS) {
     if (!skills.has(skill)) errors.push(`El banco no cubre la competencia ${skill}.`);

@@ -204,3 +204,30 @@ body {
 @media (min-width: 821px) {
   .case-workspace.marking-only { grid-template-columns: minmax(0, 1fr); }
 }
+
+.hero-progress { color: #567279; font-size: .72rem; font-weight: 700; line-height: 1.35; }
+.training-page .session-summary button { border: 1px solid #b9d4d7; border-radius: 8px; background: #fff; color: #1f6870; cursor: pointer; font: inherit; font-size: .7rem; font-weight: 800; padding: 7px 9px; }
+.training-page .session-summary button:hover, .training-page .session-summary button:focus-visible { border-color: #2b7b84; background: #edf8f7; outline: 3px solid rgba(39, 121, 132, .14); }
+.training-page .case-nav button:disabled { border-color: #d7e1e2; background: #eef2f2; color: #8a9a9d; cursor: not-allowed; }
+
+/* Mission selector kept global to avoid increasing the game component style budget. */
+.fall-game-page .fall-intro-card { display: grid; align-items: stretch; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.5fr); }
+.fall-mission-intro > p:not(.eyebrow) { margin: 8px 0 0; color: #526875; font-size: .82rem; line-height: 1.5; }
+.fall-mission-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.fall-mission-grid button { display: grid; align-content: start; gap: 5px; border: 1px solid #c9dcde; border-radius: 10px; background: #f8fbfb; color: #345963; cursor: pointer; font: inherit; padding: 12px; text-align: left; }
+.fall-mission-grid button:hover, .fall-mission-grid button:focus-visible { border-color: #2b7b84; background: #eef8f7; outline: 3px solid rgba(39, 121, 132, .14); }
+.fall-mission-grid button.is-selected { border-color: #2b7b84; background: #e7f5f2; box-shadow: inset 0 0 0 1px #2b7b84; }
+.fall-mission-grid small { color: #286b78; font-size: .62rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.fall-mission-grid strong { color: #173f49; font-size: .85rem; }
+.fall-mission-grid span { color: #61777e; font-size: .7rem; line-height: 1.35; }
+.fall-mission-grid em { color: #9a651f; font-size: .64rem; font-style: normal; font-weight: 800; }
+.fall-mission-action { display: flex; align-items: center; justify-content: space-between; gap: 14px; grid-column: 1 / -1; border-top: 1px solid #dbe8e9; padding-top: 15px; }
+.fall-mission-action > span { color: #61777e; font-size: .76rem; }
+
+@media (max-width: 760px) {
+  .fall-mission-action { align-items: flex-start; flex-direction: column; }
+  .fall-game-page .fall-intro-card { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .fall-mission-grid { grid-template-columns: 1fr; }
+}

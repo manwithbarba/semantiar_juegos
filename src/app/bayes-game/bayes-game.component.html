@@ -1,125 +1,173 @@
 <main class="bayes-game" aria-labelledby="bayes-game-title">
   <header class="game-header">
     <div>
-      <p class="eyebrow">Ejercicios de probabilidad contextual</p>
-      <h1 id="bayes-game-title">¿Qué tan probable es cada concepto según el contexto?</h1>
-      <p class="intro">Estos ejercicios exploran conceptos candidatos y ambigüedad contextual; no reemplazan la anotación operativa del entrenamiento. Aplicá el contexto y observá cómo cambia la plausibilidad de cada concepto.</p>
+      <p class="eyebrow">Estación 4 · Transferir · ambigüedad contextual</p>
+      <h1 id="bayes-game-title">¿El contexto alcanza para elegir un concepto?</h1>
+      <p class="intro">
+        Observá primero la mención aislada. Después, leé la nota y decidí si permite elegir un
+        concepto o si corresponde abstenerse.
+      </p>
     </div>
-    <a class="back-link" routerLink="/">← Inicio</a>
+    <app-station-controls></app-station-controls>
   </header>
 
-  <section class="game-section" aria-labelledby="case-heading">
-    <div class="case-layout">
-      <div class="case-expression">
-        <p class="section-label" id="case-heading">Expresión clínica</p>
-        <div class="note-card">
-          {{ activeCase().noteBefore }}<mark>{{ activeCase().literal }}</mark>{{ activeCase().noteAfter }}
-        </div>
-        <p class="muted">{{ activeCase().specialty }}</p>
-      </div>
-      <div class="status-grid" aria-label="Estado de la partida">
-        <div class="stat-card"><span>Caso</span><strong>{{ caseIndex() + 1 }}/{{ cases.length }}</strong></div>
-        <div class="stat-card"><span>Puntaje</span><strong>{{ score() }}</strong></div>
-        <div class="stat-card">
-          <span>IIS</span>
-          <strong>{{ informationIndex() | number: '1.2-2' }}</strong>
-          <small>{{ informationIndex() >= 0.85 ? 'Ambigüedad alta' : informationIndex() >= 0.55 ? 'Ambigüedad intermedia' : 'Ambigüedad baja' }}</small>
-        </div>
-      </div>
+  <app-journey-ribbon current="ambiguedad"></app-journey-ribbon>
+
+  <section class="game-section mention-stage" aria-labelledby="case-heading">
+    <div class="case-heading-row">
+      <p class="section-label" id="case-heading">
+        {{ contextRevealed() ? 'Nota clínica' : 'Mención aislada' }}
+      </p>
+      <span class="case-count">Caso {{ caseIndex() + 1 }} de {{ cases.length }}</span>
     </div>
-    <section class="iis-help" aria-label="Interpretación del IIS">
-      <strong>¿Qué significa IIS?</strong>
-      <span>El Índice de Incertidumbre Semántica resume la incertidumbre de una distribución de probabilidad de conceptos mediante entropía normalizada: 0 indica un concepto claramente dominante y 1, ambigüedad máxima.</span>
-    </section>
+
+    <div class="note-card" [class.note-card-context]="contextRevealed()">
+      @if (contextRevealed()) {
+        {{ activeCase().noteBefore }}<mark>{{ activeCase().literal }}</mark>{{ activeCase().noteAfter }}
+      } @else {
+        <mark>{{ isolatedMention() }}</mark>
+      }
+    </div>
+
+    @if (!contextRevealed()) {
+      <div class="context-gate">
+        <div>
+          <strong>La mención aislada puede tener más de un significado.</strong>
+          <span>Mostrá la nota completa antes de responder.</span>
+        </div>
+        <button class="btn btn-secondary" type="button" (click)="revealContext()">
+          Mostrar contexto de la nota
+        </button>
+      </div>
+    } @else {
+      <div class="context-panel">
+        <div class="context-panel-heading">
+          <strong>Qué aporta el contexto</strong>
+          <span>{{ activeCase().specialty }}</span>
+        </div>
+        <ul>
+          <li *ngFor="let item of activeCase().evidence">{{ item.text }}</li>
+        </ul>
+      </div>
+    }
   </section>
 
   <section class="game-section" aria-labelledby="candidates-heading">
     <div class="section-heading">
-      <p class="section-label" id="candidates-heading">{{ revealedEvidence() === 0 ? 'Probabilidad a priori' : 'Plausibilidad contextual actualizada' }} de conceptos</p>
-    </div>
-    <div class="probability-field" [attr.aria-label]="revealedEvidence() === 0 ? 'Probabilidad a priori de conceptos' : 'Plausibilidad contextual actualizada de conceptos'">
-      <button
-        *ngFor="let candidate of activeCase().candidates; let i = index"
-        class="probability-circle"
-        [class.circle-one]="i === 0"
-        [class.circle-two]="i === 1"
-        [class.circle-three]="i === 2"
-        [class.is-selected]="selectedCandidate() === i"
-        type="button"
-        [disabled]="locked()"
-        [attr.aria-pressed]="selectedCandidate() === i"
-        [attr.aria-label]="candidate.label + ': ' + (posterior()[i] | percent: '1.0-0')"
-        [style.width.px]="76 + posterior()[i] * 150"
-        [style.height.px]="76 + posterior()[i] * 150"
-        (click)="selectCandidate(i)"
-      >
-        <strong>{{ candidate.label }}</strong>
-        <small>{{ posterior()[i] | percent: '1.0-0' }}</small>
-      </button>
-    </div>
-  </section>
-
-  <section class="model-note" aria-label="Cómo leer el resultado">
-    <strong>Cómo leer el resultado</strong>
-    <span>Cada dato de contexto modifica la plausibilidad de los conceptos candidatos. El cálculo supone que cada dato aporta información independiente del resto; la fórmula y sus supuestos completos quedan en la bibliografía.</span>
-  </section>
-
-  <section class="game-section" aria-labelledby="evidence-heading">
-    <div class="section-heading">
-      <p class="section-label" id="evidence-heading">Evidencia disponible</p>
-      <button class="btn btn-secondary" type="button" [disabled]="locked() || revealedEvidence() >= activeCase().evidence.length" (click)="revealEvidence()">
-        {{ revealedEvidence() >= activeCase().evidence.length ? 'Todo el contexto revelado' : 'Revelar contexto' }}
-      </button>
-    </div>
-    <div class="evidence-list">
-      <div *ngFor="let item of activeCase().evidence; let i = index" class="evidence-row" [class.is-revealed]="i < revealedEvidence()">
-        <span class="evidence-dot" aria-hidden="true"></span>
-        <span>{{ i < revealedEvidence() ? item.text : 'Contexto oculto' }}</span>
+      <div>
+        <p class="section-label" id="candidates-heading">Conceptos posibles</p>
+        <p class="section-copy">
+          {{ contextRevealed() ? 'Elegí el concepto que la nota permite sostener.' : 'Las opciones se habilitan al mostrar el contexto.' }}
+        </p>
       </div>
     </div>
-  </section>
 
-  <section class="game-section" aria-labelledby="decision-heading">
-    <p class="section-label" id="decision-heading">Decisión de mapeo</p>
-    <div class="decision-grid">
-      <label>Polaridad
-        <select [ngModel]="polarity()" (ngModelChange)="setPolarity($event)" [disabled]="locked()">
-          <option>Activo</option><option>Negado</option>
-        </select>
-      </label>
-      <label>Certeza
-        <select [ngModel]="certainty()" (ngModelChange)="setCertainty($event)" [disabled]="locked()">
-          <option>Confirmado</option><option>Sospecha</option><option>Diferencial</option>
-        </select>
-      </label>
-      <label>Temporalidad
-        <select [ngModel]="temporality()" (ngModelChange)="setTemporality($event)" [disabled]="locked()">
-          <option>Actual</option><option>Histórico</option>
-        </select>
-      </label>
-      <label>Sujeto
-        <select [ngModel]="subject()" (ngModelChange)="setSubject($event)" [disabled]="locked()">
-          <option>Paciente</option><option>Familiar</option>
-        </select>
-      </label>
+    <div class="candidate-grid">
+      <button
+        *ngFor="let candidate of activeCase().candidates; let i = index"
+        class="candidate-card"
+        [class.is-selected]="selectedCandidate() === i"
+        type="button"
+        [disabled]="!contextRevealed() || locked()"
+        [attr.aria-pressed]="selectedCandidate() === i"
+        (click)="selectCandidate(i)"
+      >
+        <span>{{ i + 1 }}</span>
+        <strong>{{ candidate.label }}</strong>
+      </button>
     </div>
   </section>
 
-  <div class="action-row">
-    <button class="btn btn-ghost" type="button" [disabled]="locked()" (click)="abstain()">Abstenerse: ambigüedad persistente</button>
-    <button class="btn btn-secondary btn-small" type="button" [disabled]="locked()" (click)="recalculateProbabilities()">Actualizar plausibilidad</button>
-    <button class="btn btn-primary" type="button" (click)="submitDecision()">{{ submitLabel() }}</button>
-  </div>
+  @if (contextRevealed()) {
+    <section class="game-section decision-section" aria-labelledby="decision-heading">
+      <p class="section-label" id="decision-heading">Tu decisión</p>
+      <p class="section-copy">
+        Si elegís un concepto, completá sus atributos. Si la nota no permite distinguir las
+        opciones, elegí “La información no alcanza”.
+      </p>
+
+      <div class="decision-grid">
+        <label
+          >Polaridad
+          <select
+            [ngModel]="polarity()"
+            (ngModelChange)="setPolarity($event)"
+            [disabled]="locked() || selectedCandidate() === null"
+          >
+            <option>Activo</option>
+            <option>Negado</option>
+          </select>
+        </label>
+        <label
+          >Certeza
+          <select
+            [ngModel]="certainty()"
+            (ngModelChange)="setCertainty($event)"
+            [disabled]="locked() || selectedCandidate() === null"
+          >
+            <option>Confirmado</option>
+            <option>Sospecha</option>
+            <option>Diferencial</option>
+          </select>
+        </label>
+        <label
+          >Temporalidad
+          <select
+            [ngModel]="temporality()"
+            (ngModelChange)="setTemporality($event)"
+            [disabled]="locked() || selectedCandidate() === null"
+          >
+            <option>Actual</option>
+            <option>Histórico</option>
+          </select>
+        </label>
+        <label
+          >Sujeto
+          <select
+            [ngModel]="subject()"
+            (ngModelChange)="setSubject($event)"
+            [disabled]="locked() || selectedCandidate() === null"
+          >
+            <option>Paciente</option>
+            <option>Familiar</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    @if (!locked()) {
+      <div class="action-row">
+        <button class="btn btn-ghost" type="button" (click)="abstain()">
+          La información no alcanza
+        </button>
+        <button
+          class="btn btn-primary"
+          type="button"
+          [disabled]="selectedCandidate() === null"
+          (click)="submitDecision()"
+        >
+          Confirmar decisión
+        </button>
+      </div>
+    } @else {
+      <div class="action-row action-row-next">
+        <button class="btn btn-primary" type="button" (click)="submitDecision()">
+          {{ submitLabel() }}
+        </button>
+      </div>
+    }
+  }
+
   <p class="feedback" role="status" aria-live="polite">{{ feedback() }}</p>
 
   @if (locked()) {
     <section class="case-explanation" aria-labelledby="explanation-heading">
       <div class="section-heading">
         <div>
-          <p class="section-label" id="explanation-heading">Explicación detallada del caso</p>
-          <p class="explanation-subtitle">Leé el razonamiento antes de pasar al siguiente caso.</p>
+          <p class="section-label" id="explanation-heading">Devolución del caso</p>
+          <p class="explanation-subtitle">Revisá el razonamiento antes de continuar.</p>
         </div>
-        <span class="explanation-badge">Devolución SemantIAr</span>
+        <span class="explanation-badge">SemantIAr</span>
       </div>
       <ol class="reasoning-list">
         <li *ngFor="let step of activeCase().reasoning; let i = index">
@@ -128,19 +176,19 @@
         </li>
       </ol>
       <div class="lesson-box">
-        <strong>Conclusión del caso</strong>
+        <strong>Conclusión</strong>
         <p>{{ activeCase().lesson }}</p>
       </div>
       @if (activeCase().operationalAnnotation; as annotation) {
         <div class="operational-reference">
-          <strong>Anotación operativa de referencia</strong>
+          <strong>Respuesta formativa</strong>
           <span>{{ annotation.term }} · SCTID {{ annotation.sctid }}</span>
           <span>{{ annotation.cat }} · {{ annotation.pol }} · {{ annotation.cert }} · {{ annotation.temp }} · {{ annotation.suj }}</span>
         </div>
       } @else {
         <div class="operational-reference operational-reference-abstain">
-          <strong>Salida operativa</strong>
-          <span>Abstenerse: los conceptos candidatos siguen sin resolverse con la evidencia disponible.</span>
+          <strong>Respuesta formativa</strong>
+          <span>Abstenerse: el contexto no permite elegir un concepto de manera reproducible.</span>
         </div>
       }
     </section>

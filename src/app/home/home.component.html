@@ -1,59 +1,28 @@
 <main class="presentation-page">
   <header class="presentation-hero">
     <div>
-      <p class="eyebrow">SemantIAr · recorrido de anotación clínica</p>
-      <h1>Juegos de semántica clínica</h1>
-      <p class="intro">
-        Un recorrido interactivo para aprender a seleccionar expresiones, elegir conceptos SNOMED CT,
-        interpretar atributos y reconocer la ambigüedad semántica en notas clínicas.
-      </p>
+      <h1>Aprendé semántica clínica jugando</h1>
     </div>
     <div class="hero-action">
-      <a class="btn btn-primary" routerLink="/expresiones">Comenzar recorrido</a>
-      <a class="scroll-cue" href="#how-to-play" aria-label="Ver cómo se juega">↓ Ver cómo se juega</a>
+      <a class="btn btn-primary" routerLink="/expresiones">Empezar estación 1</a>
+      <span class="hero-progress">Puntaje global: <strong>{{ globalScore() }}</strong> · se guarda sólo en este equipo</span>
     </div>
   </header>
 
-  <section id="how-to-play" class="how-to-play-card" aria-labelledby="how-to-play-heading">
+  <section class="mvp-status-card" aria-labelledby="mvp-status-title">
     <div>
-      <p class="eyebrow">Cómo se juega</p>
-      <h2 id="how-to-play-heading">Recorré la misma decisión que harás en el anotador</h2>
+      <p class="eyebrow">Alcance del MVP</p>
+      <h2 id="mvp-status-title">Referencia formativa provisional para las cuatro estaciones</h2>
+      <p>Los juegos usan datos de los procesos de calibración efectuados y serán actualizados periódicamente para ofrecer una actividad lúdico-formativa. Los ejemplos son didácticos, están de-identificados y no contienen datos directos de pacientes.</p>
     </div>
-    <ol class="play-steps">
-      <li><strong>Leé la nota completa.</strong><span>Identificá la evidencia que sostiene la decisión.</span></li>
-      <li><strong>Delimitá la expresión.</strong><span>No mezcles hallazgos con acciones o modificadores ajenos.</span></li>
-      <li><strong>Elegí o abstente.</strong><span>Seleccioná un concepto SNOMED CT sólo cuando la evidencia lo permite.</span></li>
-      <li><strong>Completá la anotación.</strong><span>Usá las categorías y atributos disponibles en el anotador SemantIAr.</span></li>
-      <li><strong>Revisá tu decisión.</strong><span>La práctica y el dominio registran tu primera respuesta de manera local.</span></li>
-    </ol>
+    <dl>
+      <div><dt>Versión</dt><dd>{{ mvpStatus.version }}</dd></div>
+      <div><dt>Terminología</dt><dd>{{ mvpStatus.terminology }}</dd></div>
+      <div><dt>Revisión clínica</dt><dd>{{ mvpStatus.clinicalReview }}</dd></div>
+    </dl>
   </section>
 
-  <section class="interpretation-card" aria-labelledby="interpretation-heading">
-    <div class="interpretation-copy">
-      <p class="eyebrow">Qué vas a aprender</p>
-      <h2 id="interpretation-heading">Una decisión trazable desde el texto hasta la salida</h2>
-      <p>
-        Primero delimitás la <strong>expresión literal</strong>: el fragmento mínimo que conserva el significado
-        clínico sin fusionar menciones independientes.
-      </p>
-      <p>
-        Después elegís un <strong>concepto SNOMED CT</strong> suficientemente específico y una de las tres
-        categorías que admite el anotador. Finalmente completás polaridad, certeza, temporalidad y sujeto.
-      </p>
-      <p>
-        Si la nota no permite una decisión reproducible, aprendés a <strong>abstenerte y solicitar revisión</strong>.
-        La incertidumbre no se resuelve inventando un diagnóstico, una categoría o un estado que el texto no sostiene.
-      </p>
-      <p class="contract-summary"><strong>Contrato compartido con el anotador:</strong> categorías Hallazgo clínico · Procedimiento · Fármaco; atributos Activo/Negado · Confirmado/Sospecha/Diferencial · Actual/Histórico · Paciente/Familiar.</p>
-    </div>
-    <div class="interpretation-rule">
-      <strong>Regla de calidad</strong>
-      <span>
-        Cada respuesta debe poder justificarse con evidencia visible en la nota y reproducirse con las opciones del
-        anotador real.
-      </span>
-    </div>
-  </section>
+  <app-journey-ribbon current="inicio"></app-journey-ribbon>
 
   <section class="learning-resources" aria-labelledby="learning-resources-title">
     <div class="learning-resources-copy">
@@ -70,12 +39,4 @@
     </div>
   </section>
 
-  <section class="presentation-footer-card" aria-label="Continuar el recorrido">
-    <div>
-      <p class="eyebrow">Siguiente paso</p>
-      <h2>Empezá por la lectura y avanzá hacia la práctica</h2>
-      <p>Recorré la explicación, resolvé casos formativos alineados al anotador y consultá tu seguimiento cuando hayas tomado varias decisiones.</p>
-    </div>
-    <a class="btn btn-primary" routerLink="/expresiones">Comenzar recorrido</a>
-  </section>
 </main>

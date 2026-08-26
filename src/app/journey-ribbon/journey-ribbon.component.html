@@ -1,0 +1,22 @@
+<section class="journey-ribbon" aria-label="Ruta pedagógica de SemantIAr">
+  <header>
+    <p>Ruta formativa</p>
+    <span>4 estaciones conectadas</span>
+  </header>
+  <ol>
+    <li
+      *ngFor="let stage of stages; let i = index"
+      [class.is-current]="stage.id === current"
+      [class.is-previous]="currentIndex() >= 0 && i < currentIndex()"
+    >
+      <a [routerLink]="stage.route" [attr.aria-current]="stage.id === current ? 'step' : null">
+        <b>{{ i + 1 }}</b>
+        <span>
+          <small>{{ stage.verb }}</small>
+          <strong>{{ stage.label }}</strong>
+          <em>{{ stage.hint }}</em>
+        </span>
+      </a>
+    </li>
+  </ol>
+</section>

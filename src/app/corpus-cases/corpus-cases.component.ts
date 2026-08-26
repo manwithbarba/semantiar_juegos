@@ -1,55 +1,44 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { CASE_BANK_RELEASE, TRAINING_CASES } from '../training/training-case-bank';
-import type { TrainingCase, TrainingTrack } from '../training/training-contract';
+import { TRAINING_CASES } from '../training/training-case-bank';
+import type { TrainingCase } from '../training/training-contract';
 import { TrainingProgressService } from '../training/training-progress.service';
+import { JourneyRibbonComponent } from '../journey-ribbon/journey-ribbon.component';
+import { StationControlsComponent } from '../station-controls/station-controls.component';
+import { GlobalScoreService } from '../training/global-score.service';
 
 type CaseState = 'answering' | 'revealed';
 
 @Component({
   selector: 'app-corpus-cases',
   standalone: true,
-  imports: [FormsModule, NgFor, NgIf, RouterLink],
+  imports: [NgFor, NgIf, JourneyRibbonComponent, StationControlsComponent],
   templateUrl: './corpus-cases.component.html',
-  styleUrls: ['./corpus-cases.component.css', './corpus-cases.component.extra.css'],
+  styleUrl: './corpus-cases.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CorpusCasesComponent {
-  readonly release = CASE_BANK_RELEASE;
-  readonly tracks: Array<{ id: TrainingTrack; label: string; description: string }> = [
-    { id: 'guided', label: 'Guiado', description: 'Explicación paso a paso y devolución inmediata.' },
-    { id: 'practice', label: 'Práctica', description: 'Aplicación con una única decisión y explicación posterior.' },
-    { id: 'mastery', label: 'Dominio', description: 'Primera respuesta y confianza: la devolución aparece recién al confirmar.' },
-  ];
-  readonly selectedTrack = signal<TrainingTrack>('guided');
   readonly currentIndex = signal(0);
   readonly selectedOption = signal<string | null>(null);
-  readonly confidence = signal(60);
   readonly state = signal<CaseState>('answering');
   readonly startedAt = signal(Date.now());
-  readonly activeCases = computed(() => TRAINING_CASES.filter((item) => item.track === this.selectedTrack()));
+  readonly activeCases = computed(() => TRAINING_CASES);
   readonly current = computed<TrainingCase>(() => this.activeCases()[this.currentIndex()]);
-  readonly isMastery = computed(() => this.selectedTrack() === 'mastery');
   readonly correctOption = computed(() => this.current().options.find((option) => option.correct)!);
   readonly isCorrect = computed(() => this.selectedOption() === this.correctOption().id);
+  readonly isLastCase = computed(() => this.currentIndex() === this.activeCases().length - 1);
   readonly progress;
 
-  constructor(private readonly trainingProgress: TrainingProgressService) {
+  constructor(
+    private readonly trainingProgress: TrainingProgressService,
+    private readonly globalScore: GlobalScoreService = new GlobalScoreService()
+  ) {
     this.progress = trainingProgress.summary;
-  }
-
-  selectTrack(track: TrainingTrack): void {
-    this.selectedTrack.set(track);
-    this.currentIndex.set(0);
-    this.resetDecision();
   }
 
   choose(optionId: string): void {
     if (this.state() === 'revealed') return;
     this.selectedOption.set(optionId);
-    if (!this.isMastery()) this.reveal();
   }
 
   reveal(): void {
@@ -59,11 +48,12 @@ export class CorpusCasesComponent {
       caseId: item.id,
       caseVersion: item.version,
       skill: item.skill,
-      track: item.track,
       correct: this.isCorrect(),
-      confidence: this.confidence(),
       recordedAt: new Date(this.startedAt()).toISOString(),
     });
+    if (this.isCorrect()) {
+      this.globalScore.award('practica', `${item.id}:${item.version}`, 100);
+    }
     this.state.set('revealed');
   }
 
@@ -83,17 +73,17 @@ export class CorpusCasesComponent {
     this.resetDecision();
   }
 
-  setConfidence(value: number): void {
-    this.confidence.set(Number(value));
-  }
-
   abstentionReason(item: TrainingCase): string {
     return item.expected.kind === 'abstain' ? item.expected.reason : '';
   }
 
+  clearProgress(): void {
+    this.trainingProgress.clear();
+    this.globalScore.clear();
+  }
+
   private resetDecision(): void {
     this.selectedOption.set(null);
-    this.confidence.set(60);
     this.state.set('answering');
     this.startedAt.set(Date.now());
   }

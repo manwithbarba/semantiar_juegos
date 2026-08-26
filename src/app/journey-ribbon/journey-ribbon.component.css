@@ -1,0 +1,24 @@
+:host { display: block; margin: 0 0 22px; }
+.journey-ribbon { overflow: hidden; border: 1px solid #cfe0e3; border-radius: 14px; background: #fff; box-shadow: 0 8px 20px rgba(24, 62, 73, .05); }
+header { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #dbe8e9; background: #f4fbfa; padding: 12px 16px; }
+header p { margin: 0; color: #286b78; font-size: .66rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+header > span { color: #6a7f86; font-size: .72rem; font-weight: 700; }
+ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
+li { position: relative; min-width: 0; }
+li:not(:last-child)::after { position: absolute; z-index: 2; top: 27px; right: -5px; width: 10px; height: 10px; border-top: 2px solid #b9d4d7; border-right: 2px solid #b9d4d7; content: ''; transform: rotate(45deg); }
+a { display: flex; align-items: flex-start; gap: 9px; min-height: 78px; color: #526875; padding: 13px 12px; text-decoration: none; transition: background 140ms ease; }
+a:hover, a:focus-visible { background: #f0f9f8; outline: none; }
+a > b { display: grid; flex: 0 0 auto; width: 25px; height: 25px; place-items: center; border: 1px solid #bfd4d7; border-radius: 50%; background: #fff; color: #286b78; font-size: .7rem; }
+a > span { display: grid; gap: 2px; min-width: 0; }
+small { color: #6b8288; font-size: .58rem; font-style: normal; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+a strong { color: #274f58; font-size: .77rem; }
+em { overflow: hidden; color: #75888e; font-size: .63rem; font-style: normal; line-height: 1.25; text-overflow: ellipsis; }
+.is-current a { background: #e7f5f2; box-shadow: inset 0 -4px 0 #2b7b84; }
+.is-current a > b { border-color: #2b7b84; background: #2b7b84; color: #fff; }
+.is-previous a > b { border-color: #5e9b82; background: #e8f6ef; color: #236a4d; }
+@media (max-width: 760px) {
+  header { align-items: flex-start; flex-direction: column; }
+  ol { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
+  li { flex: 0 0 150px; scroll-snap-align: start; }
+  li:not(:last-child)::after { display: none; }
+}

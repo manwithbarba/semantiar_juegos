@@ -1,0 +1,69 @@
+{
+  "configVersion": 1,
+  "timestamp": 1787692863639,
+  "index": "./index.html",
+  "assetGroups": [
+    {
+      "name": "app-shell",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "./chunk-NHERNEDY.js",
+        "./chunk-VFKWCDUG.js",
+        "./favicon.ico",
+        "./index.html",
+        "./main-26KQEYR3.js",
+        "./manifest.webmanifest",
+        "./styles-HZ57V2J5.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "app-assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "./icons/semantiar-icon.svg",
+        "./semantiar-logo.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "./chunk-NHERNEDY.js": "5fbe8d8ae0384a93df6ba2f242bc6cea2b27a776",
+    "./chunk-VFKWCDUG.js": "38540d74739453bf92bc218482a2bbc04256b486",
+    "./favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
+    "./icons/semantiar-icon.svg": "df1a2db8d694a8ea1dcd89aea23f3efe26ba52f5",
+    "./index.html": "111c3e0d248866c9b276e16969d5663a4998e4ed",
+    "./main-26KQEYR3.js": "9972e9a8e5fba60630f1b043a984dae55cc0cc4a",
+    "./manifest.webmanifest": "7c9e33f0a4c032ef4464b5c1f410c1ff74701960",
+    "./semantiar-logo.png": "8f435a2ba335bac35d59688175ba6692d7c5e363",
+    "./styles-HZ57V2J5.css": "5f28f73f8378715442eb32375db93e640bcf6549"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}

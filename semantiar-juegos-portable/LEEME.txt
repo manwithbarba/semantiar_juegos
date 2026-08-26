@@ -1,0 +1,11 @@
+SEMANTIAR JUEGOS · PAQUETE PORTABLE
+
+1. Extraé toda esta carpeta en tu computadora.
+2. Hacé doble clic en «Abrir Semantiar Juegos.bat».
+3. Se abrirá el juego automáticamente en el navegador predeterminado, Chrome o Edge.
+4. No cierres la ventana negra mientras estés usando el juego.
+5. Para cerrar el juego, cerrá esa ventana.
+
+Este paquete funciona sin internet y no necesita instalar Node, Angular ni Python.
+La aplicación guarda el puntaje y el progreso solamente en esa computadora.
+Las referencias bibliográficas son opcionales y sólo se abren si se hace clic en ellas.

@@ -1,45 +1,33 @@
 <main class="training-page" *ngIf="current() as item">
   <header class="training-hero">
     <div>
-      <p class="eyebrow">Entrenamiento de decisiones · {{ release.id }}</p>
-      <h1>Practicá decisiones clínicas con el anotador SemantIAr</h1>
-      <p class="intro">Resolvé casos derivados y compará tu primera decisión con una devolución explicada. Este material es educativo y no reemplaza la revisión clínica ni la codificación en producción.</p>
+      <p class="eyebrow">Estación 3 · Aplicar</p>
+      <h1>Practicá decisiones de anotación clínica</h1>
+      <p class="intro">Leé cada nota, elegí una respuesta, confirmala y revisá la explicación antes de avanzar.</p>
     </div>
-    <a class="back-link" routerLink="/">← Inicio</a>
+    <app-station-controls></app-station-controls>
   </header>
+  <app-journey-ribbon current="practica"></app-journey-ribbon>
 
-  <section class="privacy-note" aria-label="Gobierno del banco de casos">
-    <strong>Banco versionado y revisable</strong>
-    <p>{{ release.governanceNotice }}</p>
-  </section>
-
-  <section class="track-picker" aria-label="Modo de entrenamiento">
-    <p class="track-instruction">Elegí un modo para empezar: hacé clic en <strong>Guiado</strong> para recibir una explicación inmediata, en <strong>Práctica</strong> para resolver y revisar después, o en <strong>Dominio</strong> para registrar tu primera decisión y tu confianza antes de ver la devolución.</p>
-    <button type="button" *ngFor="let track of tracks" [class.active]="selectedTrack() === track.id" (click)="selectTrack(track.id)">
-      <strong>{{ track.label }}</strong><span>{{ track.description }}</span>
-    </button>
-  </section>
-
-  <section class="session-summary" *ngIf="progress().total">
-    <strong>{{ progress().correct }} / {{ progress().total }}</strong><span>primeras decisiones correctas guardadas sólo en este navegador</span>
-    <a routerLink="/calibracion">Ver tu seguimiento →</a>
+  <section id="progreso" class="session-summary">
+    <strong>{{ progress().total ? 'Casos: ' + progress().correct + ' / ' + progress().total : 'Casos: —' }}</strong>
+    <span *ngIf="progress().total; else noProgress">
+      {{ progress().accuracy }} % de aciertos en las primeras respuestas. Sirve para elegir qué volver a practicar.
+    </span>
+    <ng-template #noProgress><span>Tu primera respuesta se guarda en este equipo para ofrecerte una devolución de práctica.</span></ng-template>
+    <button type="button" *ngIf="progress().total" (click)="clearProgress()">Borrar progreso y puntaje local</button>
   </section>
 
   <section class="case-shell">
     <header class="case-header">
-      <div><p class="eyebrow">{{ selectedTrack() === 'guided' ? 'Paso guiado' : selectedTrack() === 'practice' ? 'Práctica aplicada' : 'Desafío de dominio' }}</p><h2>{{ item.skill }}</h2></div>
+      <div><p class="eyebrow">Caso formativo</p><h2>{{ item.skill }}</h2></div>
       <span>Caso {{ currentIndex() + 1 }} de {{ activeCases().length }} · {{ item.specialty }}</span>
     </header>
 
     <div class="case-grid">
       <section class="note-panel" aria-labelledby="note-title">
-        <p class="eyebrow" id="note-title">Nota clínica derivada</p>
+        <p class="eyebrow" id="note-title">Nota clínica</p>
         <blockquote>{{ item.note }}</blockquote>
-        <dl class="case-provenance">
-          <div><dt>Versión</dt><dd>{{ item.version }}</dd></div>
-          <div><dt>Terminología</dt><dd>{{ item.governance.terminologyEdition }}</dd></div>
-          <div><dt>Revisión clínica</dt><dd>{{ item.governance.clinicalReview }}</dd></div>
-        </dl>
         <section class="glossary" *ngIf="item.glossary?.length">
           <strong>Ayuda contextual</strong>
           <p *ngFor="let entry of item.glossary"><b>{{ entry.term }}:</b> {{ entry.definition }}</p>
@@ -55,14 +43,7 @@
           </button>
         </div>
 
-        <div class="confidence" *ngIf="isMastery() && state() === 'answering'">
-          <p class="eyebrow">Confianza para el seguimiento</p>
-          <label for="confidence">¿Cuánta confianza tenés en tu primera decisión? <strong>{{ confidence() }} %</strong></label>
-          <input id="confidence" type="range" min="0" max="100" step="5" [value]="confidence()" (input)="setConfidence($any($event.target).value)" />
-          <p>Esta barra aparece sólo en Dominio. Tu respuesta y este nivel de confianza se guardan localmente para revisar después la relación entre seguridad y resultado.</p>
-        </div>
-
-        <button class="confirm-button" type="button" *ngIf="isMastery() && state() === 'answering'" [disabled]="!selectedOption()" (click)="reveal()">Confirmar primera decisión</button>
+        <button class="confirm-button" type="button" *ngIf="state() === 'answering'" [disabled]="!selectedOption()" (click)="reveal()">Confirmar decisión</button>
 
         <section class="resolution" *ngIf="state() === 'revealed'" [class.resolution-good]="isCorrect()">
           <p class="resolution-status"><strong>{{ isCorrect() ? 'Decisión concordante' : 'Revisá la evidencia' }}</strong></p>
@@ -84,8 +65,8 @@
     </div>
 
     <nav class="case-nav" aria-label="Navegación de casos">
-      <button type="button" (click)="previous()">← Caso anterior</button>
-      <button type="button" (click)="next()">Siguiente caso →</button>
+      <button type="button" [disabled]="state() !== 'revealed'" (click)="previous()">← Caso anterior</button>
+      <button type="button" [disabled]="state() !== 'revealed'" (click)="next()">{{ isLastCase() ? 'Volver al primer caso' : 'Siguiente caso →' }}</button>
     </nav>
   </section>
 </main>

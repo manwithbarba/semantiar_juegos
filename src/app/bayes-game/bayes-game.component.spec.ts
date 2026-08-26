@@ -1,69 +1,108 @@
 import { BayesGameComponent, validateBayesCases } from './bayes-game.component';
 
 describe('BayesGameComponent', () => {
-  it('offers ten cases that cover mapping and assertion ambiguity', () => {
+  beforeEach(() => globalThis.localStorage.clear());
+
+  it('offers ten cases that cover concept and attribute ambiguity', () => {
     const game = new BayesGameComponent();
 
     expect(game.cases).toHaveLength(10);
     expect(game.cases.map((item) => item.literal)).toEqual(
-      expect.arrayContaining(['SatO2 91%', 'fiebre', 'diabetes tipo 2'])
+      expect.arrayContaining(['FA crónica', 'SatO2 91%', 'fiebre', 'diabetes tipo 2'])
     );
     expect(game.cases.filter((item) => item.answer === null)).toHaveLength(2);
+    expect(
+      game.cases.every(
+        (item) => `${item.noteBefore}${item.literal}${item.noteAfter}`.length >= 120 && item.evidence.length >= 2
+      )
+    ).toBe(true);
   });
 
-  it('updates posterior probabilities as contextual evidence is revealed', () => {
+  it('keeps the decision locked until the note context is shown', () => {
     const game = new BayesGameComponent();
 
-    expect(game.posterior()[0]).toBeCloseTo(0.55, 2);
-    expect(game.informationIndex()).toBeGreaterThan(0.8);
+    expect(game.isolatedMention()).toBe('FA');
+    game.selectCandidate(0);
+    game.submitDecision();
 
-    game.revealEvidence();
-    game.revealEvidence();
+    expect(game.selectedCandidate()).toBeNull();
+    expect(game.locked()).toBe(false);
+    expect(game.feedback()).toContain('Mostrá el contexto');
 
-    expect(game.posterior()[0]).toBeGreaterThan(0.95);
-    expect(game.informationIndex()).toBeLessThan(0.35);
-  });
-
-  it('recalculates the same Bayesian model explicitly when requested', () => {
-    const game = new BayesGameComponent();
-    const before = game.posterior();
-
-    game.revealEvidence();
-    game.recalculateProbabilities();
-
-    expect(game.recalculationCount()).toBe(1);
-    expect(game.posterior()).not.toEqual(before);
-    expect(game.feedback()).toContain('dato independiente');
+    game.revealContext();
+    game.selectCandidate(0);
+    expect(game.contextRevealed()).toBe(true);
+    expect(game.selectedCandidate()).toBe(0);
   });
 
   it('scores a correct mapping and attribute decision', () => {
     const game = new BayesGameComponent();
 
-    game.selectCandidate(0);
+    game.revealContext();
+    game.selectCandidate(game.activeCase().answer!);
     game.setCertainty('Confirmado');
     game.submitDecision();
 
     expect(game.locked()).toBe(true);
-    expect(game.score()).toBe(70);
-    expect(game.feedback()).toContain('Decisión correcta');
+    expect(game.score()).toBe(100);
+    expect(game.feedback()).toContain('Decisión concordante');
   });
 
   it('does not award attribute points when abstention is the operational answer', () => {
     const game = new BayesGameComponent();
     game.caseIndex.set(3);
 
+    game.revealContext();
     game.abstain();
 
-    expect(game.score()).toBe(50);
+    expect(game.score()).toBe(100);
     expect(game.feedback()).toContain('abstención operativa');
   });
 
-  it('validates priors, independent events, spans and operational terminology', () => {
+  it('does not award attribute points when the selected concept is incorrect', () => {
+    const game = new BayesGameComponent();
+
+    game.revealContext();
+    game.selectCandidate(1);
+    game.submitDecision();
+
+    expect(game.score()).toBe(0);
+    expect(game.feedback()).toContain('Sin nuevos puntos globales');
+  });
+
+  it('distinguishes a correct concept from incorrect attributes', () => {
+    const game = new BayesGameComponent();
+
+    game.revealContext();
+    game.selectCandidate(game.activeCase().answer!);
+    game.setCertainty('Sospecha');
+    game.submitDecision();
+
+    expect(game.score()).toBe(90);
+    expect(game.feedback()).toContain('Concepto correcto; revisá los atributos');
+  });
+
+  it('validates context, mentions and operational terminology', () => {
     const game = new BayesGameComponent();
     expect(validateBayesCases(game.cases)).toEqual([]);
 
     const altered = structuredClone(game.cases) as any[];
-    altered[0].candidates[0].initialProbability = 0.7;
-    expect(validateBayesCases(altered)).toContain(`${game.cases[0].specialty}: los priors deben sumar 1.`);
+    altered[0].isolatedMention = 'XYZ';
+    expect(validateBayesCases(altered)).toContain(
+      `${game.cases[0].specialty}: la mención aislada debe estar contenida en el literal.`
+    );
+
+    const tooBrief = structuredClone(game.cases) as any[];
+    tooBrief[0].noteBefore = 'Paciente con ';
+    tooBrief[0].noteAfter = '.';
+    expect(validateBayesCases(tooBrief)).toContain(
+      `${game.cases[0].specialty}: la nota debe ofrecer un contexto clínico desarrollado en al menos dos oraciones.`
+    );
+
+    const unbalanced = structuredClone(game.cases) as any[];
+    for (const item of unbalanced) if (item.answer !== null) item.answer = 0;
+    expect(validateBayesCases(unbalanced)).toContain(
+      'Las posiciones de las respuestas correctas deben estar balanceadas.'
+    );
   });
 });

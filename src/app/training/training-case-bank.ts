@@ -26,27 +26,25 @@ export const TRAINING_CASES: readonly TrainingCase[] = [
   {
     id: 'TRN-001',
     version: '0.2.0',
-    track: 'guided',
     skill: 'Atributos',
     specialty: 'Guardia',
     note: 'Paciente con tos productiva. Niega disnea, dolor torácico y fiebre.',
     prompt: '¿Cómo se registra la mención “disnea”?',
     options: [
       { id: 'a', label: 'No anotarla porque está ausente.', rationale: 'La negación cambia la polaridad; no borra la mención clínica.', correct: false },
-      { id: 'b', label: 'Codificar disnea con polaridad Negado.', rationale: 'Conserva el concepto y representa explícitamente la aserción negativa.', correct: true },
+      { id: 'b', label: 'Codificar disnea con polaridad Negado.', rationale: 'Conserva el concepto y representa explícitamente que la nota lo niega.', correct: true },
       { id: 'c', label: 'Codificar insuficiencia respiratoria activa.', rationale: 'Agrega un diagnóstico que la nota no documenta.', correct: false },
     ],
     expected: {
       kind: 'code',
       annotation: { cat: 'Hallazgo clínico', sctid: '267036007', term: 'disnea', textoLiteral: 'disnea', pol: 'Negado', cert: 'Confirmado', temp: 'Actual', suj: 'Paciente' },
     },
-    explanation: 'La negación tiene alcance sobre disnea. En el contrato SemantIAr, la certeza se expresa como Confirmado respecto de la aserción documentada.',
+    explanation: 'La negación alcanza a disnea. La certeza se registra como Confirmado porque la nota expresa de forma clara que el paciente la niega.',
     governance,
   },
   {
     id: 'TRN-002',
     version: '0.2.0',
-    track: 'guided',
     skill: 'Normalización',
     specialty: 'Clínica médica',
     note: 'Antecedente familiar: madre con DBT2. El paciente no refiere diabetes conocida.',
@@ -67,7 +65,6 @@ export const TRAINING_CASES: readonly TrainingCase[] = [
   {
     id: 'TRN-003',
     version: '0.2.0',
-    track: 'guided',
     skill: 'Granularidad',
     specialty: 'Clínica médica',
     note: 'SatO2 91% al aire ambiente, por debajo del rango esperado. Sin disnea en reposo.',
@@ -87,7 +84,6 @@ export const TRAINING_CASES: readonly TrainingCase[] = [
   {
     id: 'TRN-004',
     version: '0.2.0',
-    track: 'guided',
     skill: 'Normalización',
     specialty: 'Consultorio',
     note: 'Continúa amoxicilina 500 mg por vía oral según indicación previa.',
@@ -107,7 +103,6 @@ export const TRAINING_CASES: readonly TrainingCase[] = [
   {
     id: 'TRN-005',
     version: '0.2.0',
-    track: 'practice',
     skill: 'Atributos',
     specialty: 'Guardia',
     note: 'Infiltrado basal derecho. Se interpreta como probable neumonía y se indica seguimiento.',
@@ -127,7 +122,6 @@ export const TRAINING_CASES: readonly TrainingCase[] = [
   {
     id: 'TRN-006',
     version: '0.2.0',
-    track: 'practice',
     skill: 'Atributos',
     specialty: 'Cardiología',
     note: 'Antecedente de IAM en 2018; actualmente sin dolor torácico.',
@@ -148,14 +142,13 @@ export const TRAINING_CASES: readonly TrainingCase[] = [
   {
     id: 'TRN-007',
     version: '0.2.0',
-    track: 'practice',
     skill: 'Normalización',
     specialty: 'Cardiología',
     note: 'Paciente con FA crónica, en anticoagulación oral.',
     prompt: '¿Qué expansión está respaldada por el contexto?',
     options: [
-      { id: 'a', label: 'Anemia ferropénica.', rationale: 'No se sostiene en el contexto cardiológico ni en la anticoagulación.', correct: false },
-      { id: 'b', label: 'Fosfatasa alcalina elevada.', rationale: 'No corresponde a la abreviatura ni al contexto de la nota.', correct: false },
+      { id: 'a', label: 'Fosfatasa alcalina.', rationale: 'Es otra expansión posible de la forma breve, pero no concuerda con “crónica” ni con la anticoagulación.', correct: false },
+      { id: 'b', label: 'Fracción de acortamiento.', rationale: 'Es una expresión cardiológica posible, pero la nota no describe una medición ecocardiográfica.', correct: false },
       { id: 'c', label: 'Fibrilación auricular crónica.', rationale: 'La nota y el tratamiento ofrecen evidencia contextual concordante.', correct: true },
     ],
     expected: {
@@ -169,7 +162,6 @@ export const TRAINING_CASES: readonly TrainingCase[] = [
   {
     id: 'TRN-008',
     version: '0.2.0',
-    track: 'practice',
     skill: 'Granularidad',
     specialty: 'Medicina intensiva',
     note: 'Paciente en ARM invasiva; se ajustan parámetros ventilatorios.',
@@ -190,7 +182,6 @@ export const TRAINING_CASES: readonly TrainingCase[] = [
   {
     id: 'TRN-009',
     version: '0.2.0',
-    track: 'mastery',
     skill: 'Selección de expresión',
     specialty: 'Pediatría',
     note: 'Dificultad ventilatoria de 12 horas. Al examen: tiraje subcostal y sibilancias espiratorias.',
@@ -204,13 +195,12 @@ export const TRAINING_CASES: readonly TrainingCase[] = [
       kind: 'code',
       annotation: { cat: 'Hallazgo clínico', sctid: '56018004', term: 'sibilancias', textoLiteral: 'sibilancias espiratorias', pol: 'Activo', cert: 'Confirmado', temp: 'Actual', suj: 'Paciente' },
     },
-    explanation: 'El span debe preservar el modificador que caracteriza al hallazgo y excluir las menciones clínicas independientes.',
+    explanation: 'La mención debe conservar el modificador que caracteriza al hallazgo y excluir las menciones clínicas independientes.',
     governance,
   },
   {
     id: 'TRN-010',
     version: '0.2.0',
-    track: 'mastery',
     skill: 'Auditoría',
     specialty: 'Traumatología',
     note: 'En ateneo se decide considerar ventilación mecánica invasiva si empeora la mecánica respiratoria.',
@@ -227,7 +217,6 @@ export const TRAINING_CASES: readonly TrainingCase[] = [
   {
     id: 'TRN-011',
     version: '0.2.0',
-    track: 'mastery',
     skill: 'Atributos',
     specialty: 'Guardia',
     note: 'Niega fiebre. Refiere cefalea desde ayer.',
@@ -247,7 +236,6 @@ export const TRAINING_CASES: readonly TrainingCase[] = [
   {
     id: 'TRN-012',
     version: '0.2.0',
-    track: 'mastery',
     skill: 'Auditoría',
     specialty: 'Clínica médica',
     note: 'Evolución breve: SV sin cambios. No se agregan más precisiones.',
