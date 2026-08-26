@@ -66,7 +66,7 @@ Abrir `http://localhost:4200/`.
 
 ## Uso portable para anotadores
 
-La carpeta `semantiar-juegos-portable` contiene una compilación autocontenida para Windows. No requiere Node, Angular, Python ni conexión a internet.
+La carpeta `semantiar-juegos-portable` contiene una compilación autocontenida para Windows. No requiere Node, Angular, Python ni conexión a internet. La distribución no usa un service worker, para que las actualizaciones no queden retenidas por la caché del navegador.
 
 1. Copiar o extraer la carpeta completa en la computadora del anotador.
 2. Hacer doble clic en `Abrir Semantiar Juegos.bat`.
