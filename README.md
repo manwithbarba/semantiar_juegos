@@ -4,6 +4,11 @@ Aplicación Angular independiente para formación en anotación de semántica cl
 
 Las cuatro estaciones aportan a un único puntaje guardado localmente en el equipo. Cada ejercicio correcto suma hasta 100 puntos y las repeticiones conservan el mejor resultado de ese ejercicio, por lo que practicar nuevamente no infla el total. El puntaje es una señal lúdica de avance y no una calificación de competencia profesional.
 
+## Explorador público de conceptos SNOMED CT
+
+El sitio incluye una vista pública en [`#/explorador-conceptos`](https://manwithbarba.github.io/semantiar_juegos/#/explorador-conceptos). Cada círculo representa un concepto SNOMED CT anotado; la posición resume similitud terminológica, las líneas muestran relaciones jerárquicas y los filtros muestran atributos agregados de las anotaciones.
+
+La publicación contiene únicamente conceptos, relaciones y métricas agregadas. No incluye textos clínicos, fragmentos de notas, identificadores de casos, identificadores de anotadores ni rutas locales. El control `scripts/verify_public_payloads.py` se ejecuta antes de cada publicación.
 ## Contrato operativo
 
 El banco sólo admite los valores disponibles en el anotador:

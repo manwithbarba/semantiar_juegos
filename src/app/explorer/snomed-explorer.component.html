@@ -1,0 +1,280 @@
+<section class="snomed-shell">
+  <header class="snomed-header">
+    <div>
+      <p class="eyebrow">SEMANTIAR · ONTOLOGÍA SNOMED CT</p>
+      <h1>Explorador de conceptos clínicos anotados</h1>
+      <p class="header-copy">Revisá qué conceptos clínicos fueron anotados y cómo se relacionan en la jerarquía SNOMED CT.</p>
+    </div>
+    <div class="dataset-badge">
+      <span class="status-dot"></span>
+      <span><strong>{{ source?.annotatedSctidCount ?? 0 }} conceptos anotados</strong><small>{{ source?.embeddedSctidCount ?? 0 }} ubicados en el mapa</small></span>
+    </div>
+  </header>
+
+  <div class="snomed-grid">
+    <aside class="panel controls-panel">
+      <div class="panel-kicker">Qué representa</div>
+      <h2>Un concepto clínico por círculo</h2>
+      <p class="muted">La ubicación se calcula comparando los términos y descripciones de SNOMED CT. Las líneas muestran relaciones jerárquicas y los filtros resumen cómo fueron anotados los conceptos.</p>
+
+      <div class="method-card">
+        <div class="method-title">{{ projectionLabel }}</div>
+        <p>{{ projectionDescription }}</p>
+        <div class="definition-row"><span>Conceptos cercanos</span><strong>parecido en el mapa</strong></div>
+        <p class="small-note">{{ proximityDefinition }}</p>
+        <div class="definition-row"><span>Relación SNOMED</span><strong>más general / más específico</strong></div>
+        <p class="small-note">{{ hierarchyDefinition }}</p>        <details class="technical-details">
+          <summary>Cómo se ordena el mapa</summary>
+          <p>La vista general resume la información del modelo para mostrar tendencias amplias. La vista de conceptos parecidos intenta mantener juntos los conceptos que el modelo considera cercanos.</p>
+          <p>Estas posiciones sirven para explorar y auditar anotaciones; no reemplazan la definición SNOMED ni el criterio profesional.</p>
+        </details>
+      </div>
+
+      <label class="field-label" for="concept-search">Buscar concepto</label>
+      <div class="search-box">
+        <span aria-hidden="true">⌕</span>
+        <input id="concept-search" type="search" [(ngModel)]="query" (ngModelChange)="recompute()" placeholder="Código SNOMED o nombre" />
+        @if (query) {
+          <button type="button" class="clear-button" (click)="clearSearch()" aria-label="Limpiar búsqueda">×</button>
+        }
+      </div>
+
+      <label class="field-label" for="projection-select">Forma de ordenar el mapa</label>
+      <select id="projection-select" [(ngModel)]="projectionMode" (ngModelChange)="recompute()">
+        <option value="pca">Vista general del conjunto</option>
+        <option value="tsne">Conceptos parecidos entre sí</option>
+      </select>
+
+      <label class="field-label" for="color-select">Qué representa el color</label>
+      <select id="color-select" [(ngModel)]="colorMode" (ngModelChange)="recompute()">
+        <option value="category">Categoría clínica de la anotación</option>
+        <option value="tag">Tipo de concepto SNOMED</option>
+        <option value="frequency">Frecuencia en las anotaciones</option>
+        <option value="annotators">Cantidad de anotadores</option>
+      </select>
+
+      <div class="filter-section">
+        <div class="section-title-row">
+          <div class="legend-heading">Filtrar por características de la anotación</div>
+          @if (activeFilterCount) {
+            <button type="button" class="text-button" (click)="clearFilters()">Limpiar ({{ activeFilterCount }})</button>
+          }
+        </div>
+        <label class="filter-label" for="category-filter">Categoría</label>
+        <select id="category-filter" [(ngModel)]="categoryFilter" (ngModelChange)="recompute()">
+          <option value="all">Todas</option>
+          @for (value of categoryOptions; track value) { <option [value]="value">{{ value }}</option> }
+        </select>
+        <label class="filter-label" for="polarity-filter">Polaridad</label>
+        <select id="polarity-filter" [(ngModel)]="polarityFilter" (ngModelChange)="recompute()">
+          <option value="all">Todas</option>
+          @for (value of polarityOptions; track value) { <option [value]="value">{{ value }}</option> }
+        </select>
+        <label class="filter-label" for="temporality-filter">Temporalidad</label>
+        <select id="temporality-filter" [(ngModel)]="temporalityFilter" (ngModelChange)="recompute()">
+          <option value="all">Todas</option>
+          @for (value of temporalityOptions; track value) { <option [value]="value">{{ value }}</option> }
+        </select>
+        <label class="filter-label" for="subject-filter">Sujeto</label>
+        <select id="subject-filter" [(ngModel)]="subjectFilter" (ngModelChange)="recompute()">
+          <option value="all">Todos</option>
+          @for (value of subjectOptions; track value) { <option [value]="value">{{ value }}</option> }
+        </select>
+      </div>
+
+      <label class="hierarchy-toggle">
+        <input type="checkbox" [(ngModel)]="showHierarchyEdges" />
+        <span><strong>Mostrar líneas de la jerarquía SNOMED</strong><small>{{ source?.hierarchyEdgeCount ?? 0 }} relaciones disponibles; se dibujan solo las que conectan conceptos visibles.</small></span>
+      </label>
+
+      <div class="metrics-grid">
+        <div><strong>{{ points.length }}</strong><span>conceptos visibles</span></div>
+        <div><strong>{{ visibleOccurrences }}</strong><span>apariciones</span></div>
+        <div><strong>{{ visibleCases }}</strong><span>vínculos a casos</span></div>
+        <div><strong>{{ visibleAnnotators }}</strong><span>anotadores</span></div>
+      </div>
+
+      <div class="legend-block">
+        <div class="legend-heading">{{ colorLabel }}</div>
+        <div class="legend-list">
+          @for (item of legendItems; track item.label) {
+            <span class="legend-item"><i [style.background]="item.color"></i>{{ item.label }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="source-note">
+        <strong>Fuentes</strong>
+        <span>Base de comparación: conceptos y relaciones del release argentino de SNOMED CT</span>
+        <span>Jerarquía: relaciones oficiales del release argentino de SNOMED CT</span>
+        @if (source?.missingSctidCount) {
+          <span class="warning-note">{{ source?.missingSctidCount }} SCTID anotados no tienen vector disponible y no se muestran.</span>
+        }
+      </div>
+    </aside>
+
+    <main class="panel map-panel">
+      <div class="map-toolbar">
+        <div>
+          <div class="panel-kicker">¿Qué aporta este mapa?</div>
+          <h2>{{ projectionLabel }}</h2>
+          <p>{{ projectionDescription }}</p>
+        </div>
+        <div class="zoom-controls" aria-label="Controles de zoom">
+          <button type="button" (click)="zoomOut()" aria-label="Alejar">−</button>
+          <span>{{ zoomPercent }}</span>
+          <button type="button" (click)="zoomIn()" aria-label="Acercar">+</button>
+          <button type="button" class="reset-button" (click)="resetZoom()">Restablecer</button>
+        </div>
+      </div>
+
+      <div class="map-stage" (wheel)="onWheel($event)">
+        @if (loading) {
+          <div class="map-message">Cargando conceptos SNOMED…</div>
+        } @else if (error) {
+          <div class="map-message error-message">{{ error }}</div>
+        } @else if (!points.length) {
+          <div class="map-message">No hay conceptos que coincidan con la búsqueda o los filtros.</div>
+        } @else {
+          <svg viewBox="0 0 1000 620" role="img" aria-label="Mapa de conceptos SNOMED">
+            <defs>
+              <pattern id="map-grid" width="42" height="42" patternUnits="userSpaceOnUse">
+                <path d="M 42 0 L 0 0 0 42" fill="none" stroke="#e7eceb" stroke-width="1" />
+              </pattern>
+              <marker id="hierarchy-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#8ebdb6" />
+              </marker>
+            </defs>
+            <rect x="0" y="0" width="1000" height="620" fill="url(#map-grid)" />
+            <g [attr.transform]="zoomTransform">
+              @if (showHierarchyEdges) {
+                <g class="hierarchy-edges">
+                  @for (edge of visibleHierarchyEdges; track edge.source.sctid + ':' + edge.target.sctid) {
+                    <line [attr.x1]="edge.source.x" [attr.y1]="edge.source.y" [attr.x2]="edge.target.x" [attr.y2]="edge.target.y" marker-end="url(#hierarchy-arrow)" />
+                  }
+                </g>
+              }
+              @for (point of points; track point.sctid) {
+                <g class="concept-point" tabindex="0" role="button" [attr.aria-label]="point.sctid + ' — ' + point.term" (click)="selectPoint(point)" (mouseenter)="hovered = point" (mouseleave)="hovered = null" (focus)="hovered = point" (blur)="hovered = null">
+                  <circle class="point-halo" [attr.cx]="point.x" [attr.cy]="point.y" r="7" [class.selected]="selected?.sctid === point.sctid" />
+                  <circle class="point-core" [attr.cx]="point.x" [attr.cy]="point.y" r="4.2" [attr.fill]="point.color" [class.selected]="selected?.sctid === point.sctid" />
+                </g>
+              }
+            </g>
+            @if (hovered) {
+              <g class="point-tooltip" [attr.transform]="tooltipTransform(hovered)">
+                <rect width="248" height="56" rx="9"></rect>
+                <text x="12" y="20" class="tooltip-id">{{ hovered.sctid }}</text>
+                <text x="12" y="39" class="tooltip-term">{{ hovered.term }}</text>
+              </g>
+            }
+            <text x="500" y="606" text-anchor="middle" class="axis-label">proyección 1</text>
+            <text x="18" y="310" text-anchor="middle" class="axis-label" transform="rotate(-90 18 310)">proyección 2</text>
+          </svg>
+        }
+      </div>
+      <div class="map-caption">
+        <strong>{{ mapDefinition }}.</strong>
+        <span>{{ proximityDefinition }}</span>
+        @if (showHierarchyEdges) { <span>{{ hierarchyDefinition }}</span> }
+        @if (projectionMode === 'tsne') {
+          <span>En la vista de conceptos parecidos, interpretá la cercanía entre vecinos; no la distancia entre grupos completos.</span><span class="clinical-note">El mapa ayuda a revisar y auditar anotaciones; no reemplaza el criterio profesional.</span>
+        }
+      </div>
+    </main>
+
+    <aside class="panel detail-panel">
+      @if (selected) {
+        <div class="detail-header">
+          <div>
+            <div class="panel-kicker">Concepto seleccionado</div>
+            <h2>{{ selected.term }}</h2>
+          </div>
+          <button type="button" class="close-button" (click)="closeDetails()" aria-label="Cerrar detalle">×</button>
+        </div>
+        <div class="sctid-line">{{ selected.sctid }} <span>{{ selected.semanticTag || 'sin etiqueta' }}</span></div>
+
+        <div class="detail-stats">
+          <div><strong>{{ selected.occurrences }}</strong><span>apariciones</span></div>
+          <div><strong>{{ selected.caseCount }}</strong><span>casos</span></div>
+          <div><strong>{{ selected.annotatorCount }}</strong><span>anotadores</span></div>
+        </div>
+
+        <section class="detail-section hierarchy-detail">
+          <h3>Ubicación en la jerarquía SNOMED</h3>
+          <p class="muted">Un concepto puede ser más general o más específico que otro. Puede tener más de un concepto general como padre.</p>
+          <div class="relation-group">
+            <span class="relation-label">Conceptos más generales (padres directos)</span>
+            @if (selected.parents.length) {
+              @for (parent of selected.parents; track parent.sctid) {
+                <button type="button" class="relation-row" [class.external]="!parent.onMap" [disabled]="!parent.onMap" (click)="selectRelated(parent)">
+                  <span class="relation-arrow">↑</span><span><strong>{{ parent.term }}</strong><small>{{ parent.sctid }} · {{ parent.onMap ? 'en el mapa' : 'no aparece en el conjunto de anotaciones' }}</small></span>
+                </button>
+              }
+            } @else { <span class="no-relation">Sin padre directo recuperado.</span> }
+          </div>
+          <div class="relation-group">
+            <span class="relation-label">Conceptos más específicos (hijos directos)</span>
+            @if (selected.children.length) {
+              @for (child of selected.children; track child.sctid) {
+                <button type="button" class="relation-row" [class.external]="!child.onMap" [disabled]="!child.onMap" (click)="selectRelated(child)">
+                  <span class="relation-arrow">↓</span><span><strong>{{ child.term }}</strong><small>{{ child.sctid }} · {{ child.onMap ? 'en el mapa' : 'no aparece en el conjunto de anotaciones' }}</small></span>
+                </button>
+              }
+            } @else { <span class="no-relation">Sin hijo directo dentro del release consultado.</span> }
+          </div>
+        </section>
+
+        <section class="detail-section">
+          <h3>Cómo aparece en las anotaciones</h3>
+          <p class="muted">Estos datos muestran en qué tipo de situación fue anotado el concepto; no cambian el significado del concepto SNOMED.</p>
+          <div class="detail-rows">
+            @for (item of entries(selected.categories); track item.key) { <div><span>Categoría · {{ item.key }}</span><strong>{{ item.value }}</strong></div> }
+            @for (item of entries(selected.polarities); track item.key) { <div><span>Polaridad · {{ item.key }}</span><strong>{{ item.value }}</strong></div> }
+            @for (item of entries(selected.temporalities); track item.key) { <div><span>Temporalidad · {{ item.key }}</span><strong>{{ item.value }}</strong></div> }
+            @for (item of entries(selected.subjects); track item.key) { <div><span>Sujeto · {{ item.key }}</span><strong>{{ item.value }}</strong></div> }
+          </div>
+        </section>
+
+        <section class="detail-section">
+          <div class="section-title-row"><h3>Conceptos más parecidos en el mapa</h3><span>más cercano primero</span></div>
+          <div class="neighbor-list">
+            @for (neighbor of neighborConcepts; track neighbor.sctid) {
+              <button type="button" class="neighbor-row" (click)="selectPoint(neighbor)">
+                <span class="neighbor-dot" [style.background]="neighbor.color"></span>
+                <span class="neighbor-copy"><strong>{{ neighbor.term }}</strong><small>{{ neighbor.sctid }}</small></span>
+                <span class="similarity">{{ formatSimilarity(neighbor.similarity) }}</span>
+              </button>
+            }
+          </div>
+        </section>
+
+        <section class="detail-section note-context-section">
+          <div class="section-title-row"><h3>Cómo aparece en la nota</h3><span>{{ selectedContexts.length }} fragmentos</span></div>
+          <p class="muted">La publicación pública no contiene texto clínico ni fragmentos de notas. En una versión local puede habilitarse esta sección con una capa previamente anonimizada.</p>
+          @if (selectedContexts.length) {
+            <div class="note-context-list">
+              @for (context of selectedContexts; track context.caseId + ':' + context.mention) {
+                <article class="note-context">
+                  <div class="context-meta">Nota {{ context.caseId }} · Anotador {{ context.annotatorId }}</div>
+                  <p class="note-excerpt">
+                    @if (context.hasPrefix) { <span class="context-ellipsis">…</span> }{{ context.before }}<mark>{{ context.mention }}</mark>{{ context.after }}@if (context.hasSuffix) { <span class="context-ellipsis">…</span> }
+                  </p>
+                </article>
+              }
+            </div>
+          } @else {
+            <p class="small-note">No hay fragmentos clínicos disponibles en esta publicación.</p>
+          }
+        </section>
+      } @else {
+        <div class="detail-empty">
+          <div class="empty-icon">＋</div>
+          <div class="panel-kicker">Detalle de concepto</div>
+          <h2>Seleccioná un punto</h2>
+          <p>Vas a ver el código y el nombre SNOMED, sus conceptos más generales y específicos, cómo se distribuyen sus anotaciones y qué conceptos se parecen.</p>
+        </div>
+      }
+    </aside>
+  </div>
+</section>

@@ -36,6 +36,9 @@ jobs:
       - name: Audit dependencies
         run: corepack npm audit --audit-level=low
 
+      - name: Verify public data contains no clinical payloads
+        run: python scripts/verify_public_payloads.py
+
       - name: Validate training contract and run unit tests
         run: corepack npm test -- --watch=false
 

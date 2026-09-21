@@ -18,3 +18,8 @@
 @media (max-width: 760px) {
   .games-brand { align-items: flex-start; flex-direction: column; }
 }
+
+.games-nav { display: flex; flex-wrap: wrap; gap: 7px; margin-left: auto; }
+.games-nav a { border: 1px solid transparent; border-radius: 999px; color: #52717a; font-size: .78rem; font-weight: 800; padding: 9px 13px; text-decoration: none; }
+.games-nav a:hover, .games-nav a:focus-visible, .games-nav a.active { border-color: #b9d8d2; background: #eff8f5; color: #17675f; outline: none; }
+@media (max-width: 760px) { .games-nav { width: 100%; margin-left: 0; } .games-nav a { flex: 1 1 160px; text-align: center; } }

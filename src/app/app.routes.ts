@@ -4,9 +4,11 @@ import { HomeComponent } from './home/home.component';
 import { LearningComponent } from './learning/learning.component';
 import { CorpusCasesComponent } from './corpus-cases/corpus-cases.component';
 import { FallGameComponent } from './fall-game/fall-game.component';
+import { SnomedExplorerComponent } from './explorer/snomed-explorer.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
+  { path: 'explorador-conceptos', component: SnomedExplorerComponent },
   { path: 'ambiguedad', component: BayesGameComponent },
   { path: 'casos', redirectTo: 'ambiguedad', pathMatch: 'full' },
   { path: 'calibracion', redirectTo: 'casos-reales', pathMatch: 'full' },
