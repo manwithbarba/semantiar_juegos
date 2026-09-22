@@ -1,0 +1,129 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed data model — SemantIAr adjudications
+    // ===============================================================
+    // studies/{studyId}: private study metadata. Investigator-only writes.
+    // studies/{studyId}/members/{uid}: private membership marker. Only the
+    // investigator may assign membership; users cannot assign roles themselves.
+    // studies/{studyId}/records/{discrepancyId}: clinical record and A/B
+    // evidence. Readable only to a study member or investigator.
+    // .../submissions/{uid}: one submission per annotator and discrepancy.
+    // It stores ownerUid, annotatorId, decision fields, rationale, source hash,
+    // submissionState, createdAt and updatedAt. The owner may only write theirs.
+    // .../references/{referenceId}: investigator's reference validation.
+    // .../rankings/{rankingId}: server-calculated metrics; investigator-read only.
+    // The investigator role comes exclusively from a custom Auth claim
+    // request.auth.token.researcher == true, never from a client-writable doc.
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isPrincipalInvestigator() {
+      return signedIn() && request.auth.token.researcher == true;
+    }
+
+    function isMember(studyId) {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/studies/$(studyId)/members/$(request.auth.uid));
+    }
+
+    function validId(value, maxLength) {
+      return value is string && value.size() > 0 && value.size() <= maxLength;
+    }
+
+    function validOptionalText(value, maxLength) {
+      return value == null || (value is string && value.size() <= maxLength);
+    }
+
+    function validDecision(data) {
+      return data is map &&
+        data.keys().hasOnly(['status', 'resolution', 'span', 'category', 'sctid',
+          'polarity', 'certainty', 'temporality', 'subject', 'rationale']) &&
+        data.keys().hasAll(['status', 'resolution', 'span', 'category', 'sctid',
+          'polarity', 'certainty', 'temporality', 'subject', 'rationale']) &&
+        data.status is string && data.status in ['pending', 'resolved', 'ambiguous', 'unresolvable'] &&
+        data.resolution is string && data.resolution in ['pending', 'accept_a', 'accept_b',
+          'both_valid', 'new_decision', 'ambiguous', 'unresolvable'] &&
+        validOptionalText(data.category, 120) && validOptionalText(data.sctid, 40) &&
+        validOptionalText(data.polarity, 40) && validOptionalText(data.certainty, 40) &&
+        validOptionalText(data.temporality, 40) && validOptionalText(data.subject, 80) &&
+        validOptionalText(data.rationale, 4000) &&
+        (data.span == null || (data.span is map &&
+          data.span.keys().hasOnly(['start', 'end', 'text']) &&
+          data.span.keys().hasAll(['start', 'end', 'text']) &&
+          data.span.start is int && data.span.start >= 0 &&
+          data.span.end is int && data.span.end >= data.span.start &&
+          validId(data.span.text, 1000)));
+    }
+
+    function validSubmission(data, discrepancyId) {
+      return data.keys().hasOnly(['ownerUid', 'annotatorId', 'discrepancyId', 'queueRow',
+          'decision', 'submissionState', 'sourceRecordSha256', 'createdAt', 'updatedAt']) &&
+        data.keys().hasAll(['ownerUid', 'annotatorId', 'discrepancyId', 'queueRow',
+          'decision', 'submissionState', 'sourceRecordSha256', 'createdAt', 'updatedAt']) &&
+        data.ownerUid == request.auth.uid && validId(data.annotatorId, 80) &&
+        data.discrepancyId == discrepancyId && validId(data.discrepancyId, 80) &&
+        data.queueRow is int && data.queueRow > 0 && data.queueRow <= 1000000 &&
+        validDecision(data.decision) && data.submissionState is string &&
+        data.submissionState in ['draft', 'complete'] &&
+        validId(data.sourceRecordSha256, 64) && data.sourceRecordSha256.size() == 64 &&
+        data.createdAt is timestamp && data.updatedAt is timestamp &&
+        data.updatedAt <= request.time && data.updatedAt > request.time - duration.value(10, 'm');
+    }
+
+    function immutableSubmissionFields() {
+      return request.resource.data.ownerUid == resource.data.ownerUid &&
+        request.resource.data.discrepancyId == resource.data.discrepancyId &&
+        request.resource.data.queueRow == resource.data.queueRow &&
+        request.resource.data.sourceRecordSha256 == resource.data.sourceRecordSha256 &&
+        request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    match /studies/{studyId} {
+      allow read: if isPrincipalInvestigator() || isMember(studyId);
+      allow create, update, delete: if isPrincipalInvestigator();
+
+      match /members/{memberUid} {
+        allow read: if isPrincipalInvestigator() || (signedIn() && request.auth.uid == memberUid);
+        allow create, update, delete: if isPrincipalInvestigator();
+      }
+
+      match /records/{discrepancyId} {
+        allow read: if isPrincipalInvestigator() || isMember(studyId);
+        allow create, update, delete: if isPrincipalInvestigator();
+
+        match /submissions/{submitterUid} {
+          allow read: if isPrincipalInvestigator() || (signedIn() && request.auth.uid == submitterUid);
+          allow create: if isMember(studyId) && request.auth.uid == submitterUid &&
+            validSubmission(request.resource.data, discrepancyId) &&
+            request.resource.data.createdAt <= request.time &&
+            request.resource.data.createdAt > request.time - duration.value(10, 'm');
+          allow update: if isMember(studyId) && request.auth.uid == submitterUid &&
+            validSubmission(request.resource.data, discrepancyId) && immutableSubmissionFields();
+          allow delete: if false;
+        }
+
+        match /references/{referenceId} {
+          allow read, create, update, delete: if isPrincipalInvestigator();
+        }
+
+        match /modelBaselines/{modelName} {
+          allow read: if isPrincipalInvestigator();
+          allow write: if false;
+        }
+      }
+
+      match /rankings/{rankingId} {
+        allow read: if isPrincipalInvestigator();
+        allow write: if false;
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

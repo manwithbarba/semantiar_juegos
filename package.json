@@ -7,6 +7,7 @@
     "build": "ng build",
     "build:pages": "ng build --configuration production --base-href ./ && node scripts/create-nojekyll.cjs",
     "verify:public": "python scripts/verify_public_payloads.py",
+    "firebase:administer": "node scripts/firebase_administer_adjudications.cjs",
     "data:fall-game": "node scripts/build-fall-game-data.mjs",
     "build:capacitor": "ng build --configuration production --base-href ./",
     "android:sync": "npm run build:capacitor && cap sync android",
@@ -56,6 +57,7 @@
     "@angular/cli": "^21.2.21",
     "@angular/compiler-cli": "^21.2.20",
     "@capacitor/cli": "^8.4.2",
+    "firebase-admin": "^14.4.0",
     "jsdom": "^27.1.0",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
