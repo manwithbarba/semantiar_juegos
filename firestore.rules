@@ -96,7 +96,7 @@ service cloud.firestore {
         allow create, update, delete: if isPrincipalInvestigator();
 
         match /submissions/{submitterUid} {
-          allow read: if isPrincipalInvestigator() || (signedIn() && request.auth.uid == submitterUid);
+          allow read: if isPrincipalInvestigator() || (signedIn() && resource.data.ownerUid == request.auth.uid);
           allow create: if isMember(studyId) && request.auth.uid == submitterUid &&
             validSubmission(request.resource.data, discrepancyId) &&
             request.resource.data.createdAt <= request.time &&
