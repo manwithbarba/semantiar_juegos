@@ -18,3 +18,12 @@ El archivo fuente `adjudication_input.json` y el mapa privado permanecen fuera d
 ## Regeneración
 
 Desde la raíz del repositorio: `node scripts/create_blinded_adjudication_exports.cjs --input <fuente-privada.json> --out-dir <carpeta-privada>`.
+
+## Entregas individuales y cola consolidada
+
+Para una carpeta de entregas como `cuarta entrega SemantIAr`, usar:
+
+- `node scripts/create_blinded_annotation_exports.cjs --input-dir <carpeta> --output-dir <salida-ciega> --trace-dir <trazabilidad-PI>`
+- `node scripts/create_blinded_disagreement_queue.cjs --input <cola.csv> --output-dir <salida-ciega> --trace-dir <trazabilidad-PI>`
+
+El primer comando genera una copia ciega por JSON y `semantiar_annotations_blinded.jsonl` (un caso por línea). El segundo genera la cola ciega en CSV, JSON y JSONL. Los dos comandos comparten los `CASE-…` cuando la cola y las entregas contienen el mismo caso. Los mapas `*.private.json` son exclusivamente del investigador principal.
