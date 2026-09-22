@@ -7,7 +7,7 @@
     "location": "southamerica-east1"
   },
   "auth": {
-    "authorizedDomains": ["localhost", "manwithbarba.github.io"],
+    "authorizedDomains": ["localhost", "127.0.0.1", "manwithbarba.github.io"],
     "providers": {
       "emailPassword": true,
       "googleSignIn": {
@@ -17,3 +17,4 @@
     }
   }
 }
+
