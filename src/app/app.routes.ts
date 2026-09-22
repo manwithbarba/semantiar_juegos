@@ -5,6 +5,7 @@ import { LearningComponent } from './learning/learning.component';
 import { CorpusCasesComponent } from './corpus-cases/corpus-cases.component';
 import { FallGameComponent } from './fall-game/fall-game.component';
 import { SnomedExplorerComponent } from './explorer/snomed-explorer.component';
+import { AdjudicationExpeditionComponent } from './adjudication-expedition/adjudication-expedition.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -14,6 +15,7 @@ export const routes: Routes = [
   { path: 'calibracion', redirectTo: 'casos-reales', pathMatch: 'full' },
   { path: 'casos-reales', component: CorpusCasesComponent },
   { path: 'catarata-menciones', component: FallGameComponent },
+  { path: 'iniciativa-adjudicadores', component: AdjudicationExpeditionComponent },
   { path: 'caida-atributos', redirectTo: 'catarata-menciones', pathMatch: 'full' },
   { path: 'expresiones', component: LearningComponent, data: { page: 'expresiones' } },
   { path: 'granularidad', component: LearningComponent, data: { page: 'granularidad' } },
