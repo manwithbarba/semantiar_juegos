@@ -59,7 +59,7 @@ export class AdjudicationExpeditionComponent {
       choices: [{ id: 'accept_a', label: 'Cerrar con A' }, { id: 'accept_b', label: 'Cerrar con B' }, { id: 'both_valid', label: 'Cerrar como equivalentes' }, { id: 'review', label: 'Entregar al validador humano' }],
       votes: [{ model: 'Gemini', decision: 'Hipótesis de resolución', tone: 'cautious' }, { model: 'Luna', decision: 'Hipótesis o abstención', tone: 'cautious' }, { model: 'Opus', decision: 'Abstención explícita', tone: 'cautious' }, { model: 'Sonnet', decision: 'Hipótesis de resolución', tone: 'cautious' }, { model: 'Terra', decision: 'Abstención explícita', tone: 'cautious' }, { model: 'Humano', decision: 'Pendiente: referencia clínica', tone: 'human' }],
       reflection: 'El final no es una pantalla de “ganaste”: es una cola de revisión priorizada. La validación humana permitirá calcular desempeño real y convertir el conjunto en benchmark clínico.',
-      evidenceTrail: [{ label: 'Disenso', detail: 'Separar las hipótesis de los modelos de los hechos observables del caso.', state: 'available' }, { label: 'Cola priorizada', detail: 'El desacuerdo total aumenta prioridad de revisión; no habilita una decisión por mayoría.', state: 'required' }, { label: 'Referencia', detail: 'Tu validación documentada fija el estándar contra el que se calculará el ranking posterior.', state: 'human' }],
+      evidenceTrail: [{ label: 'Disenso', detail: 'Separar las hipótesis de los modelos de los hechos observables del caso.', state: 'available' }, { label: 'Cola priorizada', detail: 'El desacuerdo total aumenta prioridad de revisión; no habilita una decisión por mayoría.', state: 'required' }, { label: 'Referencia', detail: 'Cada validación humana documentada conserva la evidencia para que el investigador principal pueda fijar después el estándar de comparación.', state: 'human' }],
     },
   ];
 
@@ -91,7 +91,7 @@ export class AdjudicationExpeditionComponent {
       .catch(() => { this.music = null; this.soundEnabled.set(false); });
   }
   openFhirValidator(): void {
-    window.open('http://127.0.0.1:4300/remediation-fhir.html', '_blank', 'noopener');
+    window.open('remediation-fhir.html', '_blank', 'noopener');
   }
   private stopSoundscape(): void {
     this.music?.pause();
