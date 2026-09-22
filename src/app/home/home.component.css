@@ -156,3 +156,6 @@
 @media (prefers-reduced-motion: reduce) {
   .resource-links a { transition: none; }
 }
+
+.btn-secondary { border-color: #1b6670; background: #ffffff; color: #1b6670; }
+.btn-secondary:hover, .btn-secondary:focus-visible { background: #eaf7f5; outline: 3px solid rgba(39, 121, 132, 0.2); }

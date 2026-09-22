@@ -7,7 +7,8 @@ export type JourneyStageId =
   | 'conceptos'
   | 'catarata'
   | 'practica'
-  | 'ambiguedad';
+  | 'ambiguedad'
+  | 'adjudicacion';
 
 @Component({
   selector: 'app-journey-ribbon',
@@ -24,6 +25,7 @@ export class JourneyRibbonComponent {
     { id: 'catarata', verb: 'Reconocer', label: 'Catarata', hint: 'Mención a SNOMED', route: '/catarata-menciones' },
     { id: 'practica', verb: 'Aplicar', label: 'Casos clínicos', hint: 'Decisión y devolución', route: '/casos-reales' },
     { id: 'ambiguedad', verb: 'Transferir', label: 'Ambigüedad', hint: 'Contexto y abstención', route: '/ambiguedad' },
+    { id: 'adjudicacion', verb: 'Adjudicar', label: 'Iniciativa', hint: 'Modelos y humano', route: '/iniciativa-adjudicadores' },
   ] as const;
 
   currentIndex(): number {
