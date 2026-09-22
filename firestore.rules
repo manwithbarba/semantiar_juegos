@@ -7,8 +7,8 @@ service cloud.firestore {
     // studies/{studyId}: private study metadata. Investigator-only writes.
     // studies/{studyId}/members/{uid}: private membership marker. Only the
     // investigator may assign membership; users cannot assign roles themselves.
-    // studies/{studyId}/records/{discrepancyId}: clinical record and A/B
-    // evidence. Readable only to a study member or investigator.
+    // studies/{studyId}/records/{blindRecordId}: blind clinical record and A/B
+    // evidence. Members can read only v2 records with opaque IDs.
     // .../submissions/{uid}: one submission per annotator and discrepancy.
     // It stores ownerUid, annotatorId, decision fields, rationale, source hash,
     // submissionState, createdAt and updatedAt. The owner may only write theirs.
@@ -92,7 +92,7 @@ service cloud.firestore {
       }
 
       match /records/{discrepancyId} {
-        allow read: if isPrincipalInvestigator() || isMember(studyId);
+        allow read: if isPrincipalInvestigator() || (isMember(studyId) && resource.data.blindQueueVersion == 'annotator_blind_v2');
         allow create, update, delete: if isPrincipalInvestigator();
 
         match /submissions/{submitterUid} {
