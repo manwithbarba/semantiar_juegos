@@ -10,6 +10,9 @@ const { execFileSync } = require('node:child_process');
 const PROJECT_ID = 'semantiar-adjudicaciones-12727';
 const DATABASE_ID = 'adjudications';
 const DEFAULT_STUDY_ID = 'experimento-adjudicacion-multirama-20260922';
+const TOKEN_ALPHABET = 'GHIJKLMNOPQRSTUVWXYZ23456789';
+function opaqueToken(prefix, length = 24) { const bytes = require('node:crypto').randomBytes(length); let suffix = ''; for (const byte of bytes) suffix += TOKEN_ALPHABET[byte % TOKEN_ALPHABET.length]; return prefix + suffix; }
+function integrityToken() { return require('node:crypto').randomBytes(32).toString('hex'); }
 const DB_ROOT = 'https://firestore.googleapis.com/v1/projects/' + PROJECT_ID + '/databases/' + DATABASE_ID;
 const IDENTITY_ROOT = 'https://identitytoolkit.googleapis.com/v1/projects/' + PROJECT_ID;
 
@@ -77,45 +80,41 @@ async function bootstrap() {
   ]);
   console.log(JSON.stringify({ operation: 'bootstrap', studyId: id, principalUid: current.localId }));
 }
-function blindRecordId(record, experimentId) {
-  const crypto = require('node:crypto');
-  return 'BLD-' + crypto.createHash('sha256').update(String(experimentId) + '\0' + String(record.discrepancyId)).digest('hex').slice(0, 20);
+function blindRecordId(record, idMap) {
+  if (typeof record.blindRecordId === 'string' && /^[A-Za-z0-9_-]{3,180}$/.test(record.blindRecordId)) return record.blindRecordId;
+  const sourceId = typeof record.discrepancyId === 'string' ? record.discrepancyId : '';
+  if (!sourceId) return opaqueToken('BLD-');
+  if (!idMap.has(sourceId)) { const id = opaqueToken('BLD-'); idMap.set(sourceId, id); idMap.set(id, id); }
+  return idMap.get(sourceId);
 }
 function deepBlind(value, label) {
   if (Array.isArray(value)) return value.map((item) => deepBlind(item, label));
-  if (value && typeof value === 'object') {
-    return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, key === 'annotatorId' ? label : deepBlind(child, label)]));
-  }
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, key === 'annotatorId' ? label : deepBlind(child, label)]));
   return value;
 }
-function blindAnnotator(source, label) {
-  const output = deepBlind(source || {}, label);
-  output.annotatorId = label;
-  return output;
-}
-function recordDocument(record, now, experimentId) {
+function blindAnnotator(source, label) { const output = deepBlind(source || {}, label); output.annotatorId = label; return output; }
+function recordDocument(record, now, blindId) {
   return {
-    discrepancyId: blindRecordId(record, experimentId), queueRow: record.queueRow, noteType: record.noteType,
-    kind: record.kind, priority: record.priority, clinicalText: record.clinicalText, textSha256: record.textSha256,
+    discrepancyId: blindId, noteType: record.noteType || null, kind: record.kind || null, priority: record.priority || null,
+    clinicalText: record.clinicalText || '', integrityToken: /^[0-9a-f]{64}$/i.test(String(record.integrityToken || '')) ? record.integrityToken : integrityToken(),
     annotatorA: blindAnnotator(record.annotatorA, 'A'), annotatorB: blindAnnotator(record.annotatorB, 'B'),
-    blindQueueVersion: 'annotator_blind_v2', mismatchFields: record.mismatchFields, alignment: record.alignment,
+    blindQueueVersion: 'annotator_blind_v2', mismatchFields: record.mismatchFields || [], alignment: record.alignment || null,
     workflow: { referenceState: 'pending_human_valuation', rankingState: 'not_eligible' },
-    source: 'adjudication_input.json (PI-only source)', importedAt: now
+    source: record.blindRecordId ? 'adjudication_input_blinded.json' : 'adjudication_input.json (PI-only source)', importedAt: now
   };
 }
 async function importStudy() {
   const input = JSON.parse(fs.readFileSync(path.resolve(argument('--input')), 'utf8'));
-  if (!Array.isArray(input.records) || !input.experimentId) throw new Error('Expected a SemantIAr adjudication input JSON.');
-  const id = studyId(), now = new Date().toISOString();
-  const idMap = new Map(input.records.map((record) => [String(record.discrepancyId), blindRecordId(record, input.experimentId)]));
-  const writes = [documentWrite('studies/' + id, { studyId: id, experimentId: input.experimentId, protocolVersion: input.protocolVersion || null, recordCount: input.records.length, sourceQueue: { blind: true, version: 'annotator_blind_v2' }, status: 'active', updatedAt: now })];
-  for (const record of input.records) {
-    safeId(record.discrepancyId, 'discrepancy id');
-    if (typeof record.textSha256 !== 'string' || record.textSha256.length !== 64) throw new Error('A record lacks textSha256.');
-    const blindId = blindRecordId(record, input.experimentId);
-    writes.push(documentWrite('studies/' + id + '/records/' + blindId, recordDocument(record, now, input.experimentId)));
-  }
+  if (!Array.isArray(input.records)) throw new Error('Expected a SemantIAr adjudication input JSON with records.');
+  const id = studyId(), now = new Date().toISOString(), idMap = new Map();
+  const prepared = input.records.map((record) => ({ record, blindId: blindRecordId(record, idMap) }));
+  const writes = [documentWrite('studies/' + id, { studyId: id, protocolVersion: input.protocolVersion || null, recordCount: prepared.length, sourceQueue: { blind: true, version: 'annotator_blind_v2' }, status: 'active', updatedAt: now })];
+  for (const item of prepared) writes.push(documentWrite('studies/' + id + '/records/' + item.blindId, recordDocument(item.record, now, item.blindId)));
   await batchWrite(writes);
+  const traceOut = argument('--trace-out', false);
+  if (traceOut) {
+    fs.writeFileSync(path.resolve(traceOut), JSON.stringify({ schemaVersion: 'adjudication-blind-trace-map.v2', generatedAt: now, records: prepared.map((item) => ({ blindRecordId: item.blindId, sourceDiscrepancyId: item.record.discrepancyId || null, sourceCaseId: item.record.caseId || null, sourceQueueRow: item.record.queueRow || null, sourcePair: item.record.pair || null, sourceTextSha256: item.record.textSha256 || null })) }, null, 2) + '\n');
+  }
   let baselines = 0;
   const directory = argument('--baselines-dir', false);
   if (directory) {
@@ -125,7 +124,7 @@ async function importStudy() {
       const source = path.join(path.resolve(directory), entry.name, 'adjudications.json');
       if (!fs.existsSync(source)) continue;
       for (const item of JSON.parse(fs.readFileSync(source, 'utf8')).adjudications || []) {
-        const blindId = idMap.get(String(item.discrepancyId));
+        const blindId = idMap.get(String(item.discrepancyId)) || (item.blindRecordId && idMap.get(String(item.blindRecordId)));
         if (!blindId) throw new Error('Baseline discrepancy is not present in the source input.');
         baselineWrites.push(documentWrite('studies/' + id + '/records/' + blindId + '/modelBaselines/' + safeId(entry.name, 'model name'), { modelName: entry.name, discrepancyId: blindId, adjudication: item.adjudication, sourceRole: 'comparative_baseline', eligibleForOfficialRanking: false, importedAt: now }));
         baselines += 1;
@@ -133,7 +132,7 @@ async function importStudy() {
     }
     await batchWrite(baselineWrites);
   }
-  console.log(JSON.stringify({ operation: 'import', studyId: id, records: input.records.length, baselines }));
+  console.log(JSON.stringify({ operation: 'import', studyId: id, records: prepared.length, baselines }));
 }
 async function addMember() {
   const user = await userByEmail(argument('--email').trim().toLowerCase());

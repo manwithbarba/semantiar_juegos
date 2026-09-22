@@ -59,6 +59,11 @@ service cloud.firestore {
           validId(data.span.text, 1000)));
     }
 
+    function isBlindRecord(studyId, discrepancyId) {
+      return exists(/databases/$(database)/documents/studies/$(studyId)/records/$(discrepancyId)) &&
+        get(/databases/$(database)/documents/studies/$(studyId)/records/$(discrepancyId)).data.blindQueueVersion == 'annotator_blind_v2';
+    }
+
     function validSubmission(data, discrepancyId) {
       return data.keys().hasOnly(['ownerUid', 'annotatorId', 'discrepancyId', 'queueRow',
           'decision', 'submissionState', 'sourceRecordSha256', 'createdAt', 'updatedAt']) &&
@@ -96,12 +101,14 @@ service cloud.firestore {
         allow create, update, delete: if isPrincipalInvestigator();
 
         match /submissions/{submitterUid} {
-          allow read: if isPrincipalInvestigator() || (signedIn() && resource.data.ownerUid == request.auth.uid);
+          allow read: if isPrincipalInvestigator() || (signedIn() && resource.data.ownerUid == request.auth.uid && isBlindRecord(studyId, discrepancyId));
           allow create: if isMember(studyId) && request.auth.uid == submitterUid &&
+            isBlindRecord(studyId, discrepancyId) &&
             validSubmission(request.resource.data, discrepancyId) &&
             request.resource.data.createdAt <= request.time &&
             request.resource.data.createdAt > request.time - duration.value(10, 'm');
           allow update: if isMember(studyId) && request.auth.uid == submitterUid &&
+            isBlindRecord(studyId, discrepancyId) &&
             validSubmission(request.resource.data, discrepancyId) && immutableSubmissionFields();
           allow delete: if false;
         }

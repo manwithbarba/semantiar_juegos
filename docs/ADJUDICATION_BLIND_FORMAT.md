@@ -11,7 +11,7 @@ La cola de anotación se distribuye en formato JSONL para procesar un registro p
 
 ## Qué ve un anotador
 
-Cada fila usa un `blindRecordId` opaco (por ejemplo, `BLD-…`). No incluye `discrepancyId`, `caseId`, `pair`, `queueRow` ni los identificadores originales de anotadores. Las dos marcaciones se presentan como `A` y `B`; los identificadores anidados de la evidencia léxica también se normalizan. `textSha256` sólo sirve para verificar integridad y no es una identidad humana.
+Cada fila usa un `blindRecordId` opaco (por ejemplo, `BLD-…`). No incluye `discrepancyId`, `caseId`, `pair`, `queueRow` ni los identificadores originales de anotadores. Las dos marcaciones se presentan como `A` y `B`; los identificadores anidados de la evidencia léxica también se normalizan. `integrityToken` es un valor aleatorio para enlazar una entrega con el registro y no deriva del texto clínico. La huella `textSha256` queda sólo en el mapa PI-only.
 
 El archivo fuente `adjudication_input.json` y el mapa privado permanecen fuera de `public/` y son material de trazabilidad del investigador principal.
 
@@ -27,3 +27,4 @@ Para una carpeta de entregas como `cuarta entrega SemantIAr`, usar:
 - `node scripts/create_blinded_disagreement_queue.cjs --input <cola.csv> --output-dir <salida-ciega> --trace-dir <trazabilidad-PI>`
 
 El primer comando genera una copia ciega por JSON y `semantiar_annotations_blinded.jsonl` (un caso por línea). El segundo genera la cola ciega en CSV, JSON y JSONL. Los dos comandos comparten los `CASE-…` cuando la cola y las entregas contienen el mismo caso. Los mapas `*.private.json` son exclusivamente del investigador principal.
+
