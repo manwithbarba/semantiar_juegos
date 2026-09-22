@@ -29,10 +29,10 @@ function safeId(value, name) {
   return value;
 }
 function token() {
-  return execFileSync('gcloud', ['auth', 'application-default', 'print-access-token'], { encoding: 'utf8' }).trim();
+  return execFileSync(process.platform === 'win32' ? 'gcloud.cmd' : 'gcloud', ['auth', 'application-default', 'print-access-token'], { encoding: 'utf8', shell: true }).trim();
 }
 async function request(url, body) {
-  const response = await fetch(url, { method: 'POST', headers: { authorization: 'Bearer ' + token(), 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  const response = await fetch(url, { method: 'POST', headers: { authorization: 'Bearer ' + token(), 'x-goog-user-project': PROJECT_ID, 'content-type': 'application/json' }, body: JSON.stringify(body) });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error?.message || ('HTTP ' + response.status));
   return data;
@@ -77,18 +77,43 @@ async function bootstrap() {
   ]);
   console.log(JSON.stringify({ operation: 'bootstrap', studyId: id, principalUid: current.localId }));
 }
-function recordDocument(record, now) {
-  return { discrepancyId: record.discrepancyId, queueRow: record.queueRow, pair: record.pair, caseId: record.caseId, noteType: record.noteType, kind: record.kind, priority: record.priority, clinicalText: record.clinicalText, textSha256: record.textSha256, annotatorA: record.annotatorA, annotatorB: record.annotatorB, mismatchFields: record.mismatchFields, alignment: record.alignment, workflow: { referenceState: 'pending_human_valuation', rankingState: 'not_eligible' }, source: 'adjudication_input.json', importedAt: now };
+function blindRecordId(record, experimentId) {
+  const crypto = require('node:crypto');
+  return 'BLD-' + crypto.createHash('sha256').update(String(experimentId) + '\0' + String(record.discrepancyId)).digest('hex').slice(0, 20);
+}
+function deepBlind(value, label) {
+  if (Array.isArray(value)) return value.map((item) => deepBlind(item, label));
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, key === 'annotatorId' ? label : deepBlind(child, label)]));
+  }
+  return value;
+}
+function blindAnnotator(source, label) {
+  const output = deepBlind(source || {}, label);
+  output.annotatorId = label;
+  return output;
+}
+function recordDocument(record, now, experimentId) {
+  return {
+    discrepancyId: blindRecordId(record, experimentId), queueRow: record.queueRow, noteType: record.noteType,
+    kind: record.kind, priority: record.priority, clinicalText: record.clinicalText, textSha256: record.textSha256,
+    annotatorA: blindAnnotator(record.annotatorA, 'A'), annotatorB: blindAnnotator(record.annotatorB, 'B'),
+    blindQueueVersion: 'annotator_blind_v2', mismatchFields: record.mismatchFields, alignment: record.alignment,
+    workflow: { referenceState: 'pending_human_valuation', rankingState: 'not_eligible' },
+    source: 'adjudication_input.json (PI-only source)', importedAt: now
+  };
 }
 async function importStudy() {
   const input = JSON.parse(fs.readFileSync(path.resolve(argument('--input')), 'utf8'));
   if (!Array.isArray(input.records) || !input.experimentId) throw new Error('Expected a SemantIAr adjudication input JSON.');
   const id = studyId(), now = new Date().toISOString();
-  const writes = [documentWrite('studies/' + id, { studyId: id, experimentId: input.experimentId, protocolVersion: input.protocolVersion || null, recordCount: input.records.length, sourceQueue: input.sourceQueue || null, status: 'active', updatedAt: now })];
+  const idMap = new Map(input.records.map((record) => [String(record.discrepancyId), blindRecordId(record, input.experimentId)]));
+  const writes = [documentWrite('studies/' + id, { studyId: id, experimentId: input.experimentId, protocolVersion: input.protocolVersion || null, recordCount: input.records.length, sourceQueue: { blind: true, version: 'annotator_blind_v2' }, status: 'active', updatedAt: now })];
   for (const record of input.records) {
     safeId(record.discrepancyId, 'discrepancy id');
     if (typeof record.textSha256 !== 'string' || record.textSha256.length !== 64) throw new Error('A record lacks textSha256.');
-    writes.push(documentWrite('studies/' + id + '/records/' + record.discrepancyId, recordDocument(record, now)));
+    const blindId = blindRecordId(record, input.experimentId);
+    writes.push(documentWrite('studies/' + id + '/records/' + blindId, recordDocument(record, now, input.experimentId)));
   }
   await batchWrite(writes);
   let baselines = 0;
@@ -100,8 +125,9 @@ async function importStudy() {
       const source = path.join(path.resolve(directory), entry.name, 'adjudications.json');
       if (!fs.existsSync(source)) continue;
       for (const item of JSON.parse(fs.readFileSync(source, 'utf8')).adjudications || []) {
-        safeId(item.discrepancyId, 'baseline discrepancy id');
-        baselineWrites.push(documentWrite('studies/' + id + '/records/' + item.discrepancyId + '/modelBaselines/' + safeId(entry.name, 'model name'), { modelName: entry.name, discrepancyId: item.discrepancyId, adjudication: item.adjudication, sourceRole: 'comparative_baseline', eligibleForOfficialRanking: false, importedAt: now }));
+        const blindId = idMap.get(String(item.discrepancyId));
+        if (!blindId) throw new Error('Baseline discrepancy is not present in the source input.');
+        baselineWrites.push(documentWrite('studies/' + id + '/records/' + blindId + '/modelBaselines/' + safeId(entry.name, 'model name'), { modelName: entry.name, discrepancyId: blindId, adjudication: item.adjudication, sourceRole: 'comparative_baseline', eligibleForOfficialRanking: false, importedAt: now }));
         baselines += 1;
       }
     }
@@ -122,4 +148,7 @@ async function addMember() {
   if (command === 'add-member') return addMember();
   throw new Error('Use bootstrap, import or add-member.');
 })().catch((error) => { console.error(error.message); process.exitCode = 1; });
+
+
+
 
